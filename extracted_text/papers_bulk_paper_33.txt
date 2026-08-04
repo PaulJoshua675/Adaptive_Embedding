@@ -1,0 +1,3 @@
+Title: Query Expansion for Academic Search
+Abstract: The paper evaluates query expansion methods that improve recall for technical search tasks.
+Keywords: query expansion, academic search

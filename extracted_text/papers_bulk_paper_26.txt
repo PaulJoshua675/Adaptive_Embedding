@@ -1,0 +1,3 @@
+Title: Knowledge Distillation for Retrieval Models
+Abstract: The paper proposes distilling large retrieval models into smaller models for low-cost deployment.
+Keywords: knowledge distillation, retrieval models

@@ -1,0 +1,3 @@
+Title: Instruction-Tuned Retrievers for QA
+Abstract: The paper trains instruction-tuned retrievers that better align retrieval results with user questions.
+Keywords: instruction-tuning, retrievers, QA

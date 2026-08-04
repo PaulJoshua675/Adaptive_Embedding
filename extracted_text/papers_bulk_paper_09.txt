@@ -1,0 +1,3 @@
+Title: Sentence-BERT for Research Paper Search
+Abstract: Sentence-BERT is used to retrieve relevant paragraphs for answering questions about scholarly articles.
+Keywords: sentence-bert, paragraph retrieval

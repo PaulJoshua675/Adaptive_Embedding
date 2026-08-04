@@ -1,0 +1,224 @@
+--- PAPER 01 ---
+Title: Adaptive Retrieval for Scientific QA
+Abstract: This paper studies adaptive retrieval methods for answering scientific questions by selecting relevant passages from large corpora of technical documents.
+Keywords: retrieval, embeddings, research, question answering
+
+--- PAPER 02 ---
+Title: Dense Passage Retrieval for Long Documents
+Abstract: The study evaluates dense passage retrieval techniques that improve ranking quality for long-form academic papers.
+Keywords: dense retrieval, long documents, ranking
+
+--- PAPER 03 ---
+Title: Hybrid Search for Biomedical Knowledge
+Abstract: A hybrid search approach combines lexical and semantic retrieval to find evidence from biomedical literature.
+Keywords: hybrid search, biomedical, evidence
+
+--- PAPER 04 ---
+Title: Improving RAG with Query Reformulation
+Abstract: The authors propose query reformulation strategies to improve the recall of retrieval-augmented generation systems.
+Keywords: rag, query reformulation, recall
+
+--- PAPER 05 ---
+Title: Cross-Encoder Re-ranking for Research QA
+Abstract: This work demonstrates how cross-encoder re-ranking improves the top-k passages retrieved for question answering.
+Keywords: cross-encoder, reranking, qa
+
+--- PAPER 06 ---
+Title: Low-Latency Vector Search with FAISS
+Abstract: The paper investigates memory-efficient indexing methods for approximate nearest neighbor search in large document collections.
+Keywords: faiss, vector search, indexing
+
+--- PAPER 07 ---
+Title: ChromaDB for Semantic Document Retrieval
+Abstract: The authors benchmark ChromaDB as a vector store for semantic retrieval over academic text corpora.
+Keywords: chromadb, semantic retrieval, vector store
+
+--- PAPER 08 ---
+Title: Transformer Embeddings for Scientific Text
+Abstract: This study compares transformer-based embeddings for retrieving scientific papers and technical chapters.
+Keywords: transformers, embeddings, scientific text
+
+--- PAPER 09 ---
+Title: Sentence-BERT for Research Paper Search
+Abstract: Sentence-BERT is used to retrieve relevant paragraphs for answering questions about scholarly articles.
+Keywords: sentence-bert, paragraph retrieval
+
+--- PAPER 10 ---
+Title: Multi-Vector Retrieval for Knowledge Bases
+Abstract: The paper proposes multi-vector encodings to represent nuanced technical concepts in literature search.
+Keywords: multi-vector, knowledge bases, retrieval
+
+--- PAPER 11 ---
+Title: Graph-Based Retrieval for Citation Networks
+Abstract: The authors link document embeddings with citation graphs to improve retrieval over related papers.
+Keywords: citation graph, graph retrieval
+
+--- PAPER 12 ---
+Title: Contrastive Learning for Domain Retrieval
+Abstract: Contrastive objectives are used to train retrieval encoders tailored to academic and scientific domains.
+Keywords: contrastive learning, domain retrieval
+
+--- PAPER 13 ---
+Title: LLM Grounding with Retrieved Evidence
+Abstract: This work studies how language models can be grounded by retrieved evidence during scientific question answering.
+Keywords: grounding, evidence, LLM
+
+--- PAPER 14 ---
+Title: Chunking Strategies for Long Contexts
+Abstract: The paper evaluates chunking and overlap strategies for processing long research articles in retrieval systems.
+Keywords: chunking, long contexts, overlap
+
+--- PAPER 15 ---
+Title: Fine-Tuning Embeddings for Legal Documents
+Abstract: The authors fine-tune embedding models for legal and policy retrieval tasks with strong domain specificity.
+Keywords: fine-tuning, legal documents, embeddings
+
+--- PAPER 16 ---
+Title: Question Answering over Technical Manuals
+Abstract: This study explores question answering over manuals by combining retrieval with structured summaries.
+Keywords: qa, manuals, structured summaries
+
+--- PAPER 17 ---
+Title: Evaluation Metrics for RAG Systems
+Abstract: The paper proposes metrics to evaluate faithfulness, relevance, and groundedness in RAG pipelines.
+Keywords: evaluation metrics, rag, groundedness
+
+--- PAPER 18 ---
+Title: Memory-Efficient Inference in Vector Search
+Abstract: The study focuses on reducing memory overhead when building and querying large-scale vector stores.
+Keywords: memory efficiency, inference, vector search
+
+--- PAPER 19 ---
+Title: Summarization-Augmented Retrieval
+Abstract: The authors show that generated summaries help retrieve supporting evidence for complex questions.
+Keywords: summarization, retrieval, evidence
+
+--- PAPER 20 ---
+Title: Robust Retrieval under Query Ambiguity
+Abstract: This work examines how retrieval systems behave when user questions are vague or ambiguous.
+Keywords: ambiguity, robust retrieval, query understanding
+
+--- PAPER 21 ---
+Title: Domain Adaptation for Scientific Embeddings
+Abstract: The paper discusses domain adaptation of embedding models for chemistry, biology, and computer science.
+Keywords: domain adaptation, scientific embeddings
+
+--- PAPER 22 ---
+Title: Open-Domain QA with Retrieved Passages
+Abstract: The authors build an open-domain QA system that answers using retrieved passages rather than direct memorization.
+Keywords: open-domain QA, retrieved passages
+
+--- PAPER 23 ---
+Title: Neural Ranking for Academic Search
+Abstract: This paper presents neural ranking methods for retrieving relevant papers from a large literature database.
+Keywords: neural ranking, academic search
+
+--- PAPER 24 ---
+Title: Constrained Generation for Evidence-Based Answers
+Abstract: The authors propose constrained generation to ensure answers remain grounded in cited evidence.
+Keywords: constrained generation, evidence-based answers
+
+--- PAPER 25 ---
+Title: Multi-Hop Retrieval for Complex Questions
+Abstract: The study focuses on retrieving multiple evidence chunks to answer questions that require multi-step reasoning.
+Keywords: multi-hop retrieval, reasoning, evidence
+
+--- PAPER 26 ---
+Title: Knowledge Distillation for Retrieval Models
+Abstract: The paper proposes distilling large retrieval models into smaller models for low-cost deployment.
+Keywords: knowledge distillation, retrieval models
+
+--- PAPER 27 ---
+Title: Retrieval over Heterogeneous Documents
+Abstract: This work combines text, tables, and figures into a unified retrieval pipeline for technical reports.
+Keywords: heterogeneous documents, retrieval, technical reports
+
+--- PAPER 28 ---
+Title: Persistent Memory for RAG Agents
+Abstract: The authors propose persistent memory modules that help RAG agents retrieve prior evidence across sessions.
+Keywords: persistent memory, rag agents
+
+--- PAPER 29 ---
+Title: Adaptive Chunking for Scientific Articles
+Abstract: The paper studies how chunk sizes should vary with section type and document structure.
+Keywords: adaptive chunking, scientific articles
+
+--- PAPER 30 ---
+Title: Dense Retrieval for Code Documentation
+Abstract: The study evaluates dense retrieval methods over software documentation and README files.
+Keywords: code documentation, dense retrieval
+
+--- PAPER 31 ---
+Title: Trustworthy QA with Source Attribution
+Abstract: This work focuses on attributing answers to specific passages for more trustworthy question answering.
+Keywords: trustworthy QA, source attribution
+
+--- PAPER 32 ---
+Title: Incremental Indexing for Research Collections
+Abstract: The authors present methods for maintaining vector indexes as new papers are added to a corpus.
+Keywords: incremental indexing, research collections
+
+--- PAPER 33 ---
+Title: Query Expansion for Academic Search
+Abstract: The paper evaluates query expansion methods that improve recall for technical search tasks.
+Keywords: query expansion, academic search
+
+--- PAPER 34 ---
+Title: Semantic Similarity for Paper Recommendation
+Abstract: This study uses semantic similarity to recommend related research papers to readers.
+Keywords: semantic similarity, paper recommendation
+
+--- PAPER 35 ---
+Title: Evidence Selection in Multi-Document QA
+Abstract: The method selects the most useful evidence across many documents before answering a question.
+Keywords: evidence selection, multi-document QA
+
+--- PAPER 36 ---
+Title: Compression of Embedding Indexes
+Abstract: The paper studies compression strategies that preserve retrieval quality while reducing index size.
+Keywords: compression, embedding indexes
+
+--- PAPER 37 ---
+Title: Noise Robustness in Retrieval Pipelines
+Abstract: This work examines how retrieval pipelines behave when documents contain noisy or incomplete text.
+Keywords: robustness, retrieval pipelines
+
+--- PAPER 38 ---
+Title: Combining BM25 and Dense Retrieval
+Abstract: The authors evaluate combining traditional lexical retrieval with modern dense retrieval.
+Keywords: BM25, dense retrieval, hybrid search
+
+--- PAPER 39 ---
+Title: Contextualized Embeddings for Citation Search
+Abstract: The study uses contextualized embeddings to retrieve papers relevant to a given citation context.
+Keywords: contextualized embeddings, citation search
+
+--- PAPER 40 ---
+Title: Few-Shot Retrieval for Scientific Domains
+Abstract: The paper applies few-shot adaptation strategies to improve retrieval in specialized domains.
+Keywords: few-shot, scientific domains
+
+--- PAPER 41 ---
+Title: Relevance Feedback in Research Search
+Abstract: The authors incorporate user feedback into iterative retrieval to refine search results.
+Keywords: relevance feedback, research search
+
+--- PAPER 42 ---
+Title: Evaluation of Retrieval-Augmented LLMs
+Abstract: This work benchmarks the impact of retrieval on factuality and answer quality in large language models.
+Keywords: retrieval-augmented llms, factuality
+
+--- PAPER 43 ---
+Title: Instruction-Tuned Retrievers for QA
+Abstract: The paper trains instruction-tuned retrievers that better align retrieval results with user questions.
+Keywords: instruction-tuning, retrievers, QA
+
+--- PAPER 44 ---
+Title: Temporal Retrieval for Emerging Topics
+Abstract: The study focuses on retrieving recent papers and updates related to fast-moving research areas.
+Keywords: temporal retrieval, emerging topics
+
+--- PAPER 45 ---
+Title: Scientific Claim Verification with Retrieval
+Abstract: This work uses retrieval to verify claims made in scientific conversations and summaries.
+Keywords: claim verification, scientific reasoning

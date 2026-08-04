@@ -1,0 +1,3 @@
+Title: Evidence Selection in Multi-Document QA
+Abstract: The method selects the most useful evidence across many documents before answering a question.
+Keywords: evidence selection, multi-document QA

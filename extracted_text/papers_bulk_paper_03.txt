@@ -1,0 +1,3 @@
+Title: Hybrid Search for Biomedical Knowledge
+Abstract: A hybrid search approach combines lexical and semantic retrieval to find evidence from biomedical literature.
+Keywords: hybrid search, biomedical, evidence

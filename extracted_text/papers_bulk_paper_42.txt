@@ -1,0 +1,3 @@
+Title: Evaluation of Retrieval-Augmented LLMs
+Abstract: This work benchmarks the impact of retrieval on factuality and answer quality in large language models.
+Keywords: retrieval-augmented llms, factuality

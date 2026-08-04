@@ -1,0 +1,3 @@
+Title: Cross-Encoder Re-ranking for Research QA
+Abstract: This work demonstrates how cross-encoder re-ranking improves the top-k passages retrieved for question answering.
+Keywords: cross-encoder, reranking, qa

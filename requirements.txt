@@ -1,0 +1,8 @@
+pytest
+streamlit
+PyMuPDF
+pypdf
+sentence-transformers
+faiss-cpu
+transformers
+torch

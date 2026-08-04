@@ -1,0 +1,20 @@
+1. What is the main purpose of retrieval-augmented generation in research paper QA?
+2. How do embedding models help retrieve related passages for scientific questions?
+3. Which retrieval techniques improve answer quality for long documents?
+4. How does FAISS support fast similarity search over research papers?
+5. Why is chunking important when processing long academic documents?
+6. What are the benefits of combining lexical and semantic retrieval?
+7. How can query reformulation improve retrieval performance?
+8. What is the role of re-ranking in question answering systems?
+9. How does contrastive learning help domain-specific retrieval?
+10. Why is source attribution important in evidence-based QA?
+11. How do multi-hop retrieval systems answer complex questions?
+12. What is the difference between dense retrieval and BM25?
+13. How can summarization improve retrieval for difficult questions?
+14. Why is domain adaptation useful for scientific embeddings?
+15. What is the role of citation graphs in paper retrieval?
+16. How do vector stores support interactive RAG applications?
+17. What are the limitations of retrieval under ambiguous queries?
+18. Why might persistent memory help RAG agents over time?
+19. How do chunk size and overlap affect retrieval quality?
+20. What makes a retrieval system trustworthy for scientific QA?

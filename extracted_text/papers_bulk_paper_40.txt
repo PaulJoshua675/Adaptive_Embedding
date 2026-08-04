@@ -1,0 +1,3 @@
+Title: Few-Shot Retrieval for Scientific Domains
+Abstract: The paper applies few-shot adaptation strategies to improve retrieval in specialized domains.
+Keywords: few-shot, scientific domains

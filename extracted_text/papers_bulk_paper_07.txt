@@ -1,0 +1,3 @@
+Title: ChromaDB for Semantic Document Retrieval
+Abstract: The authors benchmark ChromaDB as a vector store for semantic retrieval over academic text corpora.
+Keywords: chromadb, semantic retrieval, vector store

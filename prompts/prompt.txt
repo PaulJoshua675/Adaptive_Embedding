@@ -1,0 +1,5 @@
+You are answering questions about a collection of research papers.
+Use the retrieved snippets as evidence and provide a concise answer.
+Question: {question}
+Context: {context}
+Answer:

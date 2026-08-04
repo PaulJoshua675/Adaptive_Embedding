@@ -1,0 +1,3 @@
+Title: Summarization-Augmented Retrieval
+Abstract: The authors show that generated summaries help retrieve supporting evidence for complex questions.
+Keywords: summarization, retrieval, evidence

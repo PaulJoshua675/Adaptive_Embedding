@@ -1,0 +1,3 @@
+Title: Fine-Tuning Embeddings for Legal Documents
+Abstract: The authors fine-tune embedding models for legal and policy retrieval tasks with strong domain specificity.
+Keywords: fine-tuning, legal documents, embeddings

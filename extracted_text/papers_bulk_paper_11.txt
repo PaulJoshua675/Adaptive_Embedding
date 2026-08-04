@@ -1,0 +1,3 @@
+Title: Graph-Based Retrieval for Citation Networks
+Abstract: The authors link document embeddings with citation graphs to improve retrieval over related papers.
+Keywords: citation graph, graph retrieval

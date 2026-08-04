@@ -1,0 +1,3 @@
+Title: Multi-Vector Retrieval for Knowledge Bases
+Abstract: The paper proposes multi-vector encodings to represent nuanced technical concepts in literature search.
+Keywords: multi-vector, knowledge bases, retrieval

@@ -1,0 +1,3 @@
+Title: Chunking Strategies for Long Contexts
+Abstract: The paper evaluates chunking and overlap strategies for processing long research articles in retrieval systems.
+Keywords: chunking, long contexts, overlap

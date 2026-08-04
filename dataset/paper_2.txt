@@ -1,0 +1,1 @@
+Embedding models map text into dense vectors that capture semantic similarity. Popular choices include BGE, E5, and MiniLM. For many retrieval tasks, stronger embeddings improve the recall of passages that are topically relevant to a query.

@@ -1,0 +1,3 @@
+Title: Adaptive Retrieval for Scientific QA
+Abstract: This paper studies adaptive retrieval methods for answering scientific questions by selecting relevant passages from large corpora of technical documents.
+Keywords: retrieval, embeddings, research, question answering

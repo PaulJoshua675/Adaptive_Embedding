@@ -1,3 +1,0 @@
-Title: Robust Retrieval under Query Ambiguity
-Abstract: This work examines how retrieval systems behave when user questions are vague or ambiguous.
-Keywords: ambiguity, robust retrieval, query understanding

@@ -30,6 +30,7 @@ def build_and_save_index(dataset_dir: str | Path, vector_store_dir: str | Path |
 
     embedding_model = EmbeddingModel(model_name=DEFAULT_EMBEDDING_MODEL)
     chunk_texts = [str(chunk["text"]) for chunk in chunks]
+    embedding_model.build_from_texts(chunk_texts)
     embeddings = embedding_model.embed_texts(chunk_texts)
 
     vector_store = VectorStore(dimension=len(embeddings[0]) if embeddings else 1)
@@ -39,6 +40,7 @@ def build_and_save_index(dataset_dir: str | Path, vector_store_dir: str | Path |
         "chunks": chunks,
         "embeddings": embeddings,
         "embedding_model_name": embedding_model.model_name,
+        "vocabulary": embedding_model.vocabulary,
         "chunk_size": DEFAULT_CHUNK_SIZE,
         "overlap": DEFAULT_CHUNK_OVERLAP,
         "top_k": DEFAULT_TOP_K,
@@ -55,7 +57,7 @@ def load_index(vector_store_dir: str | Path | None = None) -> Dict[str, object]:
     store_dir = Path(vector_store_dir or VECTOR_STORE_DIR)
     metadata_path = store_dir / "metadata.pkl"
     if not metadata_path.exists():
-        build_and_save_index(dataset_dir=store_dir.parent.parent / "dataset", vector_store_dir=store_dir)
+        build_and_save_index(dataset_dir=store_dir.parent / "dataset", vector_store_dir=store_dir)
 
     with metadata_path.open("rb") as handle:
         return pickle.load(handle)
@@ -64,6 +66,10 @@ def load_index(vector_store_dir: str | Path | None = None) -> Dict[str, object]:
 def answer_query(question: str, vector_store_dir: str | Path | None = None, top_k: int | None = None) -> str:
     metadata = load_index(vector_store_dir=vector_store_dir)
     embedding_model = EmbeddingModel(model_name=str(metadata.get("embedding_model_name", DEFAULT_EMBEDDING_MODEL)))
+    vocabulary = metadata.get("vocabulary") or {}
+    if vocabulary:
+        embedding_model.vocabulary = dict(vocabulary)
+        embedding_model._built = True
     vector_store = VectorStore(dimension=len(metadata["embeddings"][0]) if metadata.get("embeddings") else 1)
     vector_store.add_documents(metadata["chunks"], metadata["embeddings"])
 

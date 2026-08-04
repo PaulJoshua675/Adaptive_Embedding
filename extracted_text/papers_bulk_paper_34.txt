@@ -1,3 +1,0 @@
-Title: Semantic Similarity for Paper Recommendation
-Abstract: This study uses semantic similarity to recommend related research papers to readers.
-Keywords: semantic similarity, paper recommendation

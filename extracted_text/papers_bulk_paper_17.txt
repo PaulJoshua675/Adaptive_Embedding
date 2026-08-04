@@ -1,3 +1,0 @@
-Title: Evaluation Metrics for RAG Systems
-Abstract: The paper proposes metrics to evaluate faithfulness, relevance, and groundedness in RAG pipelines.
-Keywords: evaluation metrics, rag, groundedness

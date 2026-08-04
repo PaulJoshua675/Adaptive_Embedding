@@ -1,3 +1,0 @@
-Title: Contrastive Learning for Domain Retrieval
-Abstract: Contrastive objectives are used to train retrieval encoders tailored to academic and scientific domains.
-Keywords: contrastive learning, domain retrieval

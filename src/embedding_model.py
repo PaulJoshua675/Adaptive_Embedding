@@ -15,7 +15,18 @@ class EmbeddingModel:
         self.model_name = model_name
         self.vocabulary = {}
         self._built = False
-        self.backend = SentenceTransformer(model_name) if SentenceTransformer is not None else None
+        self.backend = None
+        if model_name and model_name.lower() != "simple-bow" and SentenceTransformer is not None:
+            try:
+                self.backend = SentenceTransformer(model_name)
+            except Exception:
+                self.backend = None
+
+    def build_from_texts(self, texts: List[str]) -> None:
+        if self.backend is not None:
+            self._built = True
+            return
+        self._build_vocabulary(texts)
 
     def _tokenize(self, text: str) -> List[str]:
         return re.findall(r"[a-z0-9]+", text.lower())

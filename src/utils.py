@@ -30,5 +30,6 @@ def load_text(path: str | Path) -> str:
 def write_text(path: str | Path, content: str) -> Path:
     path = Path(path)
     ensure_directory(path.parent)
-    path.write_text(content, encoding="utf-8")
+    safe_content = content.encode("utf-8", errors="ignore").decode("utf-8")
+    path.write_text(safe_content, encoding="utf-8")
     return path

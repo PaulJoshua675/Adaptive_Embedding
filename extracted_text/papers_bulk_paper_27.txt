@@ -1,3 +1,0 @@
-Title: Retrieval over Heterogeneous Documents
-Abstract: This work combines text, tables, and figures into a unified retrieval pipeline for technical reports.
-Keywords: heterogeneous documents, retrieval, technical reports

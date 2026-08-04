@@ -1,3 +1,0 @@
-Title: Relevance Feedback in Research Search
-Abstract: The authors incorporate user feedback into iterative retrieval to refine search results.
-Keywords: relevance feedback, research search

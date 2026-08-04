@@ -1,3 +1,0 @@
-Title: Combining BM25 and Dense Retrieval
-Abstract: The authors evaluate combining traditional lexical retrieval with modern dense retrieval.
-Keywords: BM25, dense retrieval, hybrid search

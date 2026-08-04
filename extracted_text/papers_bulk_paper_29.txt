@@ -1,3 +1,0 @@
-Title: Adaptive Chunking for Scientific Articles
-Abstract: The paper studies how chunk sizes should vary with section type and document structure.
-Keywords: adaptive chunking, scientific articles

@@ -1,3 +1,0 @@
-Title: Memory-Efficient Inference in Vector Search
-Abstract: The study focuses on reducing memory overhead when building and querying large-scale vector stores.
-Keywords: memory efficiency, inference, vector search

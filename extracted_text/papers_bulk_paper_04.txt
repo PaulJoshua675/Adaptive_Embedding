@@ -1,3 +1,0 @@
-Title: Improving RAG with Query Reformulation
-Abstract: The authors propose query reformulation strategies to improve the recall of retrieval-augmented generation systems.
-Keywords: rag, query reformulation, recall

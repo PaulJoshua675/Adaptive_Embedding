@@ -1,3 +1,0 @@
-Title: Dense Passage Retrieval for Long Documents
-Abstract: The study evaluates dense passage retrieval techniques that improve ranking quality for long-form academic papers.
-Keywords: dense retrieval, long documents, ranking

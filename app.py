@@ -30,9 +30,8 @@ def main() -> None:
         downloaded = download_arxiv_papers(ids, args.dataset_dir)
         print(f"Downloaded {len(downloaded)} arXiv paper(s) into {args.dataset_dir}")
 
-    build_and_save_index(args.dataset_dir, args.vector_store_dir)
-
     if args.query:
+        build_and_save_index(args.dataset_dir, args.vector_store_dir)
         print(answer_query(args.query, args.vector_store_dir))
         return
 
@@ -46,9 +45,13 @@ def main() -> None:
         st.title("Research Paper QA with RAG")
         st.write("This baseline version uses one embedding model and a simple retrieval pipeline.")
 
+        st.write("Ask questions about the papers already present in the dataset directory.")
         question = st.text_input("Ask a question about the papers")
         if st.button("Answer") and question:
-            st.write(answer_query(question, args.vector_store_dir))
+            with st.spinner("Building the index and retrieving context..."):
+                build_and_save_index(args.dataset_dir, args.vector_store_dir)
+                answer = answer_query(question, args.vector_store_dir)
+            st.write(answer)
         return
 
     print("Index built successfully. Use --query to ask a question or --streamlit for the UI.")

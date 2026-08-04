@@ -1,3 +1,0 @@
-Title: Low-Latency Vector Search with FAISS
-Abstract: The paper investigates memory-efficient indexing methods for approximate nearest neighbor search in large document collections.
-Keywords: faiss, vector search, indexing

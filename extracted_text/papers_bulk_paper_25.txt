@@ -1,3 +1,0 @@
-Title: Multi-Hop Retrieval for Complex Questions
-Abstract: The study focuses on retrieving multiple evidence chunks to answer questions that require multi-step reasoning.
-Keywords: multi-hop retrieval, reasoning, evidence

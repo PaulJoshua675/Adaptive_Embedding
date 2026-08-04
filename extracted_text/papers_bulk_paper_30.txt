@@ -1,3 +1,0 @@
-Title: Dense Retrieval for Code Documentation
-Abstract: The study evaluates dense retrieval methods over software documentation and README files.
-Keywords: code documentation, dense retrieval

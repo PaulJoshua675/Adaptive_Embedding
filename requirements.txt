@@ -2,6 +2,8 @@ pytest
 streamlit
 PyMuPDF
 pypdf
+pillow
+pytesseract
 sentence-transformers
 faiss-cpu
 transformers

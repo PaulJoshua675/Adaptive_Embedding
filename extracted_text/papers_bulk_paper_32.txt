@@ -1,3 +1,0 @@
-Title: Incremental Indexing for Research Collections
-Abstract: The authors present methods for maintaining vector indexes as new papers are added to a corpus.
-Keywords: incremental indexing, research collections

@@ -1,3 +1,0 @@
-Title: Trustworthy QA with Source Attribution
-Abstract: This work focuses on attributing answers to specific passages for more trustworthy question answering.
-Keywords: trustworthy QA, source attribution

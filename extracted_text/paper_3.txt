@@ -1,1 +1,0 @@
-Vector databases such as FAISS and Chroma store embedding vectors for fast nearest-neighbour search. They allow a system to retrieve the most relevant chunks for a user question in milliseconds, making the end-to-end RAG pipeline practical for interactive applications.

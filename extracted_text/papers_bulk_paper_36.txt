@@ -1,3 +1,0 @@
-Title: Compression of Embedding Indexes
-Abstract: The paper studies compression strategies that preserve retrieval quality while reducing index size.
-Keywords: compression, embedding indexes

@@ -1,3 +1,0 @@
-Title: Question Answering over Technical Manuals
-Abstract: This study explores question answering over manuals by combining retrieval with structured summaries.
-Keywords: qa, manuals, structured summaries

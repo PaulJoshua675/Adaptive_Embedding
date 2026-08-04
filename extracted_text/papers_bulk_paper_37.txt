@@ -1,3 +1,0 @@
-Title: Noise Robustness in Retrieval Pipelines
-Abstract: This work examines how retrieval pipelines behave when documents contain noisy or incomplete text.
-Keywords: robustness, retrieval pipelines

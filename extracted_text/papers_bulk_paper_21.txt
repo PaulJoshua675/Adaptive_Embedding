@@ -1,3 +1,0 @@
-Title: Domain Adaptation for Scientific Embeddings
-Abstract: The paper discusses domain adaptation of embedding models for chemistry, biology, and computer science.
-Keywords: domain adaptation, scientific embeddings

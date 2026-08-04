@@ -1,3 +1,0 @@
-Title: Constrained Generation for Evidence-Based Answers
-Abstract: The authors propose constrained generation to ensure answers remain grounded in cited evidence.
-Keywords: constrained generation, evidence-based answers

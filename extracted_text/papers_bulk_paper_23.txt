@@ -1,3 +1,0 @@
-Title: Neural Ranking for Academic Search
-Abstract: This paper presents neural ranking methods for retrieving relevant papers from a large literature database.
-Keywords: neural ranking, academic search

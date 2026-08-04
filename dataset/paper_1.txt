@@ -1,1 +1,0 @@
-Retrieval-Augmented Generation, or RAG, combines a retrieval system with a language model to answer questions with grounded evidence from documents. In research paper question answering, RAG helps ground answers in the source literature instead of relying only on memorized knowledge.

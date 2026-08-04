@@ -1,3 +1,0 @@
-Title: Contextualized Embeddings for Citation Search
-Abstract: The study uses contextualized embeddings to retrieve papers relevant to a given citation context.
-Keywords: contextualized embeddings, citation search

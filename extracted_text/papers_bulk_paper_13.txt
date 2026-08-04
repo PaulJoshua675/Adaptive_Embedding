@@ -1,3 +1,0 @@
-Title: LLM Grounding with Retrieved Evidence
-Abstract: This work studies how language models can be grounded by retrieved evidence during scientific question answering.
-Keywords: grounding, evidence, LLM

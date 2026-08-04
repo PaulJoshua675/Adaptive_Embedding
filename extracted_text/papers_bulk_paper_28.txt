@@ -1,3 +1,0 @@
-Title: Persistent Memory for RAG Agents
-Abstract: The authors propose persistent memory modules that help RAG agents retrieve prior evidence across sessions.
-Keywords: persistent memory, rag agents

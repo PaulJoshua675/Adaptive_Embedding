@@ -20,9 +20,12 @@ class VectorStore:
             self.index = faiss.IndexFlatIP(dimension)
 
     def add_documents(self, documents: List[Dict[str, object]], embeddings: List[List[float]]) -> None:
+        if not documents:
+            return
+
         self.documents.extend(documents)
         self.embeddings.extend(embeddings)
-        if self.index is not None and np is not None:
+        if self.index is not None and np is not None and embeddings:
             matrix = np.array(embeddings, dtype=np.float32)
             self.index.add(matrix)
 

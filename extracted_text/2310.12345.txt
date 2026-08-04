@@ -1,0 +1,1857 @@
+CLUST3: INFORMATION INVARIANT TEST-TIME TRAINING
+A PREPRINT
+Gustavo A. Vargas Hakim∗
+David Osowiechi∗
+Mehrdad Noori
+Milad Cheraghalikhani
+Ismail Ben Ayed
+Christian Desrosiers
+LIVIA, ÉTS Montréal, Canada
+International Laboratory on Learning Systems (ILLS),
+McGILL - ETS - MILA - CNRS - Université Paris-Saclay - CentraleSupélec, Canada
+gustavo-adolfo.vargas-hakim.1@ens.etsmtl.ca, david.osowiechi.1@ens.etsmtl.ca,
+mehrdad.noori.1@ens.etsmtl.ca, milad.cheraghalikhani.1@ens.etsmtl.ca
+ismail.benayed@etsmtl.ca, christian.desrosiers@etsmtl.ca
+ABSTRACT
+Deep Learning models have shown remarkable performance in a broad range of vision tasks. However,
+they are often vulnerable against domain shifts at test-time. Test-time training (TTT) methods have
+been developed in an attempt to mitigate these vulnerabilities, where a secondary task is solved at
+training time simultaneously with the main task, to be later used as an self-supervised proxy task at
+test-time. In this work, we propose a novel unsupervised TTT technique based on the maximization of
+Mutual Information between multi-scale feature maps and a discrete latent representation, which can
+be integrated to the standard training as an auxiliary clustering task. Experimental results demonstrate
+competitive classification performance on different popular test-time adaptation benchmarks.
+1
+Introduction
+The domain invariance hypothesis has been key to the success of deep learning methods for computer vision. In
+this hypothesis, the training and testing data are both assumed to be drawn from the same distribution, which rarely
+holds in practical settings. Moreover, it has been shown in numerous studies that the performance in classification
+and segmentation can drop significantly when domain shifts are present Recht et al. [2018a], Peng et al. [2018]. In
+response, Domain Adaptation (DA) studies the adaptation of learning algorithms to new domains, when different
+types of domain shifts are present in the test data. From this field, two promising directions have emerged: Domain
+Generalization and Test-Time Adaptation. On the one hand, Domain Generalization (DG) Volpi et al. [2018], Prakash
+et al. [2019], Zhou et al. [2020], Kim et al. [2022], Wang et al. [2022] assumes a model is trained on a large source
+dataset composed of different domains, and evaluates the performances on new domains at test-time. On the other hand,
+Test-Time Adaptation (TTA) Wang et al. [2021], Liang et al. [2021], Khurana et al. [2021], Boudiaf et al. [2022] adapts
+the model to test data on the fly, typically adjusting to subsets of the new domain (e.g., mini-batches) each time. In
+TTA, there is no supervision from the testing samples nor access to the source domain, which makes it a challenging,
+yet realistic problem. The main limitation of DG is the requirement of a large amount of training data from different
+domains, without the guarantee that the model generalizes well to the (virtually unlimited) possible new domains it may
+encounter. TTA methods do not have this issue. However, they are highly sensitive to the choice of the unsupervised
+loss functions deployed at test-time, which may severely hurt the performances.
+Test-Time Training (TTT) Sun et al. [2020], Liu et al. [2021], Gandelsman et al. [2022], Osowiechi et al. [2023] is
+an attractive variant of TTA, where an auxiliary task is learned from the training data (source domain) and later used
+at test-time to update a model. Typically, unsupervised and self-supervised tasks are chosen, as they allow for an
+adaptation process that does not require any label. Moreover, the joint, two-task training protocol for the source domain
+provides momentum at test-time, enabling the use of a loss function that is not completely foreign to the model.
+∗Equal contribution
+arXiv:2310.12345v1  [cs.CV]  18 Oct 2023
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+(a) Source DS and Target DT distributions
+(b) Cumulative density function of DS
+(c) Cumulative density function of DT
+Figure 1: Illustration of our Information Invariant TTT method on a 1D feature space. (a) The clustering of
+source features x (blue) into K =10 regions, maximizing the entropy of the cluster marginal distribution H(Z), is such
+that regions have the same probability mass in the source distribution. At test-time, the probability density function
+of the target domain (red) is shifted, which results in a different clustering of features. (b) The optimal clustering
+corresponds to dividing the cumulative density function (CDF) in even steps, giving a cluster marginal entropy of
+H(Z) = log2(K) ≈3.332. (c) Since the CDF of the target is not divided in even steps, the mutual information
+between features x and clusters z is no longer maximized. Note: we assume that cluster assignments are confident, i.e.,
+H(Z|X)≈0 and thus I(Z; X) = H(Z)−H(Z|X) ≈H(Z).
+Inspired by the recent success of Mutual-Information (MI) maximization in several learning tasks, such as representation
+learning Ji et al. [2019], Hu et al. [2017], Oord et al. [2018], Tschannen et al. [2020], deep clustering Jabi et al. [2021]
+and few-shot learning Boudiaf et al. [2020], we propose an information invariant TTT method called ClusT3. Our
+method maximizes the MI between the feature maps at different scales and discrete latent representations related to
+clustering. The main idea is that the amount of information between the features and their corresponding discrete
+encoding should remain constant in both the source and target domains (see Fig. 1). Toward this goal, we introduce an
+auxiliary task that performs information-maximization clustering while training on the source examples. At test time,
+we use the MI between the features and cluster assignments as a measure of representation quality, and maximize the MI
+as objective for test-time adaptation. Unlike previous TTT approaches, which rely on problem-specific, self-supervised
+learning strategies, our auxiliary clustering task is problem-agnostic and could be added on top of any model via a
+low-dimensional linear projection. Test-time adaptation could also be done using only the test samples, without any
+type of distilled information from the source domain. On the technical side, minimal architectural changes are needed,
+and the joint training approach is more efficient than proceeding with multiple, complex and time-consuming steps.
+Our contributions could be summarized as follows:
+• We propose a novel Test-Time Training approach based on maximizing the MI between feature maps and
+discrete representations learned in training. At test time, adaptation is achieved based on the principle that
+information between the features and their discrete representation should remain constant across domains.
+• ClusT3 is evaluated across a series of challenging TTA scenarios, with different types of domain shifts,
+obtaining competitive performance compared to previous methods.
+• To the best of our knowledge, this is the first Unsupervised Test-Time Training approach using a joint training
+based on the MI and linear projectors. Our approach is lightweight and more general than its previous
+self-supervised counterparts.
+The rest of this paper is organized as follows. Section 2 presents previous work in both TTA and TTT. Section 3
+introduces the ClusT3 method with the experimental setting to evaluate it in Section 4. Experimental results and
+discussions are provided in Section 5, and the closing conclusions are given in Section 6.
+2
+Related Work
+Test-Time Adaptation. The goal of TTA is to adapt a pre-trained model to a target dataset on the fly, i.e., as batches
+of data appear. Additional challenges include (1) the inaccessibility of source samples, which makes direct domain
+alignment impossible, (2) the lack of label supervision, which makes using unsupervised losses necessary, and (3) the
+fact that there is no access to all the target distribution, as the data come in the form of batches and not as a whole
+dataset. Adaptation can then be performed on different components of a network, such as the feature extractor, the
+classifier, or even the whole network.
+2
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Prediction Time Batch Normalization (PTBN) Nado et al. [2021] proposes to use the feature mean and variance from
+the batch of test samples as statistics in the batch norm layers. TENT Wang et al. [2021] instead focuses its adaptation
+on the affine parameters of the batch normalization layers only, based on the conditional entropy loss of the predictions.
+By updating linear parameters, the model can be more easily optimized and the source knowledge is preserved. SHOT
+Liang et al. [2021] also freezes the classifier, but adapts the entire feature encoder by minimizing the uncertainty
+of predictions (low conditional entropy) while making them class-balanced (high entropy of class marginals). To
+circumvent the problem of erroneous predictions, the model also uses a pseudo-labeling mechanism coupled with
+cross-entropy as part of the final loss. LAME Boudiaf et al. [2022] reduces the adaptation focus even more, by only
+refining the classifier’s predictions on target batches. In a spirit similar to that of SHOT, LAME utilizes a KL divergence
+loss on the class marginal distribution to make it more uniform, and a feature-level Laplacian regularizer to encourage
+concise clustering based on similarity. Test-time adaptation is performed using a closed-form iterative optimization
+process.
+Test-Time Training. In line with TTA methods, TTT seeks to update a model at test-time using an auxiliary task that
+has been trained along the main classification objective during source training. TTT Sun et al. [2020], which is among
+the first of such techniques, uses a Y-shaped architecture where a self-supervised rotation prediction network is attached
+to an arbitrary layer in the feature extractor of a CNN. A standard supervised cross-entropy loss (LCE) is optimized
+jointly with the auxiliary self-supervised loss Laux of the secondary branch, as follows:
+LTTT = LCE + λLaux
+(1)
+At test-time, only the layers connected to the secondary branch are updated. The loss in Eq. (1) served as basis for
+subsequent TTT methods. TTT++ Liu et al. [2021] introduced contrastive learning as the secondary task, similarly to
+TTT. However, to further improve performance at test-time, the statistics of source data are computed from a preserved
+queue of source feature maps. These statistics are then used for alignment with target data, thus regularizing the
+contrastive loss. TTT-MAE Gandelsman et al. [2022] proposes using Masked Autoencoders (MAE) He et al. [2022] as
+the second branch for test-time training. This approach also introduced Vision Transformers Dosovitskiy et al. [2020]
+in the context of TTA and TTT. Different from standard TTT methods, TTTFlow Osowiechi et al. [2023] first pre-trains
+the model with a standard cross-entropy loss and then adds a Normalizing Flow (NF) Dinh et al. [2016], Kingma and
+Dhariwal [2018] as a secondary task on top of early encoder layers. The NF is trained on source data independently of
+the classification task, by maximizing the log likelihood of source examples mapped to a simple distribution (Gaussian).
+The same loss function is later used to adapt the feature extractor for target data.
+f 1
+✓
+f 2
+✓
+f 3
+✓
+f 4
+✓
+0WPRi8cK9gPaUDbSbt0s0l3N0IJ/RNePCji1b/jzX/jts1BWx8MPN6bYWZekAiujet+O4W19Y3NreJ2aWd3b/+gfHjU1HGqGDZYLGLVDqhGwSU2DcC24lCGgUCW8Hobua3nlBpHstHM0nQj+hA8pAzaqzUHvSybjLk01654lbdOcgq
+8XJSgRz1Xvmr249ZGqE0TFCtO56bGD+jynAmcFrqphoTykZ0gB1LJY1Q+9n83ik5s0qfhLGyJQ2Zq78nMhpPYkC2xlRM9TL3kz8z+ukJrzxMy6T1KBki0VhKoiJyex50ucKmRETSyhT3N5K2JAqyoyNqGRD8JZfXiXNi6p3VXUfLiu
+12zyOIpzAKZyDB9dQg3uoQwMYCHiGV3hzxs6L8+58LFoLTj5zDH/gfP4AVcKQKQ=</latexit>gφ
+6LHoxWMF+wFtKJvtplm62Q27k0IJ/RlePCji1V/jzX/jts1Bqw8GHu/NMDMvTAU36HlfTmltfWNzq7xd2dnd2z+oHh61jco0ZS2qhNLdkBgmuGQt5ChYN9WMJKFgnXB8N/c7E6YNV/IRpykLEjKSPOKUoJV68SDvT4hOYz4bVGte3VvA
+/Uv8gtSgQHNQ/ewPFc0SJpEKYkzP91IMcqKRU8FmlX5mWEromIxYz1JEmaCfHyzD2zytCNlLYl0V2oPydykhgzTULbmRCMzao3F/zehlGN0HOZohk3S5KMqEi8qd/+8OuWYUxdQSQjW3t7o0JpQtClVbAj+6st/Sfui7l/VvYf
+LWuO2iKMJ3AK5+DNTgHprQAgoKnuAFXh10np0353ZWnKmWP4BefjG8Q2kZE=</latexit>h'
+Input
+Predictions
+LIM = H(Z|X) −H(Z)
+LIM
+LCE
+Extractor layer
+Classifier
+Projector
+Softmax projections
+x
+Multi-head 
+clustering
+z2[0,1]N⇥K
+Figure 2: The configuration of ClusT3. A projector gϕ is plugged to the output of a feature extractor layer block to
+compute a set of N, K−dimensional latent points z that are clustered through Information Maximization (LIM). The
+cross-entropy loss (LCE) is used for the classification component of training.
+3
+Method
+In this section, we present a formal definition of Test-Time Training, followed by the description of our ClusT3 method.
+3.1
+Problem formulation
+Let P(Xs, Ys) be the joint distribution that represents the source domain, where Xs and Ys are the input and label
+spaces, respectively. Similarly, P(Xt, Yt) corresponds to the target domain distribution, with inputs and labels Xt
+3
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+and Yt. In this work, we consider a likelihood shift Boudiaf et al. [2022] between the source and target datasets, i.e.,
+P(Xs|Ys)̸ = P(Xt|Yt), with both domain sharing the same label space (Ys = Yt).
+A standard TTT-based model is composed of a feature extractor fθ, a classifier hφ, and an auxiliary module gϕ, all
+collected inside the functional F(fθ, hφ, gϕ). During training, the goal is to learn Fs : Xs →Ys using Eq. (1), where
+the unsupervised loss Laux is chosen to be related to the auxiliary task gϕ. At test-time, only the unsupervised loss is
+used to adapt the model, such that we learn an adapted function Ft : Xt →Yt.
+3.2
+Proposed method
+ClusT3 is built on the formulation of previous work on TTT, following Eq. (1) and using modules plugged to the feature
+extractor. As shown in Fig. 2, we learn a discretized encoding of feature maps in the encoder using a clustering strategy
+based on MI maximization. Denote as fθ(x)∈RN×C the combined features of examples in a batch of size B, where
+the first dimension N =B·W ·H is obtained by flattening along the batch index and feature map dimensions. We use
+a shallow projector gϕ to map fθ(x) into a set of K-cluster probability distributions z = gϕ(fθ(x)) ∈[0, 1]N×K. In
+its simplest form, this projector is implemented by a single linear mapping followed by a softmax. A more complex
+projector, comprised of additional linear layers with ReLU activation can also be employed. We train the projector by
+maximizing the MI between x and its discrete representation z:
+LIM = −I(X; Z) = H(Z|X) −H(Z)
+(2)
+= −1
+N
+N
+X
+i=1
+K
+X
+K=1
+zik log zik +
+K
+X
+K=1
+zk log zk
+where zk = 1
+N
+P
+i zik is the average probability of cluster K. The first term, H(z|x), is the conditional entropy of z
+given x. Minimizing this term enforces the model to make confident assignments of examples to clusters. On the other
+hand, the term H(z) corresponds to the entropy of the cluster marginal distribution. Maximizing this term encourages
+the clusters to be balanced, and avoids the trivial solution of mapping all examples to a single cluster.
+In connection to information theory, our approach seeks a compressed encoding Z of features U =f(X), modeled by a
+Markov chain X →U →Z, which best preserves information. Following the data processing inequality, we necessarily
+have that I(X; U) ≥I(X; Z). The clustering defined by random variable Z divides the feature space in K regions.
+To maximize MI, it is known that the clustering must satisfy two conditions. First, it should divide the feature space
+in regions {Rk}K
+k=1 of equal probability mass, i.e.,
+R
+Rk p(u)du =
+R
+Rk′ p(u)du, for any k, k′ MacKay and Mac Kay
+[2003]. Second, the features falling into each region Rk should be similar, i.e., the entropy of U given Z should be low.
+Accordingly, increasing the number K of clusters leads to a higher MI. Assuming that the clustering in Z is a good
+representation of the distribution of features U, a shift in this distribution at test-time is likely to decrease MI since the
+shifted distribution is not well represented by Z.
+Multi-scale clustering. In ClusT3, different projectors can be independently placed on top of different layer blocks of
+a CNN (e.g., ResNet). In such case, the output of the ℓ-th layer is now written as zℓ=gϕ(f ℓ
+θ(x)). At training time, the
+model learns with a combined loss
+LCT3 = LCE +
+J
+X
+ℓ=j
+Lℓ
+IM
+(3)
+where j the index of the layer from which the first projector is connected. At test-time, the classifier hφ and the
+projectors {gℓ
+ϕ}J
+ℓ=j are frozen, and only the feature extractor fθ up to layer J is updated based on the IM loss of Eq. (2).
+It is worth noting that the gradient flow is going to affect only the layer blocks connected to the projectors and the ones
+before. The hypothesis is that the latent space of the feature maps should be information invariant across domains, thus
+updating the encoder to maintain a high mutual information should also improve classification accuracy.
+Multi-head clustering. As mentioned above, an encoding that better preserves information can be achieved by using a
+larger number of clusters. In practice, doing so might give poor results since the constraint of having balanced clusters
+(low entropy of the marginal) then becomes too restrictive. As better alternative, we propose a multi-head clustering
+strategy where multiple projectors {gℓ,c
+ϕ }C
+c=1 are trained for a given layer ℓand the loss Lℓ
+IM for that layer is the sum of
+MI losses for all its projectors. The following lemma relates this strategy to our previous information theory analysis.
+Lemma 3.1. Let Z = {Z1, . . . , ZC} be a set of random discrete variables representing C cluster assignments of
+features X. The MI between X and Z is bounded as follows
+max
+c
+H(Zc) −
+X
+c
+H(Zc|X) ≤I(X; Z) ≤
+X
+c
+I(X; Zc)
+4
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Proof. We start by writing the MI between X and Z as
+I(X; Z) = H(Z1, . . . , ZC) −H(Z1, . . . , ZC|X).
+The second term on the right simplifies as
+H(Z1, . . . , ZC|X) = −E
+
+log p(Z1, . . . , ZC|X)
+
+= −E
+ X
+c
+log p(Zc|X)
+
+=
+X
+c
+H(Zc|X)
+where we used the fact that the Zc variables are conditionally independent given X. To complete the proof, we use the
+following two properties of entropy: H(Z1, . . . , ZC) ≤P
+c H(Zc) and H(Z1, . . . , ZC) ≥maxc H(Zc).
+Note that the upper bound on I(X; Z), which corresponds to our multi-head clustering objective, is tight if the
+clustering variables Zc are statistically independent. Although we do not enforce this constraint, since our objective
+maximizes H(Zc) for each cluster, the lower bound of the lemma tells us that we can indirectly maximize mutual
+information with the same objective.
+4
+Experimental Setup
+ClusT3 is evaluated on four popular TTA/TTT benchmarks, comprehending different types of domain shifts. The first
+two benchmarks are based on the CIFAR-10 dataset Krizhevsky [2009] as the source domain. It contains 50,000 images
+from 10 different categories.
+Common image corruptions. First, we study adaptation on the CIFAR-10-C Hendrycks and Dietterich [2019] dataset,
+which consists of 15 different corruption types (e.g., Gaussian noise, frost, etc.) with 10,000 images, 10 classes, and
+5 different severity levels for each type. This results in 75 evaluation scenarios. We then extend the evaluation to
+CIFAR-100-C, scaling the number of classes to 100.
+Natural domain shift.
+We also evaluate the performance of our method in a natural domain shift setting, i.e.,
+classifying images that were manually selected to diverge from those seen in training. The CIFAR-10.1 dataset Recht
+et al. [2018b] is used for this experiment, consisting of 2,000 images strategically sampled from CIFAR-10 to highly
+differ from training data.
+Sim-to-real domain shift. ClusT3 is finally assessed in the context of large-scale adaptation from simulation to real
+images. The VisDa-C dataset Peng et al. [2018] offers a benchmark with a source dataset based on 3D renderings of
+12 different object categories, accumulating a total of 152,397 images. The test set comprises 72,372 video frames,
+corresponding to real images of the same classes.
+4.1
+Joint training
+For the joint training on the CIFAR-10 dataset Krizhevsky [2009], we followed previous research and trained our model
+for 350 epochs with SGD, using a batch size of 128 images and an initial learning rate of 0.1 which is reduced by a
+factor of 10 at epochs 150 and 250. For VisDA-C, the model is warm-started with pre-trained weights from ImageNet
+Deng et al. [2009], according to the protocol in Wang et al. [2021], Liu et al. [2021], Liang et al. [2021], and then
+trained for 100 epochs with a batch size of 100, using SGD with a learning rate of 0.001. The training was executed on
+four 16 GB NVIDIA V100 GPUs.
+4.2
+Test-time adaptation
+At test-time, projectors are used to detect distribution shift with the IM loss. For all the experiments with CIFAR-10-C
+and CIFAR-10.1, we keep a batch size of 128, and use the ADAM optimizer with 10−5 as learning rate. For VisDA-C,
+we used a batch size of 32 images with the same aforementioned learning rate. We update the extractor and the statistics
+of all the BatchNorm layers. To avoid the error accumulation associated to optimization, we reset our weights to the
+initial source ones after adapting to each batch. This way, each batch can have different corruptions as assumed by Sun
+et al. [2020] in their offline mode. Our codebase can be found in https://github.com/dosowiechi/ClusT3.git.
+5
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Gaussian Noise
+Shot Noise
+Snow
+Layer 1
+70.72 ±0.22
+73.57 ±0.11
+80.29 ±0.04
+Layer 2
+67.48 ±0.09
+68.96 ±0.02
+78.46 ±0.10
+Layer 3
+66.57 ±0.06
+67.97 ±0.22
+78.84 ±0.17
+Layer 4
+65.75 ±0.12
+68.10 ±0.31
+79.37 ±0.11
+Layers 1-2
+71.36 ±0.03
+72.93 ±0.34
+80.94 ±0.13
+Layers 2-3
+66.74 ±0.24
+68.76 ±0.07
+78.21 ±0.12
+Layers 3-4
+65.21 ±0.32
+67.09 ±0.15
+78.34 ±0.18
+Layers 1-2-3
+67.44 ±0.11
+68.59 ±0.14
+79.27 ±0.05
+Layers 1-2-3-4
+68.71 ±0.18
+71.39 ±0.12
+78.38 ±0.14
+Table 1: Accuracy (%) with different combinations of projectors on 3 corruptions of CIFAR-10-C dataset. Layer l
+means that we only use the projector after layer l, and Layer l-l means that we use the sum of the two projectors’ losses
+of these layers as total IM loss. The extractor ends at the last named layer.
+Gaussian
+Shot
+Snow
+Avg∗
+K=2
+71.58 ±0.12
+73.41 ±0.09
+82.98 ±0.10
+80.39
+K=5
+71.10 ±0.09
+72.89 ±0.15
+83.76 ±0.09
+80.40
+K=10
+72.96 ±0.13
+74.55 ±0.12
+83.61 ±0.09
+80.94
+K=20
+70.13 ±0.12
+72.35 ±0.10
+83.29 ±0.09
+80.10
+K=50
+71.54 ±0.18
+74.15 ±0.07
+83.39 ±0.12
+80.70
+K=100
+68.47 ±0.11
+70.82 ±0.11
+82.51 ±0.08
+79.77
+∗: Average over the 15 corruption types
+Table 2: Accuracy (%) with different number of clusters on 3 corruptions of CIFAR-10-C dataset.
+5
+Results and discussion
+First, we perform a series of ablation experiments on the CIFAR-10-C dataset, and then compare ClusT3 against
+state-of-art approaches. Afterward, we extend our evaluation to natural domain shift using the CIFAR-10.1 dataset and
+sim-to-real domain shift with the VisDA-C dataset. For all methods, we compute the accuracy for 1, 3, 5, 10, 20, 50 and
+100 iterations and report the maximum accuracy when we experiment on CIFAR-10-C and CIFAR-10.1 and do the
+same for VisDAC by adapting for 1, 3, 10, 15, and 20 iterations. For all experiments, we report the mean and standard
+deviation accuracy obtained over 3 runs with different random seeds.
+5.1
+Object recognition on corrupted images
+First, we evaluate ClusT3 on the CIFAR-10-C dataset across the 15 different corruptions. For the following experiments,
+we focus solely on the Level 5, as it is the most challenging adaptation scenario. Extensive results on all the severity
+levels can be found in the supplementary material.
+On which layers should projectors be placed? We compare the accuracy of ClusT3 on different combinations of
+projectors. The goal is to determine which layers are the most useful to adapt at test-time. In Table 1, the results show
+that only taking the first two encoder layers provides more effective results. Indeed, as assumed in Sun et al. [2020], Liu
+et al. [2021], Osowiechi et al. [2023], the first layers seem to contain the most important domain-related information.
+This finding also aligns with empirical evidence demonstrating that different layers are sensitive to different types of
+domain shifts Lee et al. [2023]. Hence, in subsequent experiments, we keep projectors on Layer 1 and Layer 2.
+On the number of clusters. As explained in Section 3.2, the proxy task consists of a projector-based clustering
+head made by a linear mapping (implemented with a 1×1 convolution) followed by a K-way softmax that projects
+features to a cluster probability map z∈[0, 1]BW H×K. In Table 2, we experiment with different number of clusters.
+Results show that having a greater number of clusters, e.g., K =100, can provide a better accuracy. We also notice
+that having K = 10 (corresponding to the number of classes in CIFAR-10-C) results in a competitive performance
+compared to other larger values, such as K =20 or K =50. This becomes a sensible approach, as projectors can help
+learn better class boundaries inside features. In the next experiments, we keep K =10 for an efficient trade-off between
+performance and computational cost.
+On the number of projectors per layer. In the previous experiments, only one projector per layer was used. Here, we
+evaluate whether having more projectors per layer can further improve performance. It has been found that increasing
+6
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+the number of projectors per layer increases accuracy compared to using a single projector per layer (Table 3). However,
+each corruption in CIFAR-10-C can be benefited differently from different configurations. On the average, using 15
+projectors on layers 1 and 2 results corresponds to the best option. In the following experiments, we compare this
+architecture (called ClusT3-H15) to the leading Test-Time Adaptation methods.
+Head = 1
+Heads = 5
+Heads = 10
+Heads = 15
+Heads = 20
+Gaussian Noise
+71.40 ±0.26
+72.72 ±0.08
+75.24 ±0.02
+76.01 ±0.19
+76.04 ±0.20
+Shot noise
+72.79 ±0.04
+74.84 ±0.14
+76.77 ±0.04
+77.67 ±0.17
+78.00 ±0.05
+Impulse Noise
+65.96 ±0.12
+67.78 ±0.06
+68.62 ±0.07
+69.76 ±0.15
+68.80 ±0.23
+Defocus blur
+82.77 ±0.09
+87.83 ±0.09
+87.91 ±0.14
+87.85 ±0.11
+87.86 ±0.19
+Glass blur
+69.65 ±0.14
+65.85 ±0.04
+71.70 ±0.12
+71.34 ±0.15
+67.26 ±0.07
+Motion blur
+82.03 ±0.17
+86.58 ±0.07
+86.44 ±0.03
+86.10 ±0.11
+86.91 ±0.06
+Zoom blur
+83.88 ±0.09
+86.83 ±0.06
+87.21 ±0.09
+86.68 ±0.05
+87.57 ±0.06
+Snow
+80.87 ±0.04
+82.68 ±0.13
+83.41 ±0.06
+83.71 ±0.09
+83.17 ±0.06
+Frost
+79.04 ±0.07
+81.38 ±0.14
+83.39 ±0.03
+83.69 ±0.03
+82.45 ±0.11
+Fog
+76.32 ±0.09
+84.40 ±0.05
+84.47 ±0.14
+85.12 ±0.13
+83.98 ±0.04
+Brightness
+89.16 ±0.10
+92.29 ±0.11
+91.91 ±0.03
+91.52 ±0.02
+91.81 ±0.02
+Contrast
+74.57 ±0.25
+85.28 ±0.09
+84.37 ±0.07
+84.40 ±0.11
+85.67 ±0.08
+Elastic transform
+80.16 ±0.16
+80.07 ±0.13
+82.33 ±0.04
+82.04 ±0.17
+82.02 ±0.09
+Pixelate
+80.09 ±0.02
+79.94 ±0.04
+82.75 ±0.06
+82.03 ±0.09
+82.00 ±0.07
+JPEG compression
+80.90 ±0.01
+79.86 ±0.08
+83.01 ±0.08
+83.24 ±0.10
+82.38 ±0.07
+Average
+77.97
+80.56
+81.97
+82.08
+81.73
+Table 3: Accuracy (%) with different number of projectors per layer on Layer 1 and 2 with K =10 on the CIFAR-10-C
+dataset.
+Comparison of the number of iterations. As shown in Fig 3, in most cases, the best accuracy is obtained after 10
+or 20 iterations, depending on the corruption. Most importantly, accuracy remains constant even after 20 iterations.
+Furthermore, we observe that adaptation to strong corruptions (e.g., contrast) can also be done at a fast rate.
+Comparison with main TTA methods. Several state-of-the-art TTA/TTT techniques were chosen for comparison:
+TTA methods include TENTWang et al. [2021], LAMEBoudiaf et al. [2022], and PTBNNado et al. [2021]. TTTSun et al.
+[2020] and TTT++Liu et al. [2021] are chosen for Test-Time Training. As shown in Table 4, the overall performance
+of ClusT3-H15 on all the corruptions outperforms ResNet50 with a gain of 28.26% as well as all the different TTA
+methods. Moreover, there is a considerably large improvement on all the individual corruptions with respect to the same
+baseline. A significant increase in accuracy can also be observed in most corruptions compared to previous methods,
+with some exceptions (e.g., Defocus blur against TTT++Liu et al. [2021] or Contrast against TTTSun et al. [2020]). It
+is however important to mention that ClusT3 differs from previous TTT methods whose self-supervised secondary task
+requires a higher computational overhead. TTT++, which improves considerably with respect to its predecessor TTT
+on Level 5, also requires preserving a queue of source feature maps to compare statistics at test-time. In comparison,
+ClusT3 is self-sufficient and less costly in both computation and memory. A more detailed comparison on all the
+corruption levels of CIFAR-10-C can be found in the supplementary material.
+Table 5 shows the overall performance of ClusT3 on CIFAR-100-C, in an effort to demonstrate the scalable capabilities
+of the method on a larger set of classes. ClusT3 mitigates the natural degradation of the ResNet50 baseline, while also
+outperforming state-of-the-art methods by an important margin.
+Visualization of adaptation. To visualize the effect of ClusT3 during adaptation, Figure 4 displays the t-SNE plots of
+the target feature maps before and after the adaptation with the corresponding model prediction. The projector induces
+the model to make better predictions by improving the clustering of the different samples’ classes in the target dataset.
+5.2
+Object recognition on natural domain shift
+The best configuration of ClusT3 (i.e., with 5 in that case or 15 projectors on Layer 1 and 2) is evaluated on CIFAR-10.1,
+which contains a more natural domain shift. A comparison is made against previous TTA methods, and as reported
+in Table 6, ClusT3 achieves a competitive accuracy despite the baseline (ResNet50) being the most accurate in this
+scenario. The gain of TTT++ Liu et al. [2021] comes from a better pre-trained encoder thanks to the influence of
+contrastive learning Chen et al. [2020]. This limitation can be explained by the fact that CIFAR-10 and CIFAR-10.1 are
+similar, thus having a smaller domain shift Osowiechi et al. [2023].
+7
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Iterations
+Accuracy (%)
+0
+25
+50
+75
+100
+0
+10
+20
+30
+40
+50
+Gaussian Noise
+Shot Noise
+Impulse Noise
+Defocus Blur
+Glass Blur
+Motion Blur
+Zoom Blur
+Snow
+Frost
+Fog
+Brightness
+Contrast
+Elastic Transform
+Pixelate
+JPEG Compression
+Figure 3: Evolution of accuracy for all corruptions in CIFAR-10-C.
+ResNet50
+LAME
+PTBN
+TENT
+TTT
+TTT++
+ClusT3-H15
+Boudiaf et al. [2022]
+Nado et al. [2021]
+Wang et al. [2021]
+Sun et al. [2020]
+Liu et al. [2021]
+Gaussian Noise
+21.01
+22.90
+57.23 ±0.13
+57.15 ±0.19
+66.14 ±0.12
+75.87 ±5.05
+76.01 ±0.19
+Shot noise
+25.77
+27.24
+61.18 ±0.03
+61.08 ±0.18
+68.93 ±0.06
+77.18 ±1.36
+77.67 ±0.17
+Impulse Noise
+14.02
+30.99
+54.74 ±0.13
+54.63 ±0.15
+56.65 ±0.03
+70.47 ±2.18
+69.76 ±0.15
+Defocus blur
+51.59
+45.38
+81.61 ±0.07
+81.39 ±0.22
+88.11 ±0.08
+86.02 ±1.35
+87.85 ±0.11
+Glass blur
+47.96
+36.66
+53.43 ±0.11
+53.36 ±0.14
+60.67 ±0.06
+69.98 ±1.62
+71.34 ±0.15
+Motion blur
+62.30
+55.29
+78.20 ±0.28
+78.04 ±0.17
+83.52 ±0.03
+85.93 ±0.24
+86.10 ±0.11
+Zoom blur
+59.49
+51.40
+80.29 ±0.13
+80.26 ±0.22
+87.25 ±0.03
+88.88 ±0.95
+86.68 ±0.05
+Snow
+75.41
+66.17
+71.59 ±0.21
+71.59 ±0.04
+79.29 ±0.05
+82.24 ±1.69
+83.71 ±0.09
+Frost
+63.14
+49.98
+68.77 ±0.25
+68.52 ±0.20
+79.84 ±0.11
+82.74 ±1.63
+83.69 ±0.03
+Fog
+69.63
+64.49
+75.79 ±0.05
+75.73 ±0.10
+84.46 ±0.09
+84.16 ±0.28
+85.12 ±0.13
+Brightness
+90.53
+84.26
+84.97 ±0.05
+84.77 ±0.13
+91.23 ±0.08
+89.07 ±1.20
+91.52 ±0.02
+Contrast
+33.88
+31.50
+80.81 ±0.15
+80.70 ±0.15
+88.58 ±0.09
+86.60 ±1.39
+84.40 ±0.11
+Elastic transform
+74.51
+64.16
+67.14 ±0.17
+67.13 ±0.10
+75.69 ±0.10
+78.46 ±1.83
+82.04 ±0.17
+Pixelate
+44.43
+39.34
+69.17 ±0.31
+68.70 ±0.29
+76.35 ±0.19
+82.53 ±2.01
+82.03 ±0.09
+JPEG compression
+73.61
+66.05
+65.86 ±0.05
+65.83 ±0.07
+73.10 ±0.19
+81.76 ±1.58
+83.24 ±0.10
+Average
+53.82
+49.05
+70.05
+69.93
+77.32
+81.46
+82.08
+Table 4: Accuracy (%) on CIFAR-10-C dataset with Level 5 corruption for ClusT3-15 compared to ResNet50, LAME,
+PTBN, TENT, TTT, and TTT++.
+Method
+Acc. (%)
+ResNet50
+31.37
+LAME
+29.63
+PTBN
+54.53
+TENT
+54.48
+TTT
+51.43
+Ours
+56.70
+Table 5: Results on the CIFAR-100-C dataset.
+Method
+Accuracy (%)
+ResNet50
+88.45
+LAME Boudiaf et al. [2022]
+82.68
+PTBN Nado et al. [2021]
+79.57 ±0.47
+TENT Wang et al. [2021]
+79.69 ±0.21
+TTT Sun et al. [2020]
+86.30 ±0.20
+TTT++ Liu et al. [2021]
+88.03 ±0.17
+ClusT3-H5 (Ours)
+87.43 ±0.02
+ClusT3-H15 (Ours)
+85.57 ±0.11
+Table 6: Accuracy of compared methods on the CIFAR-10.1 dataset containing
+natural domain shift.
+5.3
+Object recognition on sim-to-real domain shift
+We use the VisDA-C dataset to test ClusT3 on the sim-to-real domain shift. To account for the challenge of this scenario,
+a slightly different projector is proposed: using two linear (1×1 convolutional) layers with a ReLU activation in between.
+The output number of channels of the first layer is set to half the input feature maps’ number of channels. This setting
+8
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+(a) Prediction (before adaptation)
+(b) Prediction (after adaptation)
+(c) Ground truth (before adaptation)
+(d) Ground truth (after adaptation)
+Figure 4: t-SNE plots of gaussian noise for the features at the output of the extractor from ClusT3 with one projector on
+Layer 1 and 2 each. (a) prediction of the model without adaptation. (b) prediction of the model after 20 iterations of
+adaptation. (c) ground truth labels without adaptation. (d) ground truth labels of adapted representations.
+is named Large projector. The best configuration (i.e., type of projector, number of projectors, and combination of
+layers) was found based on a hyperparameter study that can be found in the supplementary material. The resulting best
+approach consisted in using one large projector on Layer 2 (ClusT3-H1*).
+Comparison with other methods. Our method is compared against the previously presented, popular TTT/TTA
+methods. For fairness, we evaluate LAME Boudiaf et al. [2022] using the three proposed affinity matrices in its original
+publication: LAME-L (linear affinity), LAME-K (K-NN affinity with 5 neighbors), and LAME-R (RBF affinity with
+5 neighbors). As shown in Table 7, ClusT3 achieves a higher performance than its competitors in the reproduced
+experiments. With respect to the baseline, ClusT3 obtains a gain of around 15.6%.
+Computational cost. The nature of the auxiliary tasks in Test-Time Training methods can importantly impact the
+training efficiency. For instance, methods based on self-supervised learning might require additional forward passes,
+or a higher memory input, which ultimately increases the computation time. ClusT3 does not depend on additional
+data transformations, hence reducing execution times. We evaluate the time of one epoch of joint training (without
+evaluation steps) of ClusT3, utilizing 1 Large projector on top of all layers, one of the heaviest configurations. The
+average execution time of one epoch was 2.7947 ± 0.0294 minutes, compared to 12.4941 ± 1.3994 minutes for TTT.
+6
+Conclusion
+In this work, we proposed ClusT3, a new unsupervised Test-Time Training framework based on Information Maxi-
+mization of feature latent spaces across domains. This method allows adapting the model at test-time when there is a
+distribution shift between the source and the target datesets. By using simple linear projectors and Mutual Information
+in our proxy task, we update the feature extractor to improve the accuracy at test-time.
+A complete ablation study helped determine the best hyperparameters and to better understand the different possible
+configurations of the model. As shown in our experimental results, ClusT3 obtains a highly-competitive performance
+against previous TTT and TTA models. Thus, on the CIFAR-10-C dataset, ClusT3 outperforms state-of-the-art.
+Surprisingly, the baseline defeats all previous methods on CIFAR-10.1, as the domain shift with respect to the source
+9
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Method
+Accuracy (%)
+ResNet50
+46.31
+LAME-L Boudiaf et al. [2022]
+22.02 ±0.23
+LAME-K Boudiaf et al. [2022]
+42.89 ±0.14
+LAME-R Boudiaf et al. [2022]
+19.33 ±0.11
+PTBN Nado et al. [2021]
+60.33 ±0.04
+TENT Wang et al. [2021]
+60.34 ±0.05
+TTT Sun et al. [2020]
+40.57 ±0.02
+TTT++ Liu et al. [2021]
+60.42†
+ClusT3-H1* (Ours)
+61.91 ±0.02
+Table 7: Accuracy values of ClusT3 and the state-of-the-art TTT/TTA methods on the VisDA-C dataset. †: Result of
+TTT++ obtained from the original paper, were not reproducible.
+dataset is smaller and adaptation causes performance degradation. Nonetheless, ClusT3 remains competitive and robust
+to this scenario.
+Future work includes further investigation on different architectures for the projector. As it has been shown, adding
+layers and nonlinearity can further improve performance in some cases. This could be due to the fact that having more
+complex and thus flexible projectors relaxes constraints on the feature space (e.g., balanced clusters) which can hurt the
+learning of a good representation for classification if too strong. Additionally, a uniform distribution has been assumed
+for the cluster marginal distribution. Diverging from this premise and exploring other distribution priors also constitutes
+an interesting line of future research. This can turn particularly useful in the scenario where adaptation to a single data
+sample is required.
+10
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+ResNet50
+LAME
+PTBN
+TENT
+TTT
+TTT++
+ClusT3-H15
+Boudiaf et al. [2022]
+Nado et al. [2021]
+Wang et al. [2021]
+Sun et al. [2020]
+Liu et al. [2021]
+Gaussian Noise
+28.02
+26.08
+61.39 ±0.10
+61.19 ±0.26
+70.63 ±0.04
+78.70 ±4.28
+79.14 ±0.03
+Shot noise
+38.33
+37.13
+66.57 ±0.06
+66.2 ±0.18
+75.18 ±0.04
+80.12 ±0.12
+81.51 ±0.15
+Impulse Noise
+46.12
+45.01
+63.56 ±0.20
+62.98 ±0.19
+65.91 ±0.04
+70.64 ±0.53
+76.95 ±0.07
+Defocus blur
+67.33
+67.65
+85.48 ±0.12
+85.32 ±0.18
+91.95 ±0.02
+81.75 ±0.43
+90.33 ±0.09
+Glass blur
+34.42
+32.73
+52.26 ±0.04
+52.08 ±0.15
+60.44 ±0.05
+62.85 ±0.50
+71.09 ±0.17
+Motion blur
+63.71
+64.09
+80.78 ±0.12
+80.75 ±0.09
+86.29 ±0.10
+68.42 ±1.08
+87.87 ±0.11
+Zoom blur
+61.27
+61.99
+83.33 ±0.11
+83.28 ±0.10
+89.90 ±0.04
+70.74 ±2.05
+88.86 ±0.04
+Snow
+72.15
+72.13
+73.25 ±0.16
+73.17 ±0.25
+81.25 ±0.02
+52.43 ±0.56
+84.30 ±0.07
+Frost
+62.27
+61.70
+73.41 ±0.22
+73.54 ±0.16
+83.83 ±0.04
+52.80 ±2.67
+87.17 ±0.07
+Fog
+81.86
+81.94
+83.88 ±0.06
+83.81 ±0.09
+90.62 ±0.05
+41.75 ±0.09
+90.03 ±0.02
+Brightness
+87.58
+87.71
+86.81 ±0.05
+86.81 ±0.23
+92.87 ±0.09
+50.95 ±2.19
+92.99 ±0.06
+Contrast
+68.62
+68.85
+84.16 ±0.09
+84.23 ±0.29
+90.94 ±0.07
+45.28 ±0.55
+89.24 ±0.07
+Elastic transform
+67.84
+68.25
+76.44 ±0.18
+76.21 ±0.08
+84.03 ±0.11
+35.53 ±1.51
+86.74 ±0.04
+Pixelate
+56.3
+55.83
+76.34 ±0.10
+76.40 ±0.16
+84.92 ±0.15
+33.64 ±0.83
+87.93 ±0.03
+JPEG compression
+70.62
+70.37
+69.64 ±0.03
+69.54 ±0.05
+76.46 ±0.04
+28.01 ±1.75
+85.11 ±0.06
+Average
+60.43
+60.10
+74.48
+74.37
+81.68
+56.91
+85.28
+Table 8: Accuracy (%) on CIFAR-10-C dataset with Level 4 corruption for ClusT3-15 compared to ResNet50, LAME,
+PTBN, TENT, TTT, and TTT++.
+ResNet50
+LAME
+PTBN
+TENT
+TTT
+TTT++
+ClusT3-H15
+Boudiaf et al. [2022]
+Nado et al. [2021]
+Wang et al. [2021]
+Sun et al. [2020]
+Liu et al. [2021]
+Gaussian Noise
+33.99
+32.58
+64.55 ±0.13
+64.67 ±0.17
+74.10 ±0.09
+80.29 ±0.81
+81.55 ±0.09
+Shot noise
+46.35
+45.88
+69.82 ±0.08
+70.04 ±0.14
+78.43 ±0.07
+82.46 ±0.37
+84.12 ±0.02
+Impulse Noise
+59.90
+59.61
+72.08 ±0.14
+71.95 ±0.33
+76.32 ±0.10
+79.20 ±0.38
+83.75 ±0.01
+Defocus blur
+79.29
+79.58
+87.62 ±0.17
+87.39 ±0.05
+93.25 ±0.06
+87.68 ±0.38
+91.74 ±0.07
+Glass blur
+47.29
+46.44
+63.29 ±0.11
+63.26 ±0.21
+72.09 ±0.11
+72.52 ±0.56
+79.78 ±0.02
+Motion blur
+63.42
+63.72
+81.13 ±0.13
+80.99 ±0.08
+86.48 ±0.09
+69.59 ±1.38
+88.02 ±0.10
+Zoom blur
+67.86
+68.36
+84.57 ±0.11
+84.34 ±0.06
+91.00 ±0.02
+73.23 ±2.33
+89.90 ±0.07
+Snow
+74.93
+74.67
+75.08 ±0.14
+75.14 ±0.19
+83.90 ±0.07
+57.96 ±1.02
+86.22 ±0.07
+Frost
+64.54
+64.05
+74.15 ±0.04
+73.98 ±0.14
+84.13 ±0.10
+49.94 ±3.53
+87.37 ±0.07
+Fog
+85.73
+85.95
+86.57 ±0.09
+86.38 ±0.15
+92.19 ±0.08
+52.89 ±4.13
+91.83 ±0.01
+Brightness
+88.93
+88.75
+87.50 ±0.19
+87.44 ±0.01
+93.53 ±0.09
+57.96 ±1.32
+93.31 ±0.04
+Contrast
+79.66
+79.83
+85.63 ±0.05
+85.46 ±0.08
+91.85 ±0.09
+53.44 ±2.37
+90.83 ±0.05
+Elastic transform
+75.67
+75.79
+82.72 ±0.14
+82.56 ±0.15
+90.09 ±0.10
+36.49 ±3.72
+89.33 ±0.11
+Pixelate
+74.83
+75.07
+82.17 ±0.14
+81.91 ±0.13
+89.30 ±0.10
+33.41 ±3.02
+90.23 ±0.06
+JPEG compression
+73.70
+73.51
+71.54 ±0.09
+71.54 ±0.15
+78.95 ±0.09
+28.82 ±2.74
+86.55 ±0.06
+Average
+67.74
+67.59
+77.89
+77.80
+85.04
+61.06
+87.64
+Table 9: Accuracy (%) on CIFAR-10-C dataset with Level 3 corruption for ClusT3-15 compared to ResNet50, LAME,
+PTBN, TENT, TTT, and TTT++.
+ClusT3: Information Invariant Test-Time Training – Suplementary Material
+1
+Results on CIFAR-10-C Hendrycks and Dietterich [2019] dataset for corruption levels 1 to
+4
+As shown in Tables 8, 9, 10 and 11, ClusT3 performs well on the different corruptions at different levels. It achieves
+a higher accuracy than ResNet50 for all corruptions, and a higher mean accuracy than all other TTA/TTT aproaches.
+While TTT Sun et al. [2020] yields competitive performance, our method achieves a mean accuracy improvement of at
+least 2% compared to this approach, on all corruption levels.
+2
+Hyperparameters search on VisDA-C
+We perform the hyperparameter search to find an efficient configuration for VisDA-C. We evaluate to up to 20 iterations,
+using all the different individual layers, as well as combinations of them. Specifically, we tested the following settings:
+• A single normal projector (one 1 × 1 convolution) in Table 12;
+• Five normal projectors in Table 13;
+• Ten normal projectors in Table 14;
+• A single Large projector (two 1 1 × 1 1 convolutions with ReLU in between) in Table 15;
+11
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+ResNet50
+LAME
+PTBN
+TENT
+TTT
+TTT++
+ClusT3-H15
+Boudiaf et al. [2022]
+Nado et al. [2021]
+Wang et al. [2021]
+Sun et al. [2020]
+Liu et al. [2021]
+Gaussian Noise
+50.53
+49.99
+71.31 ±0.16
+71.43 ±0.08
+81.18 ±0.11
+85.41 ±2.26
+86.07 ±0.08
+Shot noise
+69.27
+69.47
+78.97 ±0.19
+79.02 ±0.17
+87.54 ±0.10
+88.79 ±0.44
+89.77 ±0.04
+Impulse Noise
+68.57
+68.69
+77.09 ±0.13
+77.03 ±0.15
+82.20 ±0.13
+84.27 ±0.29
+86.60 ±0.03
+Defocus blur
+87.45
+87.47
+88.20 ±0.11
+88.06 ±0.06
+93.67 ±0.06
+90.85 ±0.42
+92.87 ±0.01
+Glass blur
+43.26
+42.01
+62.66 ±0.09
+62.55 ±0.11
+71.33 ±0.04
+71.60 ±1.95
+78.81 ±0.11
+Motion blur
+72.98
+73.11
+83.51 ±0.16
+83.46 ±0.10
+89.57 ±0.07
+77.38 ±1.12
+89.78 ±0.13
+Zoom blur
+74.89
+75.24
+85.81 ±0.21
+85.79 ±0.05
+92.05 ±0.10
+80.30 ±1.45
+90.82 ±0.04
+Snow
+71.11
+70.74
+74.73 ±0.11
+74.69 ±0.22
+82.96 ±0.08
+68.56 ±1.36
+86.30 ±0.04
+Frost
+76.67
+76.56
+79.54 ±0.15
+79.41 ±0.27
+87.67 ±0.03
+63.66 ±3.39
+90.27 ±0.10
+Fog
+88.51
+88.47
+87.62 ±0.10
+87.60 ±0.17
+93.23 ±0.04
+64.26 ±3.37
+93.07 ±0.04
+Brightness
+89.75
+89.57
+88.09 ±0.03
+87.97 ±0.14
+93.69 ±0.08
+67.19 ±1.23
+93.64 ±0.01
+Contrast
+84.58
+84.79
+86.19 ±0.17
+86.41 ±0.04
+92.50 ±0.12
+62.90 ±1.93
+92.00 ±0.01
+Elastic transform
+82.10
+82.26
+83.69 ±0.13
+83.68 ±0.08
+90.98 ±0.12
+50.06 ±2.37
+90.37 ±0.01
+Pixelate
+81.04
+80.94
+82.92 ±0.14
+83.01 ±0.07
+90.61 ±0.15
+43.33 ±3.31
+91.28 ±0.09
+JPEG compression
+76.06
+76.04
+73.63 ±0.02
+73.56 ±0.13
+81.37 ±0.11
+28.26 ±2.78
+87.86 ±0.08
+Average
+74.45
+74.36
+80.26
+80.24
+87.37
+68.45
+89.30
+Table 10: Accuracy (%) on CIFAR-10-C dataset with Level 2 corruption for ClusT3-15 compared to ResNet50, LAME,
+PTBN, TENT, TTT, and TTT++.
+ResNet50
+LAME
+PTBN
+TENT
+TTT
+TTT++
+ClusT3-H15
+Boudiaf et al. [2022]
+Nado et al. [2021]
+Wang et al. [2021]
+Sun et al. [2020]
+Liu et al. [2021]
+Gaussian Noise
+71.38
+71.54
+79.22 ±0.13
+79.52 ±0.12
+88.38 ±0.12
+90.14 ±1.05
+90.35 ±0.05
+Shot noise
+80.39
+80.44
+82.21 ±0.05
+82.18 ±0.15
+90.43 ±0.02
+90.89 ±0.29
+91.42 ±0.02
+Impulse Noise
+80.04
+80.05
+82.39 ±0.08
+82.48 ±0.15
+88.23 ±0.02
+87.76 ±0.06
+90.51 ±0.06
+Defocus blur
+90.17
+89.96
+88.28 ±0.04
+88.26 ±0.15
+93.89 ±0.04
+91.51 ±0.48
+93.72 ±0.09
+Glass blur
+40.96
+39.79
+63.19 ±0.05
+63.22 ±0.15
+71.12 ±0.07
+72.12 ±2.13
+790.1 ±0.21
+Motion blur
+82.78
+82.75
+85.99 ±0.09
+85.89 ±0.08
+91.97 ±0.05
+84.11 ±0.91
+91.50 ±0.13
+Zoom blur
+78.58
+78.90
+86.19 ±0.06
+86.23 ±0.04
+92.21 ±0.08
+81.76 ±1.38
+90.87 ±0.04
+Snow
+83.45
+83.33
+82.94 ±0.13
+82.84 ±0.35
+88.90 ±0.04
+75.89 ±0.75
+90.33 ±0.02
+Frost
+84.84
+84.48
+83.88 ±0.15
+83.71 ±0.24
+91.17 ±0.03
+71.54 ±3.13
+92.19 ±0.06
+Fog
+90.15
+90.10
+88.31 ±0.13
+88.05 ±0.06
+93.71 ±0.09
+70.58 ±1.29
+93.64 ±0.01
+Brightness
+90.35
+90.19
+88.28 ±0.09
+88.35 ±0.25
+93.90 ±0.06
+64.40 ±2.69
+93.83 ±0.05
+Contrast
+89.52
+89.33
+87.98 ±0.09
+87.93 ±0.08
+93.61 ±0.05
+53.60 ±3.80
+93.61 ±0.03
+Elastic transform
+82.46
+82.57
+83.29 ±0.17
+83.28 ±0.27
+90.55 ±0.09
+39.92 ±1.52
+90.33 ±0.06
+Pixelate
+87.27
+87.15
+85.79 ±0.12
+85.81 ±0.17
+92.24 ±0.01
+36.04 ±3.47
+92.74 ±0.04
+JPEG compression
+82.03
+81.73
+79.72 ±0.10
+79.82 ±0.14
+86.86 ±0.08
+30.90 ±1.18
+90.90 ±0.01
+Average
+80.96
+80.82
+83.17
+83.17
+89.81
+69.41
+91.00
+Table 11: Accuracy (%) on CIFAR-10-C dataset with Level 1 corruption for ClusT3-15 compared to ResNet50, LAME,
+PTBN, TENT, TTT, and TTT++.
+Layers
+Iterations
+1
+2
+3
+4
+1, 2
+2, 3
+3, 4
+All
+No adaptation
+45.31
+45.57
+45.67
+47.09
+45.66
+44.27
+38.17
+42.89
+1
+49.07
+48.73
+48.96
+52.96
+50.13
+47.85
+49.35
+48.16
+3
+52.53
+54.31
+53.99
+56.23
+52.18
+54.7
+55.57
+54.23
+10
+57.67
+58.19
+58.27
+58.79
+57.78
+58.74
+58.31
+57.56
+20
+56.84
+59.82
+56.61
+57.34
+57.41
+57.63
+56.31
+55.87
+Table 12: Accuracy (%) values on VisDA-C with 1 normal projector on different layers.
+• Five Large projectors in Table 16.
+As observed in these results, our ClusT3 method obtains significant improvements in different settings. For this dataset,
+the best accuracy is achieved using a single large projector applied to the second layer.
+References
+Benjamin Recht, Rebecca Roelofs, Ludwig Schmidt, and Vaishaal Shankar. Do CIFAR-10 classifiers generalize to
+cifar-10? CoRR, abs/1806.00451, 2018a. URL http://arxiv.org/abs/1806.00451.
+Xingchao Peng, Ben Usman, Neela Kaushik, Dequan Wang, Judy Hoffman, and Kate Saenko. Visda: A synthetic-to-real
+benchmark for visual domain adaptation. In Proceedings of the IEEE Conference on Computer Vision and Pattern
+12
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Layers
+Iterations
+1
+2
+3
+4
+1, 2
+2, 3
+3, 4
+All
+No adaptation
+45.31
+45.57
+45.67
+47.09
+45.66
+44.27
+38.17
+42.89
+1
+49.57
+49.84
+50.28
+50.69
+49.58
+47.38
+41.39
+47.72
+3
+54.39
+54.51
+55.73
+54.47
+53.99
+52.11
+47.15
+53.75
+10
+58.77
+58.85
+60.28
+58.31
+58.47
+57.34
+55.94
+57.89
+20
+57.66
+61.02
+58.43
+57.17
+56.83
+56.52
+56.31
+55.87
+Table 13: Accuracy (%) values on VisDA-C with 5 normal projectors on different layers.
+Layers
+Iterations
+1
+2
+3
+4
+1, 2
+2, 3
+3, 4
+All
+No adaptation
+46.51
+46.02
+44.69
+45.97
+44.22
+46.02
+43.2
+41.05
+1
+49.28
+50.31
+49.38
+50.38
+48.43
+50.35
+46.19
+44.25
+3
+54.79
+55.69
+55.31
+55.19
+53.34
+55.71
+51.35
+44.19
+10
+61.13
+60.93
+60.61
+59.6
+59.62
+60.78
+59.09
+59.06
+15
+61.53
+61.16
+60.59
+59.97
+60.37
+60.55
+59.82
+59.97
+20
+61.33
+60.86
+59.92
+59.8
+60.22
+59.89
+59.73
+58.98
+Table 14: Accuracy (%) values on VisDA-C with 10 normal projectors on different layers.
+Layers
+Iterations
+1
+2
+3
+4
+1, 2
+2, 3
+3, 4
+All
+No adaptation
+43.91
+46.41
+46
+42.46
+46.54
+45.45
+44.27
+44.09
+1
+48.28
+51.79
+49.82
+45.96
+51.06
+49.23
+49.41
+49.36
+3
+54.23
+56.72
+54.24
+51.62
+56.6
+54.36
+54.89
+49.43
+10
+60.04
+61.72
+59.16
+59.56
+60.93
+60.64
+61.12
+60.18
+15
+60.25
+61.93
+59.44
+60.16
+60.81
+60.91
+61.64
+60.27
+20
+59.98
+61.57
+59.14
+59.88
+60.31
+60.72
+61.16
+59.92
+Table 15: Accuracy (%) values on VisDA-C with 1 Large projector on different layers.
+Layers
+Iterations
+1
+2
+3
+4
+1, 2
+2, 3
+3, 4
+All
+No adaptation
+46.57
+44.66
+46.01
+43.86
+45.21
+46.37
+46.58
+46.81
+1
+50.67
+47.68
+50.16
+48.61
+49.70
+49.46
+49.46
+52.34
+3
+56.18
+52.77
+54.90
+54.27
+54.65
+52.88
+53.43
+52.29
+10
+61.45
+61.03
+59.87
+60.51
+59.57
+59.95
+58.12
+61.69
+15
+61.48
+61.54
+60.40
+60.96
+60.16
+61.44
+58.83
+61.51
+20
+60.91
+60.90
+59.81
+60.49
+59.83
+59.30
+58.69
+60.66
+Table 16: Accuracy (%) values on VisDA-C with 5 Large projectors on different layers.
+Recognition (CVPR) Workshops, June 2018.
+Riccardo Volpi, Hongseok Namkoong, Ozan Sener, John C Duchi, Vittorio Murino, and Silvio Savarese. Generalizing
+to unseen domains via adversarial data augmentation. Advances in neural information processing systems, 31, 2018.
+Aayush Prakash, Shaad Boochoon, Mark Brophy, David Acuna, Eric Cameracci, Gavriel State, Omer Shapira, and Stan
+Birchfield. Structured domain randomization: Bridging the reality gap by context-aware synthetic data. In 2019
+International Conference on Robotics and Automation (ICRA), pages 7249–7255. IEEE, 2019.
+Kaiyang Zhou, Yongxin Yang, Yu Qiao, and Tao Xiang. Domain generalization with mixstyle. In International
+Conference on Learning Representations, 2020.
+Donghyun Kim, Kaihong Wang, Stan Sclaroff, and Kate Saenko. A broad study of pre-training for domain generalization
+and adaptation. In Shai Avidan, Gabriel Brostow, Moustapha Cissé, Giovanni Maria Farinella, and Tal Hassner,
+editors, Computer Vision – ECCV 2022, pages 621–638, Cham, 2022. Springer Nature Switzerland. ISBN 978-3-
+031-19827-4.
+Jindong Wang, Cuiling Lan, Chang Liu, Yidong Ouyang, Tao Qin, Wang Lu, Yiqiang Chen, Wenjun Zeng, and Philip
+Yu. Generalizing to unseen domains: A survey on domain generalization. IEEE Transactions on Knowledge and
+Data Engineering, 2022.
+Dequan Wang, Evan Shelhamer, Shaoteng Liu, Bruno Olshausen, and Trevor Darrell. Tent: fully test-time adaptation
+by entropy minimization. arXiv:2006.10726 [cs, stat], March 2021. arXiv: 2006.10726.
+13
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Jian Liang, Dapeng Hu, and Jiashi Feng. Do we really need to access the source data? Source hypothesis transfer for
+unsupervised domain adaptation. arXiv:2002.08546 [cs], June 2021. URL http://arxiv.org/abs/2002.08546.
+arXiv: 2002.08546.
+Ansh Khurana, Sujoy Paul, Piyush Rai, Soma Biswas, and Gaurav Aggarwal. Sita: single image test-time adaptation.
+arXiv:2112.02355 [cs], December 2021. URL http://arxiv.org/abs/2112.02355. arXiv: 2112.02355.
+Malik Boudiaf, Romain Mueller, Ismail Ben Ayed, and Luca Bertinetto. Parameter-free online test-time adaptation. In
+IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pages 8344–8353, 2022.
+Yu Sun, Xiaolong Wang, Zhuang Liu, John Miller, Alexei A. Efros, and Moritz Hardt. Test-time training with self-
+supervision for generalization under distribution shifts. In International Conference on Machine Learning (ICML),
+2020.
+Yuejiang Liu, Parth Kothari, Bastien van Delft, Baptiste Bellot-Gurlet, Taylor Mordan, and Alexandre Alahi. Ttt++:
+When does self-supervised test-time training fail or thrive? Neural Information Processing Systems (NeurIPS), 2021.
+Yossi Gandelsman, Yu Sun, Xinlei Chen, and Alexei A Efros. Test-time training with masked autoencoders. In Alice H.
+Oh, Alekh Agarwal, Danielle Belgrave, and Kyunghyun Cho, editors, Advances in Neural Information Processing
+Systems, 2022. URL https://openreview.net/forum?id=SHMi1b7sjXk.
+David Osowiechi, Gustavo A. Vargas Hakim, Mehrdad Noori, Milad Cheraghalikhani, Ismail Ben Ayed, and Christian
+Desrosiers. Tttflow: Unsupervised test-time training with normalizing flow. In Proceedings of the IEEE/CVF Winter
+Conference on Applications of Computer Vision, pages 2126–2134, 2023.
+Xu Ji, Joao F Henriques, and Andrea Vedaldi. Invariant information clustering for unsupervised image classification
+and segmentation. In Proceedings of the IEEE/CVF International Conference on Computer Vision, pages 9865–9874,
+2019.
+Weihua Hu, Takeru Miyato, Seiya Tokui, Eiichi Matsumoto, and Masashi Sugiyama. Learning discrete representations
+via information maximizing self-augmented training. In International conference on machine learning, pages
+1558–1567. PMLR, 2017.
+Aaron van den Oord, Yazhe Li, and Oriol Vinyals. Representation learning with contrastive predictive coding. arXiv
+preprint arXiv:1807.03748, 2018.
+Michael Tschannen, Josip Djolonga, Paul K Rubenstein, Sylvain Gelly, and Mario Lucic. On mutual information
+maximization for representation learning. In International Conference on Learning Representations, 2020.
+Mohammed Jabi, Marco Pedersoli, Amar Mitiche, and Ismail Ben Ayed. Deep clustering: On the link between
+discriminative models and k-means. IEEE Trans. Pattern Anal. Mach. Intell., 43(6):1887–1896, 2021.
+Malik Boudiaf, Imtiaz Masud Ziko, Jérôme Rony, Jose Dolz, Pablo Piantanida, and Ismail Ben Ayed. Transductive
+information maximization for few-shot learning. In Neural Information Processing Systems (NeurIPS), 2020.
+Zachary Nado, Shreyas Padhy, D. Sculley, Alexander D’Amour, Balaji Lakshminarayanan, and Jasper Snoek. Evaluating
+prediction-time batch normalization for robustness under covariate shift. arXiv:2006.10963 [cs, stat], January 2021.
+URL http://arxiv.org/abs/2006.10963. arXiv: 2006.10963.
+Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, and Ross Girshick. Masked autoencoders are scalable
+vision learners. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages
+16000–16009, 2022.
+Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner,
+Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al. An image is worth 16x16 words:
+Transformers for image recognition at scale. arXiv preprint arXiv:2010.11929, 2020.
+Laurent Dinh, Jascha Sohl-Dickstein, and Samy Bengio.
+Density estimation using real nvp.
+arXiv preprint
+arXiv:1605.08803, 2016.
+Durk P Kingma and Prafulla Dhariwal. Glow: Generative flow with invertible 1x1 convolutions. In S. Bengio,
+H. Wallach, H. Larochelle, K. Grauman, N. Cesa-Bianchi, and R. Garnett, editors, Advances in Neural Information
+Processing Systems, volume 31. Curran Associates, Inc., 2018. URL https://proceedings.neurips.cc/
+paper/2018/file/d139db6a236200b21cc7f752979132d0-Paper.pdf.
+David JC MacKay and David JC Mac Kay. Information theory, inference and learning algorithms. Cambridge university
+press, 2003.
+Alex Krizhevsky. Learning multiple layers of features from tiny images. Technical report, 2009.
+Dan Hendrycks and Thomas Dietterich.
+Benchmarking neural network robustness to common corruptions and
+perturbations. Proceedings of the International Conference on Learning Representations, 2019.
+14
+
+ClusT3: Information Invariant Test-Time Training
+A PREPRINT
+Benjamin Recht, Rebecca Roelofs, Ludwig Schmidt, and Vaishaal Shankar. Do CIFAR-10 classifiers generalize to
+cifar-10? CoRR, abs/1806.00451, 2018b. URL http://arxiv.org/abs/1806.00451.
+Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image
+database. In 2009 IEEE conference on computer vision and pattern recognition, pages 248–255. Ieee, 2009.
+Yoonho Lee, Annie S Chen, Fahim Tajwar, Ananya Kumar, Huaxiu Yao, Percy Liang, and Chelsea Finn. Surgical
+fine-tuning improves adaptation to distribution shifts. In The Eleventh International Conference on Learning
+Representations, 2023. URL https://openreview.net/forum?id=APuPRxjHvZ.
+Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Everest Hinton. A simple framework for contrastive
+learning of visual representations. 2020. URL https://arxiv.org/abs/2002.05709.
+15

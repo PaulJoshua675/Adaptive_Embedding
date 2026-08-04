@@ -1,3 +1,0 @@
-Title: Scientific Claim Verification with Retrieval
-Abstract: This work uses retrieval to verify claims made in scientific conversations and summaries.
-Keywords: claim verification, scientific reasoning

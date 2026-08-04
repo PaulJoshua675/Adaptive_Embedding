@@ -1,3 +1,0 @@
-Title: Transformer Embeddings for Scientific Text
-Abstract: This study compares transformer-based embeddings for retrieving scientific papers and technical chapters.
-Keywords: transformers, embeddings, scientific text

@@ -1,3 +1,0 @@
-Title: Open-Domain QA with Retrieved Passages
-Abstract: The authors build an open-domain QA system that answers using retrieved passages rather than direct memorization.
-Keywords: open-domain QA, retrieved passages

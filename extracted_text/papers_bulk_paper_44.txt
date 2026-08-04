@@ -1,3 +1,0 @@
-Title: Temporal Retrieval for Emerging Topics
-Abstract: The study focuses on retrieving recent papers and updates related to fast-moving research areas.
-Keywords: temporal retrieval, emerging topics

@@ -1,0 +1,1958 @@
+Measuring sampling plan utility in
+post-marketing surveillance of medical
+products
+Eugene Wicketta (corr. author; eugenewickett@gmail.com),
+Matthew Plumleeb, Karen Smilowitza, Souly Phanouvongc and
+Timothy Nwoguc
+a Industrial Engineering and Management Sciences,
+Northwestern University, Evanston, Illinois
+b Amazon, Evanston, Illinois
+c Promoting the Quality of Medicines Plus (PQM+) Program,
+U.S. Pharmacopeial Convention (USP), Rockville, Maryland
+Abstract
+Ensuring product quality is critical to combating the global challenge of substan-
+dard and falsified medical products. Post-marketing surveillance is a central quality-
+assurance activity in which products from consumer-facing locations are collected and
+tested. Regulators in low-resource settings use post-marketing surveillance to evalu-
+ate product quality across locations and determine corrective actions. Part of post-
+marketing surveillance is developing a sampling plan, which specifies where to test and
+the number of tests to conduct at a location. With limited resources, it is important to
+base decisions on the utility of the samples tested. We propose a Bayesian approach to
+generate a comprehensive utility metric for sampling plans. This sampling plan utility
+integrates regulatory risk assessments with prior testing data, available supply-chain
+information, and valuations of regulatory objectives. We develop an efficient method
+for calculating sampling plan utility. We illustrate the value of the utility metric with a
+case study based on de-identified post-marketing surveillance data from a low-resource
+setting.
+Keywords: Substandard and falsified medical products, Post-marketing surveillance, Bayesian
+experimental design, Network detection
+1
+arXiv:2312.05678v3  [stat.AP]  2 Feb 2025
+
+1
+Introduction
+Substandard and falsified medical products (SFPs) cause substantial morbidity and mortal-
+ity globally according to the World Health Organization (WHO). Low- and middle-income
+countries bear the greatest SFP burdens (WHO, 2017a). Post-marketing surveillance (PMS)
+is a key regulatory activity used in these countries. The aim of PMS is to assess product
+quality through testing of samples at consumer-facing locations of the supply chain (Nkansah
+et al., 2017; WHO, 2017b). Regulators use analysis of testing results to determine corrective
+actions such as investigations, warnings and recalls. Limited PMS budgets make the choice
+of sampling locations a vital decision. Testing results from one round of PMS can feed the
+decision for sampling locations in the future. Current PMS practice does not feature a metric
+for the marginal value of future tests. This paper considers how supply-chain information
+and prior PMS results can be leveraged to establish the value of additional tests.
+This
+value captures the ability of tests to improve inference of SFP prevalence that informs the
+deployment of corrective actions. We provide methods for efficiently calculating this value.
+Our case study demonstrates that even a simple greedy application of the value of further
+testing can help regulators improve the use of PMS budgets. Generating the value of further
+tests thus lays a foundation for more advanced approaches to determining a set of sampling
+locations.
+The decisions of which locations to visit, the visiting order of these locations, and the
+number of tests to collect from each location is called the PMS sampling plan. Regulators seek
+sampling plans that maximize the prospective value of data produced by a sampling plan,
+which we refer to as the plan utility. Current practice for sampling plan development centers
+on a risk-based framework (Nkansah et al., 2017). Regulators assess the SFP risk of locations
+as a function of geography, disease burden, and other characteristics. These assessments, as
+2
+
+well as operational requirements, desired regional variety, or other factors, then inform the
+construction of sampling plans. These plans focus testing at high-risk locations. However,
+this approach has limitations. First, assessments of SFP risk may not explicitly account
+for important elements of prior data.
+Some locations may have been tested previously,
+and testing at alternate locations yields different inference about upstream supply-chain
+conditions. Knowing five tests from one location are as valuable as twenty tests from another
+location, for instance, can improve plan design. Further, establishing a plan’s utility is not
+straightforward. The objective of PMS is effectively deploying corrective actions, and not
+necessarily maximizing SFP detection. A utility measuring the likelihood of SFP detection
+is thus insufficient. Determining future actions requires an analysis of prospective testing
+results prior to collection. How these prospective results tie to regulatory decisions must
+be appropriately characterized to capture regulatory aims. For example, overestimating the
+SFP rate at one location may be preferable to underestimating the rate at another location.
+Lastly, as established in Wickett et al. (2023), analysis of utility cannot consider tests at
+different locations independently. Supply-chain information can impact inference of product
+quality across all tested and non-tested locations. In this paper, we show how a Bayesian
+approach can integrate regulatory objectives, assessments of SFP risk, past testing data, and
+available supply-chain information in a single utility measure.
+Any location in the supply chain can be a source of SFPs (Pisani et al., 2019; WHO,
+2017b; Newton et al., 2011; Suleman et al., 2014). Manufacturers may produce products of
+poor quality, distributors may substitute placebos for authentic products, or shops may store
+products at unsuitable temperatures. Each supply-chain location is associated with an SFP
+rate, defined as the proportion of quality products passing through that location that become
+substandard or falsified. Regulators continuously update estimates of these rates and deploy
+corrective actions accordingly. This paper, building on the Bayesian inference approach of
+3
+
+Wickett et al. (2023), proposes an innovative measure of the value of new samples using
+supply-chain information and prior testing results. This measure can inform the locations
+to test that produce the data most beneficial to decision-making.
+The approach to measuring sampling plan utility proposed in this paper, which grew
+from a partnership between operations researchers and regulatory practitioners, broadens
+the connection between PMS data and budgets. Existing approaches, such as that of Newton
+et al. (2009), specify the sample sizes needed to form sufficient confidence intervals for SFP
+rates. These intervals are compared with tolerance thresholds, where intervals exceeding
+thresholds trigger corrective actions. Under constrained resources, these samples sizes may
+be infeasible when considered across locations. A Bayesian, utility-based approach instead
+provides the value of any plan for deploying future actions, tying budgets to decisions. Plan
+utility is comprised of two main elements: the value of an estimate relative to the latent truth,
+called the score, and the importance of the latent truth for regulatory objectives, called the
+weight.
+The score measures the deviation between an estimate and the true SFP rate,
+and accounts for a difference in hazard between overestimation and underestimation. The
+weight captures regulator prioritization of ranges of SFP rates. For example, SFP rates that
+sufficiently exceed the tolerance threshold do not need to be estimated with high accuracy:
+it is clear corrective actions are needed. The product of the score and weight is the loss, the
+weighted penalty for the difference between the estimate and reality when accounting for
+regulatory objectives. We propose a utility equal to the expected loss across all locations.
+Plans with high utility are likely to produce strong estimates where regulatory objectives
+are impacted. Importantly, these valuations do not impose a sample-size requirement; any
+sampling plan has an associated utility. Regulators can thus focus on increasing the value
+of available resources.
+Furthermore, we provide methods for efficient utility estimation.
+These methods can be embedded in approaches to solving the larger problem of identifying
+4
+
+high-utility sampling plans.
+This approach to estimating sampling plan utility can be most beneficial in low-resource
+settings. Regulators in these settings have limited capacities for the procurement, transport,
+and testing of samples. However, regulators are responsible for ensuring quality for an array
+of medical products. Understanding the marginal utility of sampling plans as PMS budgets
+change can improve operational planning. For instance, incurring the marginal costs associ-
+ated with sampling from a remote area may be inadvisable if more utility can be obtained by
+redirecting those resources to additional sampling from nearby regions. Furthermore, obtain-
+ing resources for many surveillance activities depends on providing justification to funding
+sources, such as government bodies or nonprofit organizations. Measurements of utility can
+facilitate these justifications. Additionally, methods that are not computationally intensive
+are essential in low-resource settings. We leverage the binary, pass-fail nature of much PMS
+testing to develop an efficient method for calculating sampling plan utility. This method
+facilitates plan comparison and means of generating plans, and thus lays a foundation for
+more advanced approaches to determining a set of sampling locations. A case study in Sec-
+tion 5, using de-identified PMS data from a low-resource setting, demonstrates the value of
+the utility metric.
+2
+Literature review
+Current PMS sampling plan methodology relies on assessments of SFP risk. The risk-based
+approach of Nkansah et al. (2017) is valuable for low-resource settings, where regulators often
+lack the resources necessary for statistically sufficient testing of all products, as proposed
+in Newton et al. (2009). Focusing resources at high-risk areas helps address this scarcity.
+However, this approach does not explicitly integrate prior testing results and available supply-
+chain information into sampling plan formation. Previous work has demonstrated the value
+5
+
+of analyzing supply chains in understanding SFP incidence. For example, the qualitative
+analysis of Pisani et al. (2019) showed how incentives across the supply chain interact with
+government policy to encourage or discourage SFPs.
+Wickett et al. (2023) incorporated
+supply-chain information through Bayesian inference to better understand SFP sources. This
+inference uses testing results and supply-chain information for a fixed sampling plan. We
+offer a utility-based method for developing sampling plans that builds on this inference
+framework while integrating the SFP-risk assessments of Nkansah et al. (2017).
+This method adds to a literature of settings using Bayesian experimental design. A design
+is set of input parameter choices for an experiment; see a review in Chaloner and Verdinelli
+(1995). Bayesian experimental design suits settings involving binary, count, or categorical
+data where data collection is expensive, such as PMS. The loss determines the cost of a
+decision made from an experiment with respect to the latent truth. Chaloner and Verdinelli
+stressed the importance of constructing a loss matching experimental aims. In Section 4, we
+propose such a loss for PMS.
+Bayesian experimental design has been applied to a variety of problems using different
+losses or utilities, where a utility is an integration of the loss over a distribution of key
+parameters. Lookman et al. (2019), for example, used an expected improvement utility for
+materials discovery. This utility fits settings where the goal is to maximize a response: the
+best designs balance uncertainty with the prospect for response maximization. Lookman
+et al. aimed to identify materials maximizing the level of different physical attributes. This
+contrasts with PMS, where the objective is an effective deployment of corrective actions,
+which may not correspond with heightened SFP detection. Phillips et al. (2021) used a
+measure of the distance between the prior and posterior, called the Shannon information, for
+key parameters in nuclear physics experiments. The aim of these experiments is to tighten
+the feasible constraint range for modeled parameters or constants.
+This relates to PMS
+6
+
+decision thresholds: corrective actions are deployed once the credible interval for a location’s
+associated SFP rate exceeds the threshold. Morgan et al. (2020) studied parameters of carbon
+capture systems, and discussed how loss specifications might change as experimentation
+continues and objectives evolve. Initial experiments may target uncertainty across input
+ranges, while later experiments focus data collection at inputs deemed crucial for program
+objectives. Similar dynamism exists in PMS settings, as discussed in Section 4.1: initial
+iterations provide broad assessments of SFP rates while later iterations focus on distributing
+corrective actions.
+Improving the understanding of quality issues through PMS can draw on previous work
+in auditing. Auditing problems usually consider game-theoretic settings where a buyer’s
+inspection policies elicit reactions by suppliers: see Dawande and Qi (2020) for a review of
+auditing problems in supply chains. Zhang et al. (2022) and Huang et al. (2022) considered
+violations of social responsibility, e.g., abusive labor practices, at suppliers for a buyer who
+could be impacted by such violations. The buyer decides where to audit and how much
+effort to expend. These papers identified optimal auditing policies for different contexts
+within two- or three-echelon supply chains. This setting is similar to PMS in that the buyer
+chooses locations to audit and corrective actions to deploy. However, the focus is modeling
+incentives and violations as a function of these audits, rather than improving detection.
+Identifying a utility-maximizing sampling plan can be modeled as a variant of the orien-
+teering problem (Tsiligirides, 1984). Orienteering problems seek a utility-maximizing tour
+through a subset of locations, subject to budget constraints. The utility of an orienteering
+problem is usually additive across visited locations, representing some reward for visiting
+locations. However, the value of testing data in PMS is not independent across locations.
+Locations share a connected supply chain, and thus information about one location affects
+inference at another location. This article considers calculating a sampling plan utility that
+7
+
+accounts for inference of quality problems across the supply chain. In ongoing work, we
+develop approaches to solving a formulation for sampling plan optimization based on the
+orienteering problem.
+This formulation requires a way to evaluate prospective sampling
+plans.
+Network detection problems use sensors throughout a network to either discover anoma-
+lies or learn network-based attributes. Anzoom et al. (2022) reviewed approaches for disrupt-
+ing illicit networks. They labeled approaches as having either a network or a supply-chain
+view. Network views consider general collections of nodes and links; supply-chain views
+distinguish nodes by their role.
+Our work carries the supply-chain view: nodes are dis-
+tinguished in that only consumer-facing nodes are tested. We target learning SFP rates for
+improved decision-making; the work reviewed in Anzoom et al. generally sought to maximize
+detection. For instance, Triepels et al. (2018) built a Bayesian network model for detect-
+ing document fraud in international shipping. Bayesian networks are systems of structured
+variable dependencies; these dependencies yield conditional probabilities for variables that
+require significantly less data to estimate than amassing all possible combinations of vari-
+ables. Bayesian networks are beneficial in settings with variable structure like international
+shipping, where different types of goods are frequently shipped together to similar places.
+Triepels et al. formed posterior likelihoods of the presence or omission of different goods on
+shipping itineraries; the presence of low-likelihood goods or the omission of high-likelihood
+goods, relative to established thresholds, triggered inspection flags. Similar decision thresh-
+olds exist for PMS in low-resource settings, where challenges exceed resources and some SFP
+risk must often be tolerated.
+Sensor location problems consider how best to deploy limited measurement capacity on a
+network to learn an important network attribute. These problems parallel test deployment
+at a subset of nodes in PMS. For example, Yang and Zhou (1998) and Bianco et al. (1997)
+8
+
+considered sensor locations on a traffic network for learning the origin-destination matrix
+governing the network.
+Origin-destination matrices indicate the traffic between any two
+nodes. Yang and Zhou (1998) identified the sensor location subsets of a given size that
+minimized the worst-case error. Bianco et al. (1997) determined lower and upper bounds on
+the minimal cost of sensor locations that ensure learning traffic flows.
+The rest of this paper is as follows. Section 3 describes key elements of sampling plans in
+PMS and defines sampling plan utility. Section 4 proposes methods of building and applying
+a loss for SFP-rate estimates that tie key regulatory objectives to sampling plan utility.
+Section 5 uses these methods with a 2021 set of de-identified PMS data and demonstrates
+the application of utility to the generation of favorable sampling plans. Section 6 summarizes
+the advantages of plan utility.
+3
+Sampling plans in supply chains
+In this section, we describe sampling plans and a proposed utility metric that ties data
+collection to the effective deployment of corrective actions.
+3.1
+Overview of post-marketing surveillance
+PMS is an iterative process of data collection and analysis, centered on WHO’s framework
+of prevention, detection, and response (WHO, 2017b). This process is usually conducted for
+a single class of medical products. For instance, elevated malaria incidence, or interest in
+malarial parasite resistance (Chikowe et al., 2015), may motivate a PMS iteration for anti-
+malarial products. The availability of procurement, transportation, and testing resources is
+subject to funding and approval procedures. PMS data are often produced in batches as
+these procedures are completed.
+9
+
+Figure 1 illustrates the iterative PMS process.
+Step 1 is forming the sampling plan.
+Current practice centers on the Medicines Risk-based Surveillance framework and web tool
+(Nkansah et al., 2017). Regulators assess locations’ SFP risk as a function of geography,
+disease burden, past corrective actions, and other inputs. These assessments inform choices
+of where to sample. In our experience in low-resource settings, a plan may comprise collection
+of a few dozen to a few thousand samples for a single PMS iteration.
+1. Form sampling plan: Determine how many
+samples to obtain from each consumer-facing
+location, using assessments and available data
+2. Procure samples: Visit locations and ob-
+tain samples according to the sampling plan
+3. Conduct testing: Evaluate samples’ quality
+with chosen testing method
+4. Analyze results: Use testing data to form
+estimates of SFP rates at locations in the sup-
+ply chain and apply corrective actions
+This paper: Use supply-chain informa-
+tion and prior testing results to define
+the utility of a given sampling plan
+Figure 1: PMS iterative process for a designated product class.
+Step 2 is sample procurement, where locations designated by the plan are visited. Regu-
+lators may procure any available product of the designated class, or regulators may choose
+among products that reflect different supply-chain paths. Each product has an associated
+supply-chain path that is a list of locations visited by a product. Frequently, the full path is
+unavailable and only partial information such as a manufacturer or distributor label can be
+accessed. With increased use of track-and-trace systems, most or all of a sample’s supply-
+chain path will become known (Rotunno et al., 2014). We assume that each product has a
+label for the visited location and one upstream location, and products are randomly sampled
+across paths.
+Step 3 is testing samples against product registration specifications. Kovacs et al. (2014)
+described a variety of testing methods used in PMS, ranging from visual inspection to X-ray
+10
+
+diffraction analysis. Some testing methods provide an array of measurements for the sam-
+ple, such as the amount of active pharmaceutical ingredient or the amount of impurities.
+We consider binary pass/fail determinants of sample quality, as reflected in common PMS
+data sets like the Medicines Quality Database (USP, 2021). These pass/fail measurements
+align with the screening second level of the three-level inspection approach of Pribluda et al.
+(2014), where the first level is physical and visual inspection and the third level is a com-
+plete pharmacopeial assessment. While we assume perfect accuracy of pass/fail detection,
+imperfect testing accuracy can be easily incorporated. Each record in a PMS data set then
+contains a binary test result and associated metadata, including available supply-chain in-
+formation such as procurement location or manufacturer. Practically, there may be sample
+attrition between procurement and testing: samples may be damaged or lost, or testing
+materials may be degraded or unavailable. However, for our modeling we assume there is no
+attrition between procurement and testing. Thus, “samples” and “tests” will often be used
+interchangeably in this paper.
+Step 4 is analysis.
+Regulators use PMS with two related, yet distinct, objectives: a
+classification objective or an assessment objective. The classification objective categorizes
+locations as either high or low SFP risk. Corrective actions are deployed at high-risk lo-
+cations. The assessment objective seeks accurate estimation of the SFP rates associated
+with locations. Classification may fit a context of deploying a limited number of process
+or operational inspections. Assessment may fit a context where regulators seek inference of
+SFP rates in the supply chain, such as a setting of studying a new or previously untested
+class of products. This inference may then inform broad corrective actions, such as changes
+to registration procedures, or the decision to conduct further surveillance. After analysis,
+regulators apply any corrective actions and iterate to Step 1.
+This paper extends the analysis stage by considering how testing results affect sampling
+11
+
+plan design for the next PMS iteration. Our aim is to devise a utility metric capturing a
+plan’s ability to improve decision-making. For instance, allocating samples to a province with
+a low associated SFP rate may be helpful if that province is connected to key distributors
+for which there is little information.
+3.2
+Inference in post-marketing surveillance
+Regulators in low-resource settings generally have access to limited supply-chain information
+at sample collection, such as one or two labels from upstream supply locations. The example
+in Figure 2 illustrates the approach of Wickett et al. (2023) to leverage limited supply-chain
+information to improve inference of SFP rates. A node is a location within an echelon. A
+sample’s trace is the supply-chain information associated with that sample. Test nodes are
+consumer-facing locations, and supply nodes are locations from one upstream echelon. The
+number below each test node a, na, is the number of samples obtained from a. The fraction
+on each adjacent edge is the number of detected SFPs over the number of samples from that
+trace. For example, 8 of 11 samples obtained from Test Node 4 were sourced from Supply
+Node 1, and 2 of these 8 samples were SFPs. The principal challenge is that a product can
+become substandard or falsified at any supply-chain location, but testing in PMS is only
+done at test nodes.
+A PMS data set contains testing results and traces for each sample. Let A be the set of
+test nodes and let B be the set of supply nodes. Regulators collect and test samples from
+test nodes in A. All products pass through one supply node and one test node. A set of N
+tests yields a set of binary results y = {y1, . . . , yN}: a “1” denotes SFP detection and “0”
+denotes no SFP detection. Traces are stored as (a, b), where a = {a1, . . . , aN} is the set of
+test-node labels and b = {b1, . . . , bN} is the set of supply-node labels. The overall data set
+is d = (y, a, b).
+12
+
+Supply
+Node 1
+Supply
+Node 2
+Test
+Node
+1
+n1 = 12
+Test
+Node
+2
+n2 = 3
+Test
+Node
+3
+n3 = 7
+Test
+Node
+4
+n4 = 11
+3
+7
+0
+0
+0
+3
+2
+8
+1
+5
+0
+3
+0
+4
+1
+3
+positive tests
+total samples
+Distribution
+Upstream sourcing
+Figure 2: Example of two echelons of a supply chain with PMS testing results. Data are
+only collected from the lower echelon of test nodes. “Upstream sourcing” and “Distribution”
+signify echelons for which information is unavailable.
+The approach of Wickett et al. (2023) seeks to infer the SFP rates associated with test
+nodes and supply nodes using PMS data d. Test-node SFP rates are stored in vector η =
+(η1, . . . , η|A|) ∈(0, 1)|A| and supply-node SFP rates are stored in vector θ = (θ1, . . . , θ|B|) ∈
+(0, 1)|B|. A test can be classified as an SFP due to causes associated with either the test
+node or supply node (or further upstream). The consolidated SFP rate of a test with trace
+(a, b) accounts for SFP causes associated with either test node a or supply node b (or further
+upstream), and is stated as
+zab(η, θ) = ηa + (1 −ηa)θb .
+(1)
+The log-likelihood of γ = (η, θ) under data d is
+ℓ(γ|d) =
+X
+a∈A
+X
+b∈B
+
+log[zab(γ)]N ab + log[1 −zab(γ)](N ab −Y ab)
+
+,
+(2)
+where N ab is the number of tests in d from trace (a, b) and Y ab is the number of observed
+SFPs. Wickett et al. (2023) showed this log-likelihood is unidentifiable: for any SFP rates
+γ, there exist alternate rates γ′̸ = γ with equal likelihood; i.e., there exists γ′ such that
+13
+
+ℓ(γ′|d) = ℓ(γ|d). Thus, when resources are limited to testing at consumer-facing locations,
+as in common PMS, testing data alone cannot yield exact conclusions regarding SFP rates.
+This unidentifiability is mitigated through a Bayesian approach. Let p(γ) be a prior on
+γ that is designated through regulator assessments of SFP risk. Multiplying p(γ) with the
+likelihood under data d, exp
+
+ℓ(γ|d)
+
+, is then proportional to a posterior, i.e.,
+p(γ|d) ∝exp
+
+ℓ(γ|d)
+
+p(γ) .
+(3)
+We can infer SFP rates associated with nodes at both tested and upstream locations with
+Markov Chain Monte Carlo (MCMC) draws from this posterior. Credible intervals formed
+from these draws are compared with designated thresholds to inform the deployment of
+corrective actions.
+3.3
+SFP-rate inference and sampling plan utility
+The utility of a sampling plan is directly tied to SFP-rate inference. As with Wickett et al.
+(2023), we consider two echelons of a larger, more complex supply chain in analyzing sampling
+plans. Sampling plan n ∈(Z+)|A| is an allocation of samples where na is the allocation to
+test node a in A. Each PMS iteration has a budget of N samples; thus, P
+a∈A na ≤N.
+Consistent with PMS practice, we express the budget by the number of samples instead of
+the cost to procure samples.
+Bayesian experimental design uses existing testing data and priors on SFP rates to explore
+how the value of inference might be improved through different sampling plans in the next
+PMS iteration (Chaloner and Verdinelli, 1995). Inference improvement is defined by a value
+function capturing what constitutes a good estimate of SFP rates. Proper characterization
+of this value function is key to Bayesian experimental design.
+Our aim is to determine the utility of new tests. Let dprior = (yprior, aprior, bprior) be the
+set of existing PMS data from previous iterations and let d = (y, a, b) be a new data set.
+14
+
+The supply node associated with each test in d is randomly drawn according to historic
+sourcing records. The estimate of SFP rates, ˆγ(d, dprior), is a function of existing data dprior
+as well as new data d once sampling plan n is deployed. Let L
+ˆγ(d, dprior), γ
+
+be a loss that
+describes the penalty accrued as ˆγ differs from γ, a vector of true SFP rates. L comprises of
+a score, S
+ˆγ(d, dprior), γ
+
+, and a weight, W(γ), that together capture how estimates impact
+regulatory objectives. The score reflects the difference between an estimate and the truth;
+the weight defines the significance of the truth for regulatory goals. The loss of an estimate
+formed using d sums the score and weight for each node:
+L
+ˆγ(d, dprior), γ
+
+=
+X
+v∈A∪B
+S
+ˆγv(d, dprior), γv
+
+W(γv) .
+(4)
+The utility of plan n is then the expected loss reduction from new data:
+U(n) = E
+
+L
+ˆγ(dprior), γ
+
+−E
+
+L
+ˆγ(d|n, dprior), γ
+
+.
+(5)
+A good plan samples from test nodes with a high likelihood of yielding data that reduce
+estimate loss.
+Plan utility provides a single metric for plan comparison and can inform
+evaluation of PMS budgets: analysis of the change in utility with respect to data set size
+may indicate budgets that do not provide high marginal value after a certain size.
+4
+Interpreting utility in post-marketing surveillance
+Calculating sampling plan utility requires a loss formulation that aligns SFP-rate estimates
+with regulatory objectives. Section 4.1 presents loss formulation that accounts for an esti-
+mate’s accuracy (score) and its significance for regulatory decision-making (weight). Section
+4.2 defines Bayes estimates that minimize the expected loss under new data. Section 4.3
+illustrates the application of sampling plan utility. Section 4.4 presents an efficient method
+for utility estimation.
+15
+
+4.1
+Loss construction for SFP-rate estimates
+The loss captures both an estimate’s accuracy and the importance of accuracy at different
+SFP rates. General functions exist for measuring estimate quality, e.g., an estimate’s squared
+error. However, decision-makers often desire tailored functions with properties better suited
+to objectives (Hennig and Kutlukaya, 2007), particularly in Bayesian experimental design
+(Chaloner and Verdinelli, 1995).
+Characterization of the score and weight in (4) depends on the regulatory objective(either
+a classification or an assessment objective). Section 4.1.1 describes the classification objec-
+tive, where regulators aim to classify nodes as either high or low SFP risk. Section 4.1.2
+describes the assessment objective, where regulators aim to form useful inference of SFP
+rates. The loss construction we propose is not burdensome: the regulator specifies only one
+parameter for the classification objective, and two parameters for the assessment objective.
+4.1.1
+Classification objective
+A classification objective looks to correctly identify nodes that are significant sources of
+SFPs. Identification is determined through classification threshold t. Nodes with estimated
+SFP rates above t are classified as significant SFP sources, and corrective action is taken.
+Classification score
+Let
+C(γv) =
+
+
+
+
+
+
+
+
+
+1 if γv ≥t and
+0 if γv < t
+be a classification for SFP rate γv at node v with respect to threshold t. The classification
+score for estimate ˆγv of latent SFP rate γv is
+S1 (ˆγv, γv) =
+h
+C(ˆγv) −C(γv)
+i+
++ u
+h
+C(γv) −C(ˆγv)
+i+
+(6)
+16
+
+for any v ∈A ∪B, where (x)+ = max(0, x). The first term captures overestimation error
+and the second term captures underestimation error, magnified by parameter u. Reducing
+the score means better classifying node SFP rates correctly as below or above t.
+User-determined parameter u is the penalty of underestimation relative to overestima-
+tion. Overestimation means potentially mis-allocating corrective actions; underestimation
+means potentially neglecting a significant SFP source. Increasing u favors estimates that
+result in classifying more nodes as SFP sources. One can consider u as the trade-off between
+corrective actions at high-SFP and low-SFP nodes: each accurate action requires potentially
+u inaccurate actions. Over-allocating resources like corrective actions is preferred to neglect-
+ing issues in many public-health situations. For instance, Wachtel and Dexter (2010) and
+Olivares et al. (2008) identified a u around 2 for balancing overstaffing and effectiveness in
+an operating room under uncertain operating times. With PMS, the number of corrective
+actions deployed depends on the number of high-SFP nodes. If regulators expect few such
+nodes, u can be set high: acting against true high-SFP nodes means possibly acting against
+many low-SFP nodes. If regulators expect many high-SFP nodes, u can alternatively be
+set low. This trade-off may depend on the corrective action class being considered: more
+punitive actions may require higher classification accuracy.
+4.1.2
+Assessment objective
+An assessment objective measures estimate accuracy and the significance of the latent SFP
+rate for regulatory decision-making.
+Assessment score
+The assessment score measures the deviation between estimate ˆγv
+and latent rate γv:
+S2(ˆγv, γv) = (ˆγv −γv)+ + u(γv −ˆγv)+ ,
+(7)
+17
+
+for each v ∈A ∪B. The assessment score mirrors the classification score in balancing over-
+estimation and underestimation through u, but differs in considering the absolute difference
+between estimate and true rates, instead of the classification difference.
+Assessment weight
+The weight reflects the relative importance of different ranges of
+SFP rates for decision-making. Uncertainty for rates near the decision threshold is more
+hazardous than rates away from the threshold. The assessment weight for latent rate γv is
+W(γv) = 1 −γv
+
+m −1{γv < t}
+
+1 −t
+γv
+
+,
+(8)
+for each v ∈A ∪B. Parameter m ∈[0, 1] designates the slope of the weight away from
+threshold t. The weight is highest at t independent of m. Figure 3 plots weight values for
+different choices of m for t = 30%. For rate γv < t, the weight is 1 −(m −1)γv −t; for
+rate γv ≥t, the weight is 1 −mγv. Values for m below 0.5 produce a reduced slope for SFP
+rates higher than t and an increased slope for rates lower than t: values above t are weighted
+higher than values below t. Values for m above 0.5 produce the opposite effect: values below
+t are instead weighted higher.
+The weight is a key element of loss specification for the assessment objective, though
+results do not seem overly sensitive to exact weight values. Estimation accuracy for rates
+near t is more important than accuracy for rates far from t: poor estimation of rates far from
+t is less likely to have an impact on regulatory decisions. For example, distinguishing a 5%
+SFP rate from a 20% SFP rate may be more important than distinguishing a 70% rate from
+an 85% rate, although the difference within each pair of rates is the same. Corrective actions
+will be deployed in the latter case for either rate, while the deployment of corrective actions
+in the former case may depend on the latent reality. A value of m between 0.6 and 0.95 meets
+the common PMS aim of de-emphasizing high latent rates while focusing utility at rates near
+t. This unequal weighting of rates above or below t through a single parameter, m, is the
+18
+
+Figure 3: Illustration of weights for t = 30% and m ∈{0.05, 0.2, 0.4, 0.6, 0.95}.
+appeal of using (8) over other weight forms, such as a parabolic weighting. Where t is not
+well established, using a high t appropriate to the regulatory setting, in combination with
+an m above 0.9, places approximately equal emphasis on rates below the highest reasonable
+t while de-emphasizing very high rates.
+4.2
+Forming Bayes estimates from PMS data
+This section introduces Bayes estimates that integrate PMS data with the score and weight
+values to evaluate sampling plan utility.
+Bayes estimates are decisions that minimize expected loss (Ghosh et al., 2006). In PMS,
+these are SFP-rate estimates that best integrate regulatory goals and testing data. The loss
+is a measure of the quality of estimate ˆγ: the loss incorporates how estimates will be used,
+the penalty of overestimation versus underestimation, and the weighted relevance of the true
+SFP rate being estimated. The true SFP rates are unknown; these rates are inferred via
+19
+
+p(γ|d), the posterior using available data. The Bayes estimate minimizes the expected loss
+under p(γ|d):
+ˆγ(d) = arg min
+˙γ
+Eγ|dL( ˙γ, γ) ,
+(9)
+where ˙γ is a vector with length |A ∪B|. The Bayes estimate can be found by derivation,
+by using standard optimization software, or by selecting the member of a set of MCMC
+draws from p(γ|d) that minimizes the average loss across all MCMC draws. Derived Bayes
+estimates for the loss constructions of Section 4.1 are described in Appendix C.
+4.3
+Benefits of the utility metrics
+Sampling plan utility sharpens plan selection in at least three ways, which we illustrate
+through an example. First, plan utility provides a single metric for how well a plan integrates
+objectives with data; this metric facilitates plan comparison. Second, plans can be compared
+for given budgets, allowing evaluation of the trade-off between utility and budget. Third,
+plans meeting different operational constraints can be compared, yielding a utility cost for
+these constraints.
+Recall the example of Figure 2, which consists of 4 test nodes, 2 supply nodes, 33 tests
+and 7 positive results. Suppose the goal is to ascertain the best sampling plan for the next N
+tests. Regulators want to explore SFP prevalence; thus, they apply the assessment objective.
+The number and results of tests already collected along each test node-supply node trace
+are respectively provided as N prior and Y prior, where row i denotes Test Node i and column
+j denotes Supply Node j:
+N prior =
+
+
+7
+5
+0
+3
+3
+4
+8
+3
+
+, Y prior =
+
+
+3
+1
+0
+0
+0
+0
+2
+1
+
+.
+We see from Y prior that SFPs have been detected at Test Nodes 1 and 4, sourced from
+Supply Nodes 1 and 2. Inference from these data is not strong enough to take corrective
+20
+
+Figure 4: Illustration of utility for different plans as the size of the next set of tests, N,
+increases in intervals of four tests.
+actions: one cannot conclude if SFP issues occurred due to test nodes or locations upstream
+in the supply chain. Therefore, regulators plan to collect more tests. Suppose three plans
+are under consideration. The proportion of tests allocated to each test node under any plan
+can be expressed in vector form:
+nLT =
+
+0 N 0 0
+⊺
+, nU =
+
+N
+4
+N
+4
+N
+4
+N
+4
+⊺
+, nHS =
+
+N
+2 0 0 N
+2
+⊺
+.
+These plans meet different concerns. Plan nLT, a “least tested” plan, allocates all tests to
+Test Node 2, with the least prior tests. Plan nU, a “uniform” plan, allocates tests to all
+nodes equally. Plan nHS, a “highest SFPs” plan, evenly allocates tests to Test Nodes 1 and
+4, with prior detected SFPs.
+Suppose regulators designate the loss with a score that equally considers overestimation
+and underestimation (u = 1) and a weight using threshold t = 20% and slope m = 0.6.
+Figure 4 (left) shows the utility for each plan as the total number of tests, N, increases in
+intervals of four tests. This plot shows a few key aspects of plan utility. First, there is a
+diminishing return on additional testing: less is learned through continued testing. Second,
+the preferred plan can depend on budget: the Highest SFPs plan provides higher utility until
+the budget exceeds 25 tests, where the Uniform plan becomes preferable. For low budgets,
+21
+
+estimates of node SFP rates are best improved by testing where SFPs have been previously
+observed. Third, the utility of the Highest SFPs plan is close to the utility of the Uniform
+plan. As the Highest SFPs plan requires visiting only two of the four nodes, this plan may
+still be preferable even for high budgets.
+Changes to loss parameters underscore the need to accurately characterize the loss. Sup-
+pose the score parameter is changed to u = 10, meaning underestimation is 10 times worse
+than overestimation. Figure 4 (right) shows the resulting utility evaluations as N increases.
+The difference in scales for the y-axis of each figure results from different loss specifications.
+The key for analysis is determining which plan provides the highest utility as compared
+with other plans—not identifying the highest absolute utility value across loss specifications.
+Changing u from 1 to 10 makes the Highest SFPs plan the worst plan from 0 to 20 tests.
+This makes sense when considering there are only 3 tests from Test Node 2: the likely range
+of SFP rates for this node is wide, so there is a strong underestimation risk. Interestingly,
+the Least Tested plan provides the most initial value for the “next test,” though this plan’s
+advantage dissipates after about 5 tests. Additionally, the Uniform plan dominates the other
+two plans once N exceeds around 10 tests: the risk of underestimating at Test Node 2 is
+outweighed by the risk of underestimating at other nodes. A balanced approach best ensures
+no significant SFP sources are missed.
+4.4
+Efficient estimation of sampling plan utility
+Moving beyond the simple example, a utility-based approach to sampling plan development
+requires methods for efficient utility estimation. MCMC integration is standard for estimat-
+ing expressions like sampling plan utility (Kleinegesse and Gutmann, 2019). However, the
+computational resources needed for standard MCMC integration are prohibitive for many
+low-resource contexts: calculating the utility for a single sampling plan requires about 16
+22
+
+hours with an Intel Core 1.6GHz processor. Regulators with limited computational resources
+cannot then analyze the benefit of different plans, which is a key practical benefit of consid-
+ering plan utility.
+A faster utility approximation is found by avoiding the repeated MCMC sampling of
+standard MCMC integration when estimating a loss and instead coupling a single set of
+MCMC draws with a collection of simulated data sets, detailed in Appendix B. The posterior
+for the expected loss is expressed as p(γ|dprior, d)p(d|dprior) (Chaloner and Verdinelli, 1995).
+Manipulation of this posterior produces an equivalent posterior that separates SFP-rate
+MCMC draws under known data from the binomial likelihood of an SFP-rate vector under
+a simulated data set:
+p(γ|dprior, d)p(d|dprior) = p(γ|dprior)p(d|γ) .
+This likelihood can be efficiently calculated for each SFP-rate draw and simulated data
+set. An efficient approximation for the expected loss is generated through a weighted sum
+of loss realizations for each SFP-rate draw in a single MCMC set. The resulting utility
+approximation requires around 10 minutes for settings similar in size to the case study in
+Section 5.
+This efficient approximation of utility is subject to bias under settings with sufficiently
+large supply chains or numbers of tests.
+A small subset of the MCMC-generated set of
+SFP-rate draws acquire an outsized impact on the resulting loss estimate. Bias stems from
+identifying Bayes minimizers that are overfit to this subset: the resulting loss estimate is
+too low. Increasing the number of SFP-rate MCMC draws mitigates this bias. However, the
+time required to generate and manipulate a sufficiently large set of draws can approach the
+time needed for standard MCMC integration. We propose an importance-sampling approach
+for efficiently mitigating the bias of large systems, which is shown to work well in the case
+23
+
+study. The first step of this approach is identifying the important region of the space of SFP
+rates for a given supply chain and sampling plan. This region is then oversampled. The
+resulting set of MCMC draws, coupled with their importance weights, is used for efficient
+loss estimation.
+Software package logistigate, available on GitHub (Wickett et al., 2021), provides
+methods for utility estimation, including efficient approximation and the importance sam-
+pling approach.
+5
+Integrating utility into sampling plan generation
+The development of a new utility metric is part of a larger collaboration with a medical
+product regulatory agency implementing PMS in a low-resource setting. Using a de-identified
+case study with data from this agency, we illustrate how this metric can assist plan evaluation.
+5.1
+Case study background
+The agency conducted the first PMS iteration for a class of maternal and child health prod-
+ucts in 2021. Products had not yet been broadly tested at consumer-facing locations. The
+agency tested 177 samples from 4 provinces near the capital, of which 62 were SFPs (a 35%
+rate). Samples featured 13 unique manufacturer labels.
+The sampling plan for the first PMS iteration was developed using the risk-based ap-
+proach of Nkansah et al. (2017). The agency will conduct a second PMS iteration for the
+same products to form estimates of SFP rates throughout the supply chain (assessment
+objective). The first iteration allocated samples to the four provinces nearest the central
+laboratory. This met operational constraints, including time and transportation costs. The
+usual approach for the next iteration would be to re-apply these assessments to formation
+of the new plan.
+24
+
+The operational constraints for the next iteration, including the PMS budget, are largely
+dependent on variable funding sources that are not yet established. Thus, this case study
+considers a range of possible budgets. There are also two considered implementation set-
+tings: an existing setting and an all-provinces setting. The existing setting only considers
+allocations to the provinces of the first iteration. The all-provinces setting considers every
+province.
+5.2
+Preparations for applying utility
+Section 5.2.1 describes the preparation necessary for aligning utility with the regulatory
+context. Section 5.2.2 describes a greedy heuristic for plan formation.
+5.2.1
+Capturing the regulatory context in utility calculations
+Construction of the loss was informed by collaboration with the regulatory agency. An SFP-
+rate threshold of t = 15% approximated the agency’s threshold of serious concern. The
+agency indicated a higher tolerance for overestimation versus underestimation of SFP rates:
+about five false alarms per true detection (u = 5) justifies the use of correction resources. We
+use an assessment weight with m = 0.6 to de-emphasize high versus low SFP rates, while
+prioritizing rates near t. Sensitivity analysis shows generally small but expected changes
+under different choices (Wickett, 2024).
+We estimated sourcing probabilities for test nodes visited in the first PMS iteration
+through the traces observed in that iteration, as was done in Wickett et al. (2023). Elici-
+tation of priors on SFP rates uses an adaptation of the risk assessment process of Nkansah
+et al. (2017). This process places nodes in one of seven SFP-risk categories. Our elicita-
+tion methodology and details on sourcing probability estimation are described further in
+Appendix D.
+25
+
+5.2.2
+Plan formation through a greedy heuristic
+Efficient utility calculation opens valuable avenues of analysis for regulators. However, iden-
+tifying a utility-maximizing plan remains a challenge: calculating the utility of each possible
+plan is combinatorically impractical.
+While our ongoing research is exploring this chal-
+lenge, this section shows that even a simple heuristic that leverages efficient calculation and
+marginal utility can form sampling plans with high utility across a budgetary range.
+Algorithm 1: Greedy heuristic for sampling plan generation with varying budgets
+Input: A, N, U(·)
+Output: Set of test allocations
+
+n(i) : i ∈{1, . . . , N}
+	
+for each possible budget i
+1 Initialize n(0)
+a
+:= 0 for a ∈A.
+2 for i in {1, . . . , N} do
+3
+for a ∈A do
+4
+Fa = U(n(i−1) + ea) −U(n(i−1)).
+5
+Set a′ = arg maxa Fa.
+6
+for a ∈A do
+7
+n(i)
+a =
+(
+n(i−1)
+a
++ 1
+if a = a′
+n(i−1)
+a
+otherwise.
+8 Return {n(i) : i ∈{1, . . . , N}}.
+This heuristic finds the best allocation for the ith test, given an allocation of the first
+(i−1) tests. Algorithm 1 takes as inputs a set of test nodes (A), a number of tests (N), and
+a function yielding an allocation’s utility
+ U(·)
+
+. The output is a set of allocation vectors
+{n(i)}N
+i=1, where each vector has length |A|, for all budgets i ∈{1, . . . , N}. The algorithm
+proceeds as follows.
+Initialize
+In Line 1, initialize the allocation to each test node as zero: n(0)
+a
+:= 0 for each
+a ∈A.
+26
+
+Add node with the best marginal utility increase
+Loop through budgets from 1 to N
+tests. Estimate the utility of a test from each available test node in Lines 3 and 4. Marginal
+utility Fa is the difference between the utility of the last budget, U
+ n(i−1)
+, and the utility
+of the last budget plus one test at node a; ea denotes a basis vector with a 1 at position a.
+In Lines 5 through 7, allocate a test to the test node with the highest marginal utility.
+Algorithm 1 uses
+ |A| × N
+
+utility evaluations and leverages the sampling plans under
+successive budgets to identify the next best allocation. Intervals of N, e.g., batches of five
+tests, can be used at each step to reduce the number of estimates. The smallest possible
+interval justifying transport to a region may be an appropriate interval of N.
+Figure 5
+illustrates three iterations of the heuristic.
+PMS budget
+PMS budget
+PMS budget
+Utility, U
+0
+0
+0
+1
+1
+1
+2
+2
+2
+3
+3
+3
+Step 1
+Step 2
+Step 3
+TN 1
+TN 2
+TN 3
+TN 2
+TN 1
+TN 2
+TN 3
+TN 2
+TN 3
+TN 1
+TN 2
+TN 3
+Figure 5: Greedy heuristic example with three test nodes (TNs).
+5.3
+Benefits of considering plan utility
+The PMS budget for the next iteration may be unknown, so we consider a budgetary range
+up to 400 samples, more than twice the first budget. We evaluate in intervals of 10 samples:
+17 samples was the smallest test-node allocation in the first iteration, and a finer precision is
+unnecessary for the agency’s planning. Utility-informed allocations derive from the greedy
+27
+
+heuristic. Each of the utility-informed allocations in the existing and all-provinces settings is
+compared with two different allocations: a uniform allocation where samples are distributed
+evenly across all test nodes, and a fixed allocation where samples are distributed according
+to the sampling plan of the first iteration.
+We first consider the setting of existing provinces. The SFP risk assessment classified two
+provinces as Moderate SFP risk and two provinces as Moderately High SFP risk. We label
+provinces by these SFP risk classifications as well as the number of associated samples in
+the first PMS iteration. For example, province “Mod (39)” is classified as Moderate risk and
+had 39 first-iteration samples. Figure 6a shows the utility-informed allocation. Mod (17)
+comprises around half the allocation for any considered budget: a budget of 250 samples
+results in allocating 200 samples to Mod (17), which is more than twice the maximum of
+95 samples from the first iteration. Conversely, Mod (39) only receives 10 samples for any
+budget exceeding 40 samples. These two test nodes have the same risk and only differ by
+19 first-iteration samples, yet samples at Mod (17) provide substantially stronger utility.
+Allocations for budgets exceeding 250 samples emphasize Mod High (26), with a budget
+of 380 samples resulting in allocating 150 samples to this province. Mod High (95) never
+receives more than 20 samples for any budget. Thus, neither SFP risk nor prior samples are
+an exclusive driver of locations’ utility.
+Figure 6c shows the estimated cumulative utility across budgets for the utility-informed,
+uniform, and fixed policies. We observe a consistent utility improvement under the utility-
+informed policy relative to other policies.
+A budget of 100 samples deployed under the
+utility-informed policy requires about 33 fewer samples than the uniform or fixed policy to
+attain the same utility. This level of savings (a third of the budget) can be significant in
+low-resource settings where sample procurement and testing are frequent barriers to more
+consistent PMS iterations. We also observe different policy preferences, depending on the
+28
+
+(a) Utility-informed sample allocation in the exist-
+ing setting.
+(b) Utility-informed sample allocation in the all-
+provinces setting.
+(c) 95% confidence intervals for utility of the utility-
+informed, uniform, and fixed allocations in the ex-
+isting setting.
+(d) 95% confidence intervals for utility of the
+utility-informed, uniform, and fixed allocations in
+the all-provinces setting.
+Figure 6: Utility-informed plans and a utility comparison with the uniform and fixed ap-
+proaches in the existing and all-provinces settings. The utility comparisons show the number
+of samples saved under the utility-informed plan, at 100 samples, to attain the same utility
+under other approaches. Variance in utility estimates stems from the use of different MCMC
+sets of SFP rates at each 10-test interval of the budget; see Appendix B for details.
+29
+
+budget, between the uniform and fixed policies. The fixed policy emphasizes allocations to
+Mod (17) similarly to the utility-informed policy, and has a higher estimated utility than the
+uniform policy until around 100 samples. The uniform policy has higher estimated utility
+than the fixed policy for budgets exceeding 150 samples. This switch in policy performance
+makes sense when considering that the uniform policy more closely aligns with the utility-
+informed policy as the associated sample budget increases.
+We next consider the results of the all-provinces setting. The dotted lines in the allocation
+of Figure 6b correspond to test nodes not visited in the existing setting. These “new” test
+nodes are named by their assessed SFP risk: there are two test nodes each with Moderate
+and Moderately High risk. The all-provinces results employ a sourcing matrix for new nodes
+formed by a single bootstrap sample of the traces observed in the first iteration. The utility-
+informed allocations in the existing and all-provinces settings closely align. The allocation
+favors new nodes for budgets below 200 samples, allocating at least 30 samples to each new
+node. This allocation thus parallels the uniform allocation, and the corresponding utilities
+in Figure 6d are closer than in the existing setting. The allocation emphasizes the nodes
+of the existing setting for budgets exceeding 200 samples: Mod (17) receives about twice as
+many samples as Mod High (26), while Mod High (95) and Mod (39) receive only 20 and 10
+samples, respectively. This emphasis mirrors the utility-informed allocation of the existing
+setting. From Figure 6d we see that the fixed policy faces a comparative disadvantage in not
+sampling new test nodes: more than 250 fixed samples are required to match the utility of
+100 samples of the utility-informed allocation. At the same time, the fixed policy does not
+incur any sunk costs associated with visiting untested regions. The all-provinces case thus
+illustrates how utility can form a basis for exploring trade-offs in operational costs.
+The results of this case study illustrate the value of sampling plan utility. Considering
+only assessed SFP risk, or where tests have been previously conducted, may not best produce
+30
+
+inference that furthers regulatory decision-making. Applying plan utility leverages supply-
+chain information and more efficiently centers plans around regulatory decisions.
+6
+Conclusion
+Regulation of SFPs is most urgent in low-resource settings, where the burden of poor-quality
+products is largest (Ozawa et al., 2018). PMS is a crucial activity for understanding the qual-
+ity of products reaching the public (WHO, 2017b). Our work provides a means of character-
+izing and estimating the value of PMS through a sampling plan’s utility, and demonstrates
+how this utility can be employed for the comparison of sampling plans. Approaches for sam-
+pling plan development depend substantially on the availability of a efficiently calculated
+utility metric that appropriately characterizes the value of a sampling plan. Ongoing work
+at United States Pharmacopeia, under the USAID-funded PQM+ program, will integrate
+sampling plan utility into a tool for field users in low- and middle-income countries. These
+countries currently use the risk-based assessment procedure of Nkansah et al. (2017) for de-
+veloping sampling plans. Identifying plan utility as proposed here only requires two or three
+additional parameter assessments by regulators to characterize objectives. This utility is
+an improvement in sampling plan development that integrates these assessments with prior
+tests and supply-chain information.
+Our proposed loss for identifying sampling plan utility meets practical needs of PMS.
+Using a summation of penalties across nodes simplifies calculation, interpretation, and syn-
+thesis with data sources that are often available on a node-by-node basis. We multiple the
+score by the weight to address the fact that deviations are more important near crucial
+decision points. Another benefit of this summation of penalties across nodes is the ability
+to distinguish loss among nodes. For instance, catchment areas of test nodes, or market
+shares of supply nodes, can be used as prioritization terms for each node that can readily
+31
+
+incorporated at each node-wise addend. Evaluation of these terms is often available as part
+of the assessment process of Nkansah et al. (2017). However, this summation ignores the
+interdependence of SFP rates, illustrated by the likelihood in Section 3.2.
+Data availability
+Due to the nature of this research, participants of this study did not agree for their data
+to be shared publicly; supporting data are not available. In lieu of data used in the case
+study, analogous data comprising the example of Section 4.3 that similarly demonstrate the
+application of our efficient estimation method can be found on Github at https://github.
+com/eugenewickett/measuringUtility_paper_repo.
+Funding
+This work was funded through two National Science Foundation grants: EAGER Award
+1842369: ISN: Unraveling Illicit Supply Chains for Falsified Pharmaceuticals with a Citizen
+Science Approach, and NSF 1953111. We acknowledge United States Pharmacopeial Con-
+vention (USP) and the Promoting the Quality of Medicines Plus (PQM+) program, funded
+by the United States Agency for International Development (USAID), for the use of data in
+our case study.
+References
+Anzoom, Rashid, Rakesh Nagi, and Chrysafis Vogiatzis. 2022. “A review of research in illicit
+supply-chain networks and new directions to thwart them.” IISE Transactions 54(2),
+134–158. doi: 10.1080/24725854.2021.1939466.
+Bianco, Lucio, Giuseppe Confessore, and Pierfrancesco Reverberi. 1997. “A combinatorial
+optimization approach to locate traffic counting points in a transport network.” In: Op-
+erations Research Proceedings 1996. Berlin, Heidelberg: Springer Berlin Heidelberg, 283–
+288. isbn: 978-3-642-60744-8.
+Chaloner, Kathryn and Isabella Verdinelli. 1995. “Bayesian Experimental Design: A Review.”
+Statistical Science 10(3), 273–304.
+32
+
+Chikowe, Ibrahim, Dorcas Osei-Safo, Jerry J. Harrison, Daniel Y. Konadu, and Ivan Addae-
+Mensah. 2015. “Post-marketing surveillance of anti-malarial medicines used in Malawi.”
+Malaria Journal 14, 127. doi: 10.1186/s12936-015-0637-z.
+Dawande, Milind and Anyan Qi. 2020. “Auditing, Inspections, and Testing for Social Re-
+sponsibility in Supply Networks.” Social Science Research Network. doi: 10.2139/ssrn.
+3521582.
+Ghosh, Jayanta K., Mohan Delampady, and Tapas Samanta. 2006. An Introduction to
+Bayesian Analysis: Theory and Methods. New York, NY: Springer New York, 29–63.
+isbn: 978-0-387-35433-0. doi: 10.1007/978-0-387-35433-0_2.
+Hennig, Christian and Mahmut Kutlukaya. Apr. 2007. “Some thoughts about the design of
+loss functions.” REVSTAT - Statistical Journal Volume 5, 19–39.
+Huang, Lu, Jing-Sheng Song, and Robert Swinney. 2022. “Managing Social Responsibility
+in Multitier Supply Chains.” Manufacturing & Service Operations Management 24(6),
+2843–2862. doi: 10.1287/msom.2021.1063.
+Kleinegesse, Steven and Michael U. Gutmann. 2019. “Efficient Bayesian Experimental Design
+for Implicit Models.” In: Proceedings of the Twenty-Second International Conference on
+Artificial Intelligence and Statistics. Ed. by Kamalika Chaudhuri and Masashi Sugiyama.
+Vol. 89. Proceedings of Machine Learning Research, 476–485.
+Kovacs, Stephanie, Stephen E. Hawes, Stephen N. Maley, Emily Mosites, Ling Wong, and
+Andy Stergachis. 2014. “Technologies for detecting falsified and substandard drugs in low
+and middle-income countries.” PLoS ONE 9(3), e90601. doi: 10.1371/journal.pone.
+0090601.
+Lookman, Turab, Prasanna V. Balachandran, Dezhen Xue, and Ruihao Yuan. 2019. “Active
+learning in materials science with emphasis on adaptive sampling using uncertainties for
+targeted design.” npj Computational Materials 5, 21. doi: 10.1038/s41524-019-0153-
+8.
+Morgan, Joshua C., Anderson Soares Chinen, Christine Anderson-Cook, et al. 2020. “De-
+velopment of a framework for sequential Bayesian design of experiments: Application
+to a pilot-scale solvent-based CO2 capture process.” Applied Energy 262, 114533. doi:
+10.1016/j.apenergy.2020.114533.
+Newton, Paul N, Sue J Lee, Catherine Goodman, et al. 2009. “Guidelines for field surveys
+of the quality of medicines: A proposal.” PLoS Medicine 6(3), e1000052. doi: 10.1371/
+journal.pmed.1000052.
+Newton, Paul N., Michael D. Green, Dallas C. Mildenhall, et al. 2011. “Poor quality vital
+anti-malarials in Africa - an urgent neglected public health priority.” Malaria Journal
+10, 352. doi: 10.1186/1475-2875-10-352.
+Nkansah, Paul, Karim Smine, Victor Pribluda, et al. 2017. Guidance for Implementing Risk-
+Based Post-Marketing Quality Surveillance in Low- and Middle-Income Countries. U.S.
+Pharmacopeial Convention. The Promoting the Quality of Medicines Program. Rockville,
+Maryland.
+Olivares, Marcelo, Christian Terwiesch, and Lydia Cassorla. 2008. “Structural Estimation of
+the Newsvendor Model: An Application to Reserving Operating Room Time.” Manage-
+ment Science 54(1), 41–55.
+Ozawa, Sachiko, Daniel Evans, Sophia Bessias, et al. 2018. “Prevalence and estimated eco-
+nomic burden of substandard and falsified medicines in low- and middle-income coun-
+33
+
+tries: A systematic review and meta-analysis.” JAMA Network Open 1(4), e181662. doi:
+10.1001/jamanetworkopen.2018.1662.
+Phillips, Daniel R., Richard J. Furnstahl, Ulrich Heinz, et al. May 2021. “Get on the BAND
+Wagon: a Bayesian framework for quantifying model uncertainties in nuclear dynamics.”
+Journal of Physics G: Nuclear and Particle Physics 48(7), 072001. doi: 10.1088/1361-
+6471/abf1df.
+Pisani, Elizabeth, Adina-Loredana Nistor, Amalia Hasnida, Koray Parmaksiz, Jingying Xu,
+and Maarten Oliver Kok. 2019. “Identifying market risk for substandard and falsified
+medicines: An analytic framework based on qualitative research in China, Indonesia,
+Turkey and Romania.” Wellcome Open Research 4, 70. doi: 10.12688/wellcomeopenres.
+15236.1.
+Pribluda, Victor S., Adrian Barojas, Veerle Coignez, et al. Jan. 2014. “The Three-Level
+Approach: A Framework for Ensuring Medicines Quality in Limited-Resource Countries.”
+Pharmaceutical Regulatory Affairs: Open Access 03. doi: 10.4172/2167-7689.1000117.
+Rotunno, Raffaele, Vittorio Cesarotti, Attilio Bellman, Vito Introna, and Miriam Benedetti.
+2014. “Impact of track and trace integration on pharmaceutical production systems.”
+International Journal of Engineering Business Management 6. doi: 10.5772/58934.
+Suleman, Sultan, Gemechu Zeleke, Habtewold Deti, et al. 2014. “Quality of medicines com-
+monly used in the treatment of soil transmitted helminths and giardia in Ethiopia: A
+nationwide survey.” PLoS Neglected Tropical Diseases 8(12), e3345. doi: 10 . 1371 /
+journal.pntd.0003345.
+The United States Pharmacopeial Convention. 2021. Medicines Quality Database. Data re-
+trieved on June 12, 2021, apps.usp.org/app/worldwide/medQualityDatabase/.
+Triepels, Ron, Hennie Daniels, and Ad Feelders. 2018. “Data-driven fraud detection in inter-
+national shipping.” Expert Systems with Applications 99, 193–202. issn: 0957-4174. doi:
+https://doi.org/10.1016/j.eswa.2018.01.007.
+Tsiligirides, T. 1984. “Heuristic Methods Applied to Orienteering.” The Journal of the Op-
+erational Research Society 35(9), 797–809. issn: 01605682, 14769360.
+Virtanen, Pauli, Ralf Gommers, Travis E. Oliphant, et al. 2020. “SciPy 1.0: Fundamental
+Algorithms for Scientific Computing in Python.” Nature Methods 17, 261–272. doi: 10.
+1038/s41592-019-0686-2.
+Wachtel, Ruth E and Franklin Dexter. June 2010. “Review article: Review of behavioral op-
+erations experimental studies of newsvendor problems for operating room management.”
+Anesthesia and analgesia 110(6), 1698–1710.
+Wickett, Eugene. Mar. 2024. “Post-Market Surveillance: Using Supply-Chain Information
+to Facilitate Regulatory Actions in Medical Product Quality Assurance.” PhD thesis.
+Northwestern University. url: https://www.proquest.com/dissertations-theses/
+post-market-surveillance-using-supply-chain/docview/3020635145/se-2.
+Wickett, Eugene, Matthew Plumlee, and Karen Smilowitz. 2021. Logistigate Users Manual.
+Version 0.1.1. Northwestern University. url: https://logistigate.readthedocs.io.
+Wickett, Eugene, Matthew Plumlee, Karen Smilowitz, Souly Phanouvong, and Victor Pri-
+bluda. 2023. “Inferring sources of substandard and falsified products in pharmaceutical
+supply chains.” IISE Transactions 56(3), 241–256. doi: 10 . 1080 / 24725854 . 2023 .
+2174277.
+34
+
+World Health Organization. 2017a. A Study on the Public Health and Socioeconomic Im-
+pact of Substandard and Falsified Medical Products. Licence: CC BY-NC-SA 3.0 IGO.
+World Health Organization. url: https://www.who.int/publications/i/item/
+9789241513432.
+— 2017b. WHO Global Surveillance and Monitoring System for Substandard and Falsified
+Medical Products. Licence: CC BY-NC-SA 3.0 IGO. World Health Organization. url:
+https://www.who.int/publications/i/item/WHO-MVP-EMP-SAV-2019.04.
+Yang, Hai and Jing Zhou. Feb. 1998. “Optimal traffic counting locations for origin-destination
+matrix estimation.” Transportation Research Part B: Methodological 32(2), 109–126.
+Zhang, Han, Goker Aydin, and Rodney P. Parker. 2022. “Social Responsibility Auditing in
+Supply Chain Networks.” Management Science 68(2), 1058–1077. doi: 10.1287/mnsc.
+2020.3950.
+35
+
+Appendix A
+Table of notation
+Table 1:
+Notation used in this paper.
+Sets
+A
+Set of test nodes
+B
+Set of supply nodes
+Decision variables
+n ∈(Z+)|A|
+Vector denoting the sampling plan, where na is the number of tests allocated
+to a ∈A
+Given parameters
+N prior ∈Z+
+Number of prior tests
+N ∈Z+
+Budget, in tests, for the next PMS iteration
+y ∈{0, 1}N
+Vector of binary test results, where yi is the result of the ith test
+a ∈AN
+Vector of test-node labels, where ai is the label associated with the ith test
+b ∈BN
+Vector of supply-node labels, where bi is the label associated with the ith test
+N prior ∈(Z+)|A|×|B|
+Matrix of prior tests along each trace, where N prior
+ab
+is the number of tests
+traversing supply node b and test node a
+Y prior ∈(Z+)|A|×|B|
+Matrix of prior SFPs along each trace, where Y prior
+ab
+is the number of observed
+SFPs traversing supply node b and test node a
+dprior
+Prior PMS data set
+d
+Prospective PMS data set
+η ∈(0, 1)|A|
+Vector of test-node SFP rates, where ηa is the SFP rate at test node a; can
+likewise be defined on the space of reals, R|A|, through a logit transformation
+θ ∈(0, 1)|B|
+Vector of supply-node SFP rates, where θb is the SFP rate at supply node b;
+can equivalently be defined on the space of reals, R|B|
+γ ∈(0, 1)|A∪B|
+Vector of SFP rates at test nodes and supply nodes; can equivalently be defined
+on the space of reals, R|A∪B|
+User-defined
+parameters
+t ∈(0, 1)
+Classification threshold for significantly high SFP rates
+u ∈R+
+Underestimation penalty relative to overestimation
+m ∈[0, 1]
+Tuning parameter for the assessment weight
+Functions
+zab(η, θ)
+Consolidated SFP rate along trace (a, b) for SFP rates (η, θ), or the probability
+of being SFP for a sample traversing a and b
+L(ˆγ, γ)
+Loss for SFP-rate estimate ˆγ under latent SFP rates γ
+S(ˆγv, γv)
+Score for SFP-rate estimate ˆγv under latent SFP rate γv
+W(γv)
+Weight for the estimation importance of latent SFP rates γv
+C(γv)
+Classification of node v as either a significant or insignificant source of SFPs,
+as a function of threshold t and SFP rate γv
+U(n)
+Utility, or expected reduction in loss, for sampling plan n
+36
+
+Appendix B
+Estimating sampling plan utility
+Calculating utility using standard Markov Chain Monte Carlo (MCMC) integration is com-
+putationally prohibitive for many low-resource contexts. Our efficient method leverages the
+binary nature of PMS data to produce estimates of plan utility that are computed consider-
+ably faster than the utility estimates estimated through MCMC integration. Synthesis with
+importance sampling addresses estimate bias in settings with many nodes and many tests.
+B.1
+MCMC integration for plan utility
+The utility U(n) defined in Section 3 is the difference between EL
+
+(ˆγ(n), γ
+
+and EL
+
+(ˆγ(0), γ
+
+,
+i.e., the utility is the difference in expected loss obtained when deploying sampling plan n
+versus conducting no additional tests.
+Using the Bayesian experimental construction of
+Chaloner and Verdinelli (1995), the expected loss can be expressed as
+EL
+
+(ˆγ(n), γ
+
+=
+Z
+γ∈R|A|+|B| inf
+˜γ(·)
+Z
+d∈D(n)
+L
+˜γ(dprior, d), γ
+
+p(γ|dprior, d)p(d|dprior) dddγ , (10)
+where D(n) is the set of all possible data sets resulting from plan n, and dprior is the set of
+existing data. Each member of D(n) is a set of N test results with associated test node-
+supply node traces. For each set of SFP rates, γ, and new data set, d ∈D(n), the associated
+loss L
+˜γ(dprior, d), γ
+
+is weighted by the likelihood of the new data set given the existing
+data, p(d|dprior), as well as the likelihood of the SFP rates given the new data and existing
+data, p(γ|dprior, d). The infimum captures the use of a Bayes estimate, the loss-minimizing
+SFP-rate estimate under d. Calculation of EL
+
+(ˆγ(n), γ
+
+requires integration over possible
+d and γ. This integration requires posteriors p(γ|dprior) and p(γ|dprior, d). These posteriors
+can be challenging to calculate directly: Kleinegesse and Gutmann (2019) noted that Monte
+Carlo integration is standard for estimating expressions like EL
+
+(ˆγ(n), γ
+
+. The posterior of
+Wickett et al. (2023) is also computed through MCMC sampling.
+Our Monte Carlo integration procedure for E
+
+L(ˆγ(n), γ)
+
+is given in Algorithm 2. The
+expected loss is approximated through three key sets: an MCMC set of SFP-rate vectors
+drawn from the posterior for the SFP rates under existing data; a set of new data sets
+simulated using these posterior draws; and an MCMC set of SFP-rate vectors drawn from
+the posterior for the SFP rates under existing and new data. An SFP-rate draw from the
+posterior under existing data, p(γ|dprior), is taken as the latent truth. New data, d, are
+simulated under this latent truth as well as the sampling plan, n. Draws from a posterior
+under these new data and existing data, p(γ|dprior, d), are used to identify a Bayes estimate
+and the loss associated with the Bayes estimate. Averaging the loss across latent SFP-rate
+draws approximates the expected loss. The key algorithm parameters are the size of the sets
+of SFP-rates, h0, and the number of simulated new data sets, h1. Low values for h0 induce
+bias: Bayes estimates are identified using an insufficient representation of p(γ|dprior), such
+that the true expected loss is underestimated. Low values for h1 induce variance: the range
+of possible data sets is insufficiently explored. Accordingly, both larger PMS budgets and
+settings with lower levels of initial data require a higher h1 to achieve a desired variance: the
+range of possible data sets is larger.
+37
+
+Algorithm 2: MCMC estimation of E[L(ˆγ(n), γ)]
+Input: n, A, B, Q, dprior, L(·, ·), h0, h1
+Output: Estimate of E
+
+L(ˆγ(n), γ)
+
+1 Set Γ0 := set of h0 MCMC draws from p(γ|dprior).
+2 for each j in {1, . . . , h1} do
+3
+Sample γ(j) from Γ0.
+4
+for each a in A do
+5
+for each i in {1, . . . , na} do
+6
+Set ai := a, and sample bi according to Qa.
+7
+Sample yi from Bern
+
+zaibi(γ(j))
+
+.
+8
+Set d := (y, a, b).
+9
+Generate Γj, a set of h0 MCMC draws from p(γ|dprior, d).
+10
+Set ˆγ := arg min
+˜γ
+P
+γ∈Γj
+L(˜γ, γ) .
+11
+Set Lj :=
+1
+|Γj|
+P
+γ∈Γj
+L(ˆγ, γ).
+12 Return
+1
+h1
+P
+j∈{1,...,h1}
+Lj.
+Algorithm 2 uses as inputs the sampling plan allocation vector (n), the sets of test and
+supply nodes (A, B), the sourcing-probability matrix (Q), existing data (dprior), a specified
+loss (L), the size of the MCMC sets of SFP rates (h0), and a number of data sets to generate
+(h1). Each of h1 data sets is a single simulation d of the data obtained under plan n. The
+h0 MCMC draws from p(γ|dprior) or p(γ|dprior, d) enable numerical integration.
+New data generation uses γ(j), a vector of SFP rates capturing the latent truth, and
+sampling plan n, where na is the number of tests allocated to test node a ∈A. Products at
+a are sourced from supply nodes in B according to sourcing-probability matrix Q. Element
+Qab ∈[0, 1] is the probability that a product from a is sourced from supply node b ∈B.
+P
+b∈B Qab = 1 for each a ∈A. The supply node associated with each test i at test node
+a is drawn according to the sourcing probabilities of vector Qa. A Bernoulli test result yi
+is generated for test i from the consolidated SFP probability of (1); the consolidated SFP
+probability is the SFP likelihood when accounting for test-node and supply-node SFP rates.
+The average loss across all h1 simulations yields the estimate of E
+
+L(ˆγ(n), γ)
+
+.
+An
+approximate (1−α)% confidence interval for this average loss can be formed via the standard
+Central Limit Theorem formulation
+1
+h1
+X
+j∈{1,...,h1}
+Lj ± z1−α
+2
+ˆσ
+√h1
+,
+where z1−α
+2 is the standard normal value at the (1 −α
+2 )th quantile and ˆσ is the standard
+deviation of observed simulation utility realizations. This confidence interval can be similarly
+applied under the efficient and importance sampling algorithms in Sections B.2 and B.3, and
+is displayed in the figures of the case study of Section 5.
+38
+
+Algorithm 2 can consume substantial computational resources. h0 MCMC samples are
+needed for each of h1 simulations, and each round of MCMC sampling takes a few minutes
+to conduct with an Intel Core 1.6GHz processor. Using h0 = 10, 000 and h1 = 1, 000 requires
+about 16 hours to complete an expected loss estimate for one plan designation of n in the
+six-node example of Section 4.3.
+B.2
+A faster algorithm for plan utility
+A key factor in the long processing time of Algorithm 2 is the need for repeated MCMC
+sampling of the posterior after the generation of each new data set.
+Reformulating the
+expression p(γ|dprior, d)p(d|dprior) of (10) yields a useful equivalence:
+p(γ|dprior, d)p(d|dprior) = p(γ,dprior,d)p(dprior,d)
+p(dprior,d)p(dprior)
+= p(d|dprior,γ)p(dprior,γ)
+p(dprior)
+= p(γ|dprior)p(d|dprior, γ) .
+Conditional on γ, dprior and d are independent; thus,
+p(γ|dprior, d)p(d|dprior) = p(γ|dprior)p(d|γ) .
+(11)
+The first term on the right-hand side, p(γ|dprior), is the posterior for SFP rates γ under
+existing data dprior. The second term, p(d|γ), is the binomial likelihood of a data set for a
+given set of SFP rates:
+Y
+a∈A
+Y
+b∈B
+zab(γ)Y ab
+1 −zab(γ)
+Nab−Y ab
+N ab
+Y ab
+
+,
+(12)
+where N ab and Y ab are the respective numbers of tests and SFP positives in d along trace
+(a, b).
+The equivalence of (11) feeds an efficient approximation for the expected loss. Let Γ ∼
+p(γ|dprior) be a set of MCMC draws under dprior, let γ(i) ∈Γ be the ith member of Γ, let
+D(n) be the set of possible data sets generated by plan n, and let DΓ(n) be a set of |Γ|
+data sets randomly generated under plan n for each SFP-rate vector in Γ. Substituting the
+right-hand side of (11) into (10) yields an approximation of the expected loss that can be
+calculated without repeated MCMC sampling:
+EL
+
+(ˆγ(n), γ
+
+=
+Z
+d∈D(n)
+inf
+ˆγ(·)
+Z
+γ∈R|A|+|B| L
+ˆγ(dprior, d), γ
+
+p(γ|dprior)p(d|γ) dγdd
+(13)
+≈
+Z
+d∈D(n)
+inf
+ˆγ(·)
+1
+|Γ|
+X
+i∈{1,...,|Γ|}
+L
+ˆγ(dprior, d), γ(i)
+p(d|γ(i)) dd
+(14)
+≤
+Z
+d∈D(n)
+min
+˜γ:D(n)→R|A|+|B|
+1
+|Γ|
+X
+i∈{1,...,|Γ|}
+L
+˜γ(d), γ(i)
+p(d|γ(i)) dd
+(15)
+≈
+X
+d(j)∈DΓ(n)
+min
+˜γ:D(n)→R|A|+|B|
+1
+|Γ|
+X
+i∈{1,...,|Γ|}
+L
+h
+˜γ(d(j)), γ(i)i
+p(d(j)|γ(i)) .
+(16)
+39
+
+The approximation in (14) proceeds from substituting the initial set of posterior MCMC
+draws of SFP rates. The inequality in (15) results from using MCMC draws of SFP rates
+to identify the Bayes estimate: these draws are a finite set and do not fully capture the
+posterior.
+The second approximation in (16) follows from using sets of generated data
+instead of integrating over all possible data sets. The final expression can be produced with
+one set of posterior MCMC draws of SFP rates and computationally inexpensive binomial
+likelihoods.
+Algorithm 3: Efficient estimation of E
+
+L
+ ˆγ(n), γ
+
+Input: n, A, B, Q, dprior, L(·, ·), h0, h1
+Output: Estimate of E
+
+L(ˆγ(n), γ)
+
+1 Function BuildDatasimMatrix(Γ0, Γ1, n, A, B, Q, h0, h1):
+2
+Initialize D ∈Rh0×h1.
+3
+for j in {1, . . . , h1} do
+4
+Generate data d(j) := (y, a, b) according to n, Q and γ(j) ∈Γ1.
+5
+for a ∈A, b ∈B do
+6
+Set N ab :=
+P
+i∈{1,...,N}
+1{ai = a, bi = b}.
+7
+Set Y ab :=
+P
+i∈{1,...,N}
+1{ai = a, bi = b, yi = 1}.
+8
+for γ(i) ∈Γ0 do
+9
+Set Dij := Q
+a∈A
+Q
+b∈B
+zab
+ γ(i)Y ab
+1 −zab
+ γ(i)Nab−Y ab Nab
+Y ab
+
+.
+10
+Normalize column D·j to sum to 1.
+11
+Return D.
+12 Set Γ0, Γ1 := h0, h1 MCMC draws from p(γ|dprior).
+13 Get D :=BuildDatasimMatrix(Γ0, Γ1, n, A, B, Q, h0, h1).
+14 for j in {1, . . . , h1} do
+15
+Set uj = minˆγ
+ Ph0
+i=1 DijL
+ ˆγ, γ(i)
+16 Return
+1
+h1
+Ph1
+j=1 uj.
+Algorithm 3 leverages the approximation of (16) to produce an efficient estimate of the
+expected loss. This algorithm uses the same inputs as Algorithm 2. A single MCMC set
+of SFP-rate vectors and a set of of simulated data sets are used. The equivalence of (11)
+means that incorporating the likelihood of each SFP rate with respect to each simulated data
+set is sufficient for approximating the expected loss: no further MCMC sampling is needed.
+A key matrix for this algorithm, D, stores these likelihoods: each row corresponds to an
+SFP-rate vector and each column corresponds to a simulated data set. A Bayes estimate
+is derived for each simulated data set through a weighting of the loss corresponding to
+each SFP-rate vector by the binomial likelihoods in D. The set of weighted losses for each
+simulated data set are averaged to yield the expected loss. In Line 10, the data likelihoods are
+normalized column-wise to sum to one, as the data are generated from members of Γ1 that
+40
+
+are distributed according to p(γ|dprior). Failure to normalize would disproportionately affect
+data sets corresponding to different members of Γ1. In Lines 14 to 15, the minimum loss
+uj for each simulated data set d(j) is identified. Bayes estimate ˆγ minimizes the loss across
+the members of Γ0 approximating the distribution p(γ|dprior), weighted for the binomial
+likelihoods in column D·j. Losses using the scores described in Sections 4.1.1 and 4.1.2 have
+analytical minimizers, shown in Appendix C; thus, Bayes estimates under these scores can
+be found through an indexing of the weighted losses. Our Python implementation uses these
+analytical solutions or, for other scores, the low-memory Broyden-Fletcher-Goldfarb-Shanno
+(L-BFGS) minimization algorithm available in SciPy (Virtanen et al., 2020).
+The principal parameters of Algorithm 3 are h0, the number of MCMC draws for repre-
+senting p(γ|dprior), and h1, the number of data sets to simulate. Computational experiments
+show it is beneficial to expend more resources on Γ0 than Γ1; see Wickett (2024) for the
+impact of different h0 and h1 choices on utility estimates. Low values for h0 induce bias: iden-
+tified minima insufficiently account for a full representation of p(γ|dprior), such that the true
+expected loss is underestimated. This bias will tend to increase with larger PMS budgets, as
+the Bayes estimate is more likely to move to areas of the parameter space less represented
+in Γ0. Low values for h1 induce variance: the range of possible data sets is insufficiently
+explored. We suggest choosing h0 as large as computational resources will allow, and h1 as
+large as needed to meet variance tolerance.
+Algorithm 3 runs significantly faster than the MCMC integration of Algorithm 2. The
+execution of full MCMC integration needs multiple hours; this efficient implementation cal-
+culates around four simulated data sets per second for our case study. Our case study uses
+h0 = 75, 000 and h1 = 2, 000, as these values produce consistent allocation decisions (Wick-
+ett, 2024). This processing rate means utility estimation takes about 10 minutes on a laptop
+with an Intel Core 1.6GHz processor.
+B.3
+Using importance sampling to reduce bias and variance
+The quality of utility estimates produced through the efficient estimation algorithm is im-
+pacted by four key factors: the size of the set of MCMC draws from p(γ|dprior), h0; the size
+of the set of MCMC draws simulating data sets, h1; the number of nodes, |A| + |B|; and
+the number of tests in a prospective sampling plan, N (Wickett, 2024). A sufficiently high
+number of nodes or number of tests means a small subset of SFP-rate vectors in the MCMC
+set will have a large impact on the resulting loss estimate, i.e., the significant region of SFP
+rates will be underrepresented.
+The significant region of SFP rates can be be better represented through importance
+sampling. We form loss estimates through an additional MCMC set of SFP-rate vectors
+better capturing this significant region, drawn using an “expected” set of traces and test
+results. These loss estimates are then adjusted to account for the oversampling of the sig-
+nificant region. Let dimp be the expected data set under sampling plan n. Rewriting the
+posterior expression in (11) yields the basis for importance sampling:
+p(γ|dprior)p(d|γ) = p(γ|dprior, dimp)
+p(γ|dprior)
+p(γ|dprior, dimp)p(d|γ) .
+(17)
+41
+
+The first term on the right-hand side of (17), p(γ|dprior, dimp), is the basis for new MCMC
+generation of SFP-rate vectors. The second term,
+p(γ|dprior)
+p(γ|dprior,dimp), indicates scaling of the new
+SFP-rate vectors into the target space characterized by dprior. The third term is the binomial
+likelihood of a data set, as in (12).
+Sampling plan loss is estimated similarly to the efficient method of Algorithm 3 by substi-
+tuting an MCMC set of SFP-rate vectors generated under dprior and dimp for the MCMC set
+generated only under dprior. The expected data set, dimp, is an assumed data set that allows
+a better centering of generated SFP-rate vectors at a parameter space important to sampling
+plan evaluation. We build dimp through repeated simulation of the data set resulting from
+implementation of n.
+Algorithm 4: Efficient estimation of E
+
+L(ˆγ(n), γ)
+
+using importance sampling
+Input: n, A, B, Q, dprior, L(·, ·), h0, h1, h2
+Output: Estimate of E
+
+L(ˆγ(n), γ)
+
+1 Function BuildImportanceData(Γ0, n, Q, h2):
+2
+Initialize N := ∅, Y := ∅, N imp ∈(Z+)A×B and Y imp ∈(Z+)A×B.
+3
+for k ∈{1, . . . , h2} do
+4
+Simulate N (k) according to n and Q, where N (k)
+ab is the number of tests
+observed along trace (a, b).
+5
+Add N (k) to N.
+6
+for N (k) ∈N do
+7
+Randomly draw γ(k) from Γ0.
+8
+Simulate Y (k) according to N (k) and γ(k), where Y (k)
+ab is the number of
+positive tests observed along trace (a, b).
+9
+Add Y (k) to Y.
+10
+for a ∈A, b ∈B do
+11
+Set N imp
+ab
+to the average number of tests for trace (a, b) across the members
+of N, rounded to the nearest integer.
+12
+Set Y imp
+ab
+to the average number of positive tests for trace (a, b) across the
+members of Y, rounded to the nearest integer.
+13
+Return dimp, formed using N imp and Y imp.
+14 Set Γ0, Γ1 := h0, h1 MCMC draws from p(γ|dprior).
+15 Get dimp := BuildImportanceData(Γ0, n, Q, h2).
+16 Set Γimp = {γ(i)}h0
+i=1 := h0 MCMC draws from p(γ|dprior, dimp).
+17 Get D :=BuildDatasimMatrix(Γimp, Γ1, n, A, B, Q, h0, h1).
+18 for j in {1, . . . , h1} do
+19
+Set uj = minˆγ
+ Ph0
+i=1 DijL
+ ˆγ, γ(i)
+p(γ(i)|dprior)
+p(γ(i)|dprior,dimp)
+
+20 Return
+1
+h1
+Ph1
+j=1 uj.
+Algorithm 4 produces an efficient expected loss estimate that reduces bias prevalent in
+42
+
+high-dimensional settings. This algorithm uses the same inputs as Algorithm 3. The key
+extension is the use of an additional set of MCMC draws of SFP-rate vectors to better
+capture the region of importance for the evaluated sampling plan. An expected data set,
+dimp, is combined with known data dprior for generating this additional MCMC set, Γimp. The
+matrix of binomial likelihoods for simulated data sets, D, is generated using Γimp, instead
+of Γ0 as in Algorithm 3. The loss estimate under each simulated data set is adjusted by the
+importance weight before returning the estimate.
+Algorithm 4 requires one additional parameter as compared with Algorithm 3: h2, the
+number of data sets to generate for forming dimp. Generating these data sets is computation-
+ally inexpensive. We use h2 = 5, 000 for the loss estimates of the case study, as evaluations
+showed this value yielded consistent resulting dimp sets. Calculating dimp in this case requires
+only a few seconds on a standard laptop. Thus, this step contributes little to the overall
+calculation time as compared with MCMC generation, which requires a few minutes for our
+case study.
+The principal disadvantage of Algorithm 4 is the additional MCMC generation required,
+which can be computationally expensive. This disadvantage compounds when evaluating
+multiple plans; the ability to evaluate multiple plans efficiently is a key goal of our work.
+Whereas Algorithm 3 can use a single MCMC set of SFP-rate vectors for evaluating any
+number of plans, Algorithm 4 requires additional MCMC generation for each plan. However,
+the importance sampling of Algorithm 4 addresses a bias issue arising for Algorithm 3 under
+sufficiently high dimensionality and a given maximal size of the MCMC set.
+Future work will aim to discern when to apply each algorithm. It is not clear how to use
+supply-chain size and computational limits to determine when importance sampling should
+be used: the bias of a loss estimate is a function of the set of MCMC draws, the number of
+nodes in the supply chain, and the underlying SFP rates. One approach is to calibrate the
+amount of bias as a function of sampling budget by applying each algorithm at fixed sampling
+intervals, using a uniform allocation across test nodes. Any bias can then be estimated as
+the difference in loss estimate between the two algorithms.
+B.4
+Utility approximations for case study
+Approximations of sampling plan utility depend significantly on the MCMC set of SFP-rate
+vectors used to generate the approximation. Application of importance sampling requires
+new MCMC generation for approximations at each considered sampling budget. Using differ-
+ent MCMC sets at each budget introduces variance. We address this variance by re-running
+Algorithm 4 ten times with h0 = 75, 000, h1 = 2, 000, and h2 = 5, 000. We then compile
+the generated uj loss values into a single loss vector; 95% confidence interval values are
+calculated using this single vector.
+43
+
+Appendix C
+Derivation of Bayes estimates for selected scores
+Bayes estimates for the scores proposed in Sections 4.1.1 and 4.1.2 can be derived analytically.
+These estimates are posterior quantiles that can be readily obtained using a set of MCMC
+draws. Using these analytical estimates instead of optimization software can improve com-
+puting time. Propositions 1 and 2 show Bayes estimates for these scores. These propositions
+consider Bayes estimates of the SFP rate at a single node. Our proposed loss construction
+uses a summation of terms across nodes; thus, the loss pertaining to the estimate for any
+node can be considered separately from that of other nodes.
+Proposition 1. Under the Assessment score, the Bayes estimate for SFP rate γ at any node
+is ˆγ⋆, where
+P(γ ≤ˆγ⋆) =
+u
+1 + u .
+Proof. Let ˆγ be an estimate of SFP rate γ, let d be the PMS data available to choose ˆγ,
+and let V (ˆγ) be the expected loss as a function of ˆγ. The Bayes estimate ˆγ⋆is the value of
+ˆγ that minimizes V (ˆγ). Consider the expected loss:
+V (ˆγ) = E
+
+(ˆγ −γ)+ + u(γ −ˆγ)+
+.
+The expression inside the expectation is convex, with a slope of 1 as ˆγ moves to the right of
+γ and a slope of u as ˆγ moves to the left of γ. Expectation preserves convexity; thus, V is
+convex in ˆγ and the value of ˆγ where V has a slope of zero is a minimizer of V .
+Next, identify where V has a slope of zero. The Leibniz rule indicates for functions A,
+B, and ϕ that
+ Z B(x)
+A(x)
+ϕ(x, t)dt
+!′
+=
+Z B(x)
+A(x)
+ϕ′(x, t)dt + ϕ
+ x, B(x)
+
+B′(x) −ϕ
+ x, A(x)
+
+A′(x) .
+Expand the expected loss:
+V (ˆγ) = E
+
+(ˆγ −γ)+ + u(γ −ˆγ)+
+=
+Z ˆγ
+−∞
+(ˆγ −γ)p(γ|d)dγ + u
+Z ∞
+ˆγ
+(γ −ˆγ)p(γ|d)dγ .
+SFP rates lie in the (0, 1) interval, so we can change the limits of integration:
+V (ˆγ) =
+Z ˆγ
+0
+(ˆγ −γ)p(γ|d)dγ + u
+Z 1
+ˆγ
+(γ −ˆγ)p(γ|d)dγ .
+Apply the Leibniz rule to obtain the derivative of V with respect to ˆγ:
+V ′(ˆγ) =
+Z ˆγ
+0
+p(γ|d)dγ −u
+Z 1
+ˆγ
+p(γ|d)dγ .
+44
+
+Setting V ′(ˆγ) to zero and solving for ˆγ produces Bayes estimate ˆγ⋆:
+Z ˆγ⋆
+0
+p(γ|d)dγ −u
+Z 1
+ˆγ⋆p(γ|d)dγ = 0
+P(γ ≤ˆγ⋆) = u
+
+1 −P(γ ≤ˆγ⋆)
+
+P(γ ≤ˆγ⋆) =
+u
+1 + u
+Proposition 2. Under the Classification score using threshold t, the Bayes estimate for the
+SFP rate at a single node is
+(
+1 if P(γ ≤t) ≤
+u
+1+u and
+0 o.w.
+Proof. In the Classification setting, a “1” denotes nodes classified as significant SFP sources,
+and a “0” denotes nodes classified as non-significant sources. Consider the expected loss,
+V (·), when classifying a node as 1 or 0:
+V (1) = E
+h 1 −C(γ)
++ + u
+ C(γ) −1
++i
+=
+Z t
+0
+(1)p(γ|d)dγ + u
+Z 1
+t
+(0)p(γ|d)dγ
+=
+Z t
+0
+p(γ|d)dγ ,
+V (0) = E
+h 0 −C(γ)
++ + u
+ C(γ) −0
++i
+=
+Z t
+0
+(0)p(γ|d)dγ + u
+Z 1
+t
+(1)p(γ|d)dγ
+= u
+Z 1
+t
+p(γ|d)dγ .
+We classify the node as a significant SFP source when the expected loss of doing so is less than
+the expected loss of the alternative, i.e., when V (1) ≤V (0). Consider when V (1) ≤V (0):
+Z t
+0
+p(γ|d)dγ ≤u
+Z 1
+t
+p(γ|d)dγ
+P(γ ≤t) ≤u
+
+1 −P(γ ≤t)
+
+P(γ ≤t) ≤
+u
+1 + u .
+Thus, we classify the node as a significant SFP source when P(γ ≤t) ≤
+u
+1+u.
+45
+
+Observe that these propositions ignore the weight of an SFP rate, W(γ). Our implemen-
+tation of utility estimation accounts for the weight alongside the binomial likelihood of the
+data simulation matrix: both the weight and the likelihood are functions of the SFP rate
+and not the estimate.
+46
+
+Appendix D
+Inference preparation for case study
+This appendix describes preparation steps from our case study for using a utility approach
+to form sampling plans.
+We examine eliciting priors on SFP rates. An appropriate prior has two properties: right
+skewness to capture the possibility of high SFP rates, and increased variance as assessed risk
+increases. The SFP risk assessment process of Nkansah et al. (2017) establishes seven risk
+categories through appraisals of factors like population density and poverty levels. Adapting
+these risk assessments yields priors with the desired properties, while avoiding more extensive
+prior elicitation:
+p(γ) ∝
+Y
+v∈A∪B
+exp
+(
+−1
+2
+h(γv) −h(µq(v))
+λ
+2)
+.
+(18)
+Function h is the logit function; the prior is normal in the logit space. Parameter µq(v) is a
+regulator-designated SFP-rate median for node v with assessed SFP risk q(v). Our field-user
+co-authors established µ values of 1%, 2%, 5%, 10%, 15%, 20% and 25% for the seven SFP
+risk levels of Nkansah et al. Parameter λ is a variance parameter, used for all assessed SFP
+risk levels. We used a λ of 2 for the case study, which produced densities matching field-user
+expectations. These densities are shown in Figure 7. For example, a “Very Low” assessment
+corresponds to a prior 90% interval of [1%, 38%], while a “High” assessment corresponds
+to an interval of [7%, 72%]. Use of the logit space provides the desired right skew in the
+(0, 1) space, as well as increased variance as the assessed SFP risk increases. This variance
+pattern is achieved through only a single choice of λ; using only one λ value is desirable as
+it concisely captures overall confidence in risk assessments.
+Estimating sourcing probability
+The sourcing-probability matrix for the supply chain, Q, is a crucial element of understanding
+what data may result from a proposed sampling plan. National sourcing records, aggregated
+records from sub-national or outlet echelons, and track-and-trace records can all be used to
+form Q. Our case study uses supply-chain observations from a previous PMS iteration to
+estimate Q, and we use bootstrap samples of these observations to form sourcing probabilities
+for untested nodes in the all-provinces case. We used 44 independent draws from the first
+iteration’s data set to form the sourcing probabilities for each test node; 44 was the average
+number of samples per test node in the first iteration.
+The uncertainty associated with an estimated Q may be incorporated into analysis
+through similar bootstrap samples that are integrated with MCMC draws of the SFP-rate
+vector, γ. In the efficient estimation algorithm (see Appendix B), each member of the set of
+SFP-rate draws would be coupled with a bootstrap sample of Q during the data-generation
+step. The utility estimate would thus be reflective of the uncertainty in both γ and Q.
+Further discussion on sourcing probability is contained in Wickett et al. (2023) and Wickett
+(2024).
+47
+
+Figure 7: Prior densities at SFP rates for seven designations of SFP risk, as introduced
+in Nkansah et al. (2017), using variance λ = 2.
+48

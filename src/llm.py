@@ -21,7 +21,7 @@ class SimpleLLM:
 
     def _extract_answer(self, question: str, context_text: str) -> str:
         if not context_text:
-            return "No relevant chunks were retrieved from the current dataset."
+            return "Information not found in the corpus."
 
         sentences = [sentence.strip() for sentence in re.split(r"(?<=[.!?])\s+", context_text) if sentence.strip()]
         if not sentences:
@@ -33,33 +33,39 @@ class SimpleLLM:
             if token not in {"what", "which", "when", "where", "who", "why", "how", "does", "do", "did", "can", "could", "would", "should", "the", "a", "an", "to", "of", "for", "use", "uses", "used"}
         }
 
-        best_sentence = sentences[0]
-        best_score = 0
+        ranked_sentences = []
         for sentence in sentences:
             sentence_tokens = set(re.findall(r"[a-z0-9]+", sentence.lower()))
             overlap = len(question_tokens & sentence_tokens)
-            if overlap > best_score:
-                best_score = overlap
-                best_sentence = sentence
+            if overlap:
+                ranked_sentences.append((overlap, sentence))
 
-        if best_score == 0 and len(best_sentence) > 220:
-            return best_sentence[:220].rstrip() + "..."
-        return best_sentence
+        if not ranked_sentences:
+            return " ".join(sentences[:3])
+        ranked_sentences.sort(key=lambda item: item[0], reverse=True)
+        selected = [sentence for _, sentence in ranked_sentences[:6]]
+        return " ".join(selected)
 
-    def generate_answer(self, question: str, context_chunks: List[Dict[str, object]]) -> str:
+    def generate_answer(self, question: str, context_chunks: List[Dict[str, object]], instructions: str | None = None) -> str:
         if not context_chunks:
-            return "No relevant chunks were retrieved from the current dataset."
+            return "Information not found in the corpus."
 
         context_text = "\n".join(str(chunk.get("text", "")) for chunk in context_chunks[:3])
 
         if self._generator is not None:
             try:
                 prompt = (
-                    "Answer the user's question using the provided context. "
-                    "Keep the answer concise and factual.\n"
-                    f"Question: {question}\nContext: {context_text}"
+                    (instructions or "You are an academic research analyst producing a rigorous long-form answer.") + "\n"
+                    "Answer the user query using ONLY the provided verified research contexts.\n"
+                    "Do not use external knowledge, assumptions, or unstated implications.\n"
+                    "If the contexts do not contain the answer, reply exactly: Information not found in the corpus.\n"
+                    "Do not give a one-line answer or a short summary unless the user explicitly requests one.\n"
+                    "Return Markdown with an Executive Insights section containing a bold opening paragraph, "
+                    "followed by a Technical Breakdown section containing at least 2 detailed paragraphs or a "
+                    "markdown table with concrete methods, equations, comparisons, or data points.\n\n"
+                    f"USER QUERY:\n{question}\n\nVERIFIED RESEARCH CONTEXTS:\n{context_text}"
                 )
-                response = self._generator(prompt, max_length=120)[0]["generated_text"]
+                response = self._generator(prompt, max_length=700, min_length=180)[0]["generated_text"]
                 response_text = response.strip()
                 if response_text:
                     return response_text

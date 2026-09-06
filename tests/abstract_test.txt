@@ -1,0 +1,47 @@
+Knowledge domains
+Machine Learning and Deep Learning
+
+Transformers, RLHF, optimization, retrieval
+
+Image Processing
+
+CNNs, diffusion models, image understanding
+
+Hardware Architecture
+
+Distributed training, edge AI, systems
+
+Central corpus: C:\Users\DELL\AppData\Local\Temp\pytest-of-DELL\pytest-25\section_fixture0\dataset
+
+Deploy
+Research Intelligence
+
+Grounded answers from verified research sources, routed by query intent.
+
+Browse Central Repository
+
+Upload Custom Research Paper
+
+Central repository
+
+Pre-indexed arXiv research across three searchable domains.
+
+Research question
+
+Retrieve grounded answer
+
+Route: conceptual_general | Embedding: e5 | Retrieved passages: 1
+
+Executive Insights
+
+We study adaptive retrieval for research question answering. Our method selects an embedding model by query intent and improves citation coverage.
+
+Technical Breakdown
+Retrieved and synthesized 1 relevant passage(s) from ABSTRACT (1 passage).
+The response prioritizes the requested section and preserves page-level provenance.
+Claims are paraphrased into an analytical explanation rather than reproduced as raw source text.
+
+The analysis is grounded exclusively in the retrieved passages and preserves their page-level provenance.
+
+Verified Source Citations
+2401.12345.pdf | Page 1 | ABSTRACT (words 0-21) - Read Full Paper on arXiv

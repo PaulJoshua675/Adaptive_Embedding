@@ -4,3 +4,11 @@ __pycache__/
 *.pyo
 *.pyd
 *.log
+.env
+__pycache__/
+.pytest_cache/
+dataset/
+vector_store/
+data/runtime_uploads/
+static/extracted_figures/
+tests/review2_proof.png

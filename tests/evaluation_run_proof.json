@@ -1,0 +1,25 @@
+{
+  "url": "http://localhost:8501",
+  "queries": [
+    "Explain the transformer architecture and attention mechanism.",
+    "What does retrieval mean in this paper?",
+    "Show Figure 30"
+  ],
+  "metrics_visible": {
+    "Precision": true,
+    "Recall": true,
+    "F1-Score": true
+  },
+  "retrieval_metrics": {
+    "hit@3": 1.0,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "true_positives": 1.0,
+    "false_positives": 0.0,
+    "false_negatives": 0.0
+  },
+  "verified_figure_path": "D:/enhanced rag model/vector_store/figures/2307.09288_fig_30.png",
+  "figure_loaded": true
+}

@@ -34,9 +34,19 @@ def split_text_into_chunks(
     return chunks
 
 
-def chunk_documents(documents: List[Dict[str, str]], chunk_size: int = 220, overlap: int = 40) -> List[Dict[str, str | int]]:
+def chunk_documents(documents: List[Dict[str, object]], chunk_size: int = 220, overlap: int = 40) -> List[Dict[str, str | int]]:
     chunks: List[Dict[str, str | int]] = []
     for document in documents:
-        doc_metadata = {"document_id": document["id"], "source": document["source"]}
-        chunks.extend(split_text_into_chunks(document["text"], chunk_size=chunk_size, overlap=overlap, metadata=doc_metadata))
+        doc_metadata: Dict[str, str | int] = {
+            "document_id": str(document["id"]),
+            "source": str(document["source"]),
+            "page_number": int(document.get("page_number", 1)),
+            "title": str(document.get("title", document.get("id", "Untitled research paper"))),
+            "section_type": str(document.get("section_type", "ABSTRACT")),
+        }
+        if "image_count" in document:
+            doc_metadata["image_count"] = int(document.get("image_count", 0))
+        if "source_type" in document:
+            doc_metadata["source_type"] = str(document.get("source_type", "central"))
+        chunks.extend(split_text_into_chunks(str(document["text"]), chunk_size=chunk_size, overlap=overlap, metadata=doc_metadata))
     return chunks

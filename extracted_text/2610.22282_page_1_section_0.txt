@@ -1,0 +1,1 @@
+Preprint ROUTING POLICY OPTIMIZATION FOR ONLINE DIFFU- SION REINFORCEMENT LEARNING Qiuhong Shen1 Yiding Yang2 Yuxin Zhang2 Xinwei Huang2 Minxuan Lin2 Bo Liu2 Hao Kang2 Haotian Yang2 Yizhi Wang2 Chongyang Ma2 Xinchao Wang1∗ 1National University of Singapore 2ByteDance

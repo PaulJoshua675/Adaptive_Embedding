@@ -1,0 +1,1 @@
+Dann et al. [11] studied multiple-policy high-confidence evaluation in finite-horizon tabular MDPs. Their goal, as in our work, is to estimate the values of all target policies to a prescribed accuracy while sharing observations across policies. They achieve this through coupled trajectory sampling: when policies choose 15

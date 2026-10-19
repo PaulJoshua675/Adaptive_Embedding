@@ -5,50 +5,55 @@ from typing import Dict, List, Tuple
 
 from .create_vector_db import VectorStore
 from .embedding_model import EmbeddingModel
+from .extract_pdf import clean_extracted_text
+from config import DEFAULT_TOP_K, MIN_RETRIEVAL_SIMILARITY
+
+_ARXIV_ID = re.compile(r"(?<!\d)(\d{4}\.\d{4,5})(?:v\d+)?(?!\d)", re.I)
 
 
-def _tokenize(text: str) -> List[str]:
-    return re.findall(r"[a-z0-9]+", text.lower())
+def _paper_id(document: Dict[str, object]) -> str | None:
+    source = str(document.get("source", document.get("document_id", "")))
+    match = _ARXIV_ID.search(source)
+    return match.group(1) if match else None
 
 
-def _keyword_score(query: str, document: Dict[str, object]) -> float:
-    query_tokens = set(_tokenize(query))
-    if not query_tokens:
-        return 0.0
-
-    chunk_text = str(document.get("text", ""))
-    chunk_tokens = set(_tokenize(chunk_text))
-    if not chunk_tokens:
-        return 0.0
-
-    overlap = len(query_tokens & chunk_tokens)
-    return overlap / max(len(query_tokens), 1)
+def _clean_document(document: Dict[str, object]) -> Dict[str, object] | None:
+    cleaned_text = clean_extracted_text(str(document.get("text", "")))
+    if not cleaned_text:
+        return None
+    return {**document, "text": cleaned_text}
 
 
 def retrieve_top_chunks(
     query: str,
     vector_store: VectorStore,
     embedding_model: EmbeddingModel,
-    top_k: int = 5,
+    top_k: int = DEFAULT_TOP_K,
+    query_vector: List[float] | None = None,
 ) -> List[Tuple[float, Dict[str, object]]]:
-    query_vector = embedding_model.embed_text(query)
-    results = vector_store.search(query_vector, top_k=top_k)
-
-    if results and any(score > 0 for score, _ in results):
-        return results[:top_k]
-
-    scored_documents = []
-    for document in vector_store.documents:
-        score = _keyword_score(query, document)
-        if score > 0:
-            scored_documents.append((score, document))
-
-    if scored_documents:
-        scored_documents.sort(key=lambda item: item[0], reverse=True)
-        return scored_documents[:top_k]
-
-    if results:
-        return results[:top_k]
-
-    fallback_documents = [(0.0, document) for document in vector_store.documents[:top_k]]
-    return fallback_documents
+    limit = min(max(int(top_k), 3), 5)
+    query_vector = query_vector or embedding_model.embed_text(query)
+    requested_paper = _ARXIV_ID.search(query)
+    if requested_paper:
+        candidates = [
+            (
+                sum(a * b for a, b in zip(query_vector, vector_store.embeddings[index])),
+                document,
+            )
+            for index, document in enumerate(vector_store.documents)
+            if _paper_id(document) == requested_paper.group(1)
+        ]
+        candidates.sort(key=lambda item: item[0], reverse=True)
+        candidates = candidates[:limit]
+    else:
+        candidates = vector_store.search(query_vector, top_k=limit)
+    cleaned_results: List[Tuple[float, Dict[str, object]]] = []
+    for score, document in candidates:
+        cleaned_document = _clean_document(document)
+        if cleaned_document is not None:
+            if score >= MIN_RETRIEVAL_SIMILARITY:
+                cleaned_results.append((score, cleaned_document))
+    if cleaned_results:
+        cleaned_results.sort(key=lambda item: item[0], reverse=True)
+        return cleaned_results[:limit]
+    return []

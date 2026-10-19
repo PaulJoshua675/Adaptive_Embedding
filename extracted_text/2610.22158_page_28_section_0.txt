@@ -1,0 +1,1 @@
+PREMISESQL CASE STUDY E1.1 Ambiguity: Flawed query USER INPUT “What are all the titles?” SCHEMA EVIDENCE Both Songs and Albums contain a Title column, so the requested entity is unresolved. MODEL OUTPUT DeepSeek V3.2 Response excerpt “The question does not specify Songs.Title, Albums.Title, or both.” SQL behavior No SQL generated.

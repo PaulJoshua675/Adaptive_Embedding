@@ -10,6 +10,8 @@ from urllib.request import urlopen
 import fitz
 import pytest
 
+pytestmark = pytest.mark.integration
+
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, sync_playwright
 
@@ -42,48 +44,8 @@ def _create_sample_pdf(path: Path) -> None:
 
 
 @pytest.fixture(scope="module")
-def live_server():
-    try:
-        with urlopen(BASE_URL, timeout=2):
-            yield BASE_URL
-            return
-    except Exception:
-        pass
-    environment = os.environ.copy()
-    environment.update({"PYTHONUTF8": "1", "TRANSFORMERS_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false"})
-    process = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "streamlit",
-            "run",
-            "app.py",
-            "--server.headless",
-            "true",
-            "--server.port",
-            "8501",
-            "--",
-            "--streamlit",
-        ],
-        cwd=ROOT,
-        env=environment,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
-    deadline = time.time() + 45
-    while time.time() < deadline:
-        try:
-            with urlopen(BASE_URL, timeout=2):
-                break
-        except Exception:
-            time.sleep(0.5)
-    else:
-        process.terminate()
-        raise RuntimeError("Streamlit did not start")
-    yield BASE_URL
-    process.terminate()
-    process.wait(timeout=10)
+def live_server(streamlit_app_url):
+    return streamlit_app_url
 
 
 def test_disk_backed_upload_renders_distinct_analysis(live_server: str, tmp_path: Path) -> None:

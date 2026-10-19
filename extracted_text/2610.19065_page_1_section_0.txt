@@ -1,0 +1,1 @@
+Revisiting Generative vs. Dense Retrieval: A Static Value Prior Reverses the Gap Renbo Tu1,2∗ Yang Liu1 Shuying Sun1† 1 Shopify 2 University of Toronto

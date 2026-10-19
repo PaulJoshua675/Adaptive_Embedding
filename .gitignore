@@ -7,7 +7,8 @@ __pycache__/
 .env
 __pycache__/
 .pytest_cache/
-dataset/
+dataset/*
+!dataset/arxiv_metadata.json
 vector_store/
 data/runtime_uploads/
 static/extracted_figures/

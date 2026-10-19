@@ -1,0 +1,1 @@
+FutureLift: Lifting Trajectory Proposals into Bidirectional Future Graphs for Motion Forecasting Daniel Grimm J. Marius Z¨ollner FZI Research Center for Information Technology {grimm,zoellner}@fzi.de

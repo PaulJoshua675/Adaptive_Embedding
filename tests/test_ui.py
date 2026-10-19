@@ -10,6 +10,8 @@ from urllib.request import urlopen
 import fitz
 import pytest
 
+pytestmark = pytest.mark.integration
+
 playwright = pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError, sync_playwright
 
@@ -38,34 +40,8 @@ def _create_test_pdf(path: Path) -> None:
 
 
 @pytest.fixture(scope="module")
-def streamlit_server():
-    environment = os.environ.copy()
-    environment.update({"PYTHONUTF8": "1", "TRANSFORMERS_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false"})
-    process = subprocess.Popen(
-        [sys.executable, "-m", "streamlit", "run", "app.py", "--server.headless", "true", "--server.port", "8501", "--", "--streamlit"],
-        cwd=ROOT,
-        env=environment,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
-    deadline = time.time() + 45
-    while time.time() < deadline:
-        try:
-            with urlopen(BASE_URL, timeout=2):
-                break
-        except Exception:
-            time.sleep(0.5)
-    else:
-        process.terminate()
-        output = process.stdout.read() if process.stdout else ""
-        raise RuntimeError(f"Streamlit did not start:\n{output}")
-    yield BASE_URL
-    process.terminate()
-    try:
-        process.wait(timeout=10)
-    except subprocess.TimeoutExpired:
-        process.kill()
+def streamlit_server(streamlit_app_url):
+    return streamlit_app_url
 
 
 def test_repository_and_custom_upload_workflows(streamlit_server, tmp_path):
@@ -79,7 +55,7 @@ def test_repository_and_custom_upload_workflows(streamlit_server, tmp_path):
         page.get_by_text("Browse Central Repository", exact=True).wait_for()
         page.get_by_text("Upload Custom Research Paper", exact=True).click()
         page.locator('input[type="file"]').set_input_files(str(pdf_path))
-        page.get_by_text("Indexed adaptive_retrieval_test.pdf in memory with page-level provenance.", exact=True).wait_for(timeout=30_000)
+        page.get_by_text("Indexed adaptive_retrieval_test.pdf from disk with page-level provenance.", exact=True).wait_for(timeout=30_000)
 
         textareas = page.locator("textarea")
         textareas.last.fill("How does the system route technical questions and preserve citations?")

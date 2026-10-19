@@ -1,0 +1,1 @@
+Observe that these propositions ignore the weight of an SFP rate, W(γ). Our implemen- tation of utility estimation accounts for the weight alongside the binomial likelihood of the data simulation matrix: both the weight and the likelihood are functions of the SFP rate and not the estimate. 46

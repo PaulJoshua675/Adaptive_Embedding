@@ -1,0 +1,1 @@
+Speculative Forcing for Efficient Autoregressive Video Generation 1

@@ -1,0 +1,1 @@
+4 K. Lee et al. erty of the Gram matrix eigenspectrum that an unweighted sum-of-pairwise objective lacks in the same analysis. – We validate across three backbone-sampler configurations, demonstrating consistent diversity gains with a controllable quality-diversity trade-off and statistically significant downstream improvements in few-shot classification. 2

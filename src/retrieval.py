@@ -40,6 +40,7 @@ import difflib
 import json
 import re
 import pickle
+import time
 try:
     from dotenv import load_dotenv
 except ImportError:  # pragma: no cover - optional runtime dependency
@@ -49,8 +50,9 @@ except ImportError:  # pragma: no cover - optional runtime dependency
 from functools import lru_cache
 from typing import Dict, Iterable, List, Tuple
 
-from config import RERANKER_MODEL
+from config import DEFAULT_TOP_K, MIN_RERANKER_SCORE, MIN_RETRIEVAL_SIMILARITY, RERANKER_MODEL
 from .embeddings import EmbeddingRegistry
+from .reranker import PassageReranker
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 if os.getenv("HF_TOKEN"):
@@ -58,6 +60,7 @@ if os.getenv("HF_TOKEN"):
 
 
 from .preprocessing import section_query_name, trim_query_tokens
+from .extract_pdf import clean_extracted_text
 from .vector_db import MultiVectorStore
 from .profiler import profile_stage
 
@@ -78,6 +81,19 @@ except ImportError:  # pragma: no cover
     AutoTokenizer = None
 
 _SECTION_QUERY = re.compile(r"\b(?:the\s+)?(abstract|introduction|background|related work|methods?|methodology|experiments?|results?|discussion|conclusions?|references)\b", re.I)
+_GENERIC_QUERY_TERMS = {
+    "a", "an", "and", "are", "about", "can", "could", "describe", "did", "do",
+    "does", "explain", "for", "from", "how", "in", "is", "me", "of", "on",
+    "please", "tell", "that", "the", "this", "to", "what", "which", "with",
+    "would",
+}
+_ARXIV_ID = re.compile(r"(?<!\d)(\d{4}\.\d{4,5})(?:v\d+)?(?!\d)", re.I)
+
+
+def _paper_id_from_document(document: Dict[str, object]) -> str | None:
+    source = str(document.get("source", document.get("document_id", "")))
+    match = _ARXIV_ID.search(source)
+    return match.group(1) if match else None
 
 
 def _resource_cache(function):
@@ -130,7 +146,7 @@ def _direct_section_retrieval(query: str, top_k: int) -> List[Dict[str, object]]
         return []
     chunk_map = get_global_chunk_map()
     section_map = get_global_section_map()
-    chunk_ids = section_map.get(section, [])[:top_k]
+    chunk_ids = section_map.get(section, [])[: min(max(int(top_k), 3), 5)]
     return [_ram_payload(chunk_map[chunk_id], chunk_id) for chunk_id in chunk_ids if chunk_id in chunk_map]
 
 
@@ -163,8 +179,9 @@ def load_cached_reranker(model_name: str = RERANKER_MODEL):
 
 
 @_resource_cache
-def load_cached_faiss_index(index_path: str):
+def load_cached_faiss_index(index_path: str, modified_ns: int, size: int):
     """Pin one FAISS binary in process memory instead of rereading it per query."""
+    del modified_ns, size
     import faiss  # type: ignore
 
     faiss.omp_set_num_threads(4)
@@ -207,8 +224,13 @@ def _index_signature(base_path: Path, keys: Tuple[str, ...]) -> Tuple[Tuple[str,
 
 @_resource_cache
 def _load_cached_store(base_path: str, keys: Tuple[str, ...], signature: Tuple[Tuple[str, int, int], ...]) -> MultiVectorStore:
-    del signature
-    return MultiVectorStore.load(base_path, list(keys), index_loader=load_cached_faiss_index)
+    index_signatures = {path: (modified_ns, size) for path, modified_ns, size in signature}
+
+    def load_index(index_path: str):
+        modified_ns, size = index_signatures.get(index_path, (0, 0))
+        return load_cached_faiss_index(index_path, modified_ns, size)
+
+    return MultiVectorStore.load(base_path, list(keys), index_loader=load_index)
 
 
 def load_cached_vector_store(base_path: str | Path, keys: List[str]) -> MultiVectorStore:
@@ -234,6 +256,13 @@ def section_from_query(query: str) -> str | None:
 
 def _tokens(value: str) -> set[str]:
     return set(re.findall(r"[a-z0-9]+", value.lower()))
+
+
+def _lexical_overlap(query: str, passage: str) -> float:
+    query_tokens = _tokens(_ARXIV_ID.sub(" ", query)) - _GENERIC_QUERY_TERMS
+    if not query_tokens:
+        return 0.0
+    return len(query_tokens & _tokens(passage)) / len(query_tokens)
 
 
 def _visual_query(query: str) -> bool:
@@ -335,7 +364,32 @@ def _verify_figure_alignment(query: str, entry: Dict[str, object], context: str,
     return score >= threshold, score
 
 
-def find_matching_figures(query: str, manifest_path: str | Path = "vector_store/figures/figure_manifest.json", threshold: float = 0.35) -> List[Dict[str, object]]:
+def _figure_referenced_by_passages(entry: Dict[str, object], passages: Iterable[Dict[str, object]]) -> bool:
+    figure_id = _normalise_figure_identifier(str(entry.get("figure_id", "")))
+    figure_match = re.fullmatch(r"figure\s+(\d+)", figure_id)
+    if not figure_match:
+        return False
+    reference = re.compile(rf"\b(?:figure|fig\.?)\s*{figure_match.group(1)}\b", re.I)
+    paper_id = str(entry.get("paper_id", "")).strip().lower()
+    source = str(entry.get("source", "")).strip()
+    for passage in passages:
+        text = str(passage.get("text", ""))
+        if not reference.search(text):
+            continue
+        passage_source = str(passage.get("source", "")).strip()
+        if paper_id and passage_source and Path(passage_source).stem.lower() != paper_id:
+            if not source or Path(passage_source).resolve() != Path(source).resolve():
+                continue
+        return True
+    return False
+
+
+def find_matching_figures(
+    query: str,
+    manifest_path: str | Path = "vector_store/figures/figure_manifest.json",
+    threshold: float = 0.35,
+    passages: Iterable[Dict[str, object]] | None = None,
+) -> List[Dict[str, object]]:
     if not _visual_query(query):
         return []
     path = _manifest_path(manifest_path)
@@ -346,6 +400,8 @@ def find_matching_figures(query: str, manifest_path: str | Path = "vector_store/
     query_tokens = _tokens(query_text)
     matches: List[Dict[str, object]] = []
     for entry in _manifest_entries(manifest):
+        if passages is not None and not _figure_referenced_by_passages(entry, passages):
+            continue
         caption = str(entry.get("caption", ""))
         figure_id = str(entry.get("figure_id", ""))
         caption_tokens = _tokens(caption)
@@ -382,13 +438,18 @@ def inject_visual_payload(
     query: str,
     manifest_path: str | Path = "vector_store/figures/figure_manifest.json",
 ) -> Dict[str, object]:
-    """Attach the highest-confidence visual asset to an existing retrieval payload."""
-    matches = find_matching_figures(query, manifest_path)
-    if not matches:
-        return payload
+    """Attach only figures explicitly referenced by retrieved passages."""
+    passages = payload.get("chunks", [])
+    matches = find_matching_figures(
+        query,
+        manifest_path,
+        passages=passages if isinstance(passages, list) else [],
+    )
     result = dict(payload)
     result["figures"] = matches
-    result["rendered_figure_path"] = matches[0]["file_path"]
+    result.pop("rendered_figure_path", None)
+    if matches:
+        result["rendered_figure_path"] = matches[0]["file_path"]
     return result
 
 
@@ -440,41 +501,113 @@ class AdaptiveRetriever:
     def __init__(self, stores: MultiVectorStore, registry: EmbeddingRegistry, reranker_model: str = RERANKER_MODEL):
         self.stores = stores
         self.registry = registry
+        self.reranker_model = reranker_model
         self.reranker = None
-        if CrossEncoder is not None and os.getenv("RERANKER_LOCAL_ONLY", "1").lower() in {"0", "false", "no"}:
-            try:
-                self.reranker = _load_cached_cross_encoder(reranker_model)
-            except Exception:
-                self.reranker = None
+        self.last_timings_ms: Dict[str, float] = {
+            "faiss_index_lookup_ms": 0.0,
+            "cross_encoder_reranking_ms": 0.0,
+        }
 
-    def retrieve(self, query: str, embedding_key: str, top_k: int = 5, candidate_k: int = 20, section_type: str | None = None) -> List[Dict[str, object]]:
+    def retrieve(
+        self,
+        query: str,
+        embedding_key: str,
+        top_k: int = DEFAULT_TOP_K,
+        candidate_k: int = 20,
+        section_type: str | None = None,
+        query_vector: List[float] | None = None,
+    ) -> List[Dict[str, object]]:
+        self.last_timings_ms = {
+            "faiss_index_lookup_ms": 0.0,
+            "cross_encoder_reranking_ms": 0.0,
+        }
+        result_limit = min(max(int(top_k), 3), 5)
+        candidate_limit = min(max(int(candidate_k), 3), 5)
         encoder = self.registry[embedding_key]
         store = self.stores.stores[embedding_key]
-        direct_matches = _direct_section_retrieval(query, top_k)
-        if direct_matches:
-            return direct_matches
         with profile_stage("Query Vectorization"):
-            query_vector = encoder.encode_query(trim_query_tokens(query))
+            if query_vector is None:
+                query_vector = encoder.encode_query(trim_query_tokens(query))
+        reference_query = bool(re.search(r"\b(?:references?|bibliography|citations?)\b", query, re.I))
+        requested_paper = _ARXIV_ID.search(query)
+        target_paper_id = requested_paper.group(1) if requested_paper else None
+        minimum_similarity = (
+            max(0.12, MIN_RETRIEVAL_SIMILARITY * 0.5)
+            if target_paper_id is not None
+            else MIN_RETRIEVAL_SIMILARITY
+        )
+        search_limit = candidate_limit
         if section_type:
             wanted = section_type.upper()
             candidates = [
                 (sum(a * b for a, b in zip(query_vector, embedding)), document)
                 for embedding, document in zip(store.embeddings, store.documents)
                 if str(document.get("section_type", "")).upper() == wanted
+                and (target_paper_id is None or _paper_id_from_document(document) == target_paper_id)
             ]
             candidates.sort(key=lambda item: item[0], reverse=True)
-            candidates = candidates[:candidate_k]
+            candidates = candidates[:search_limit]
+        elif target_paper_id is not None:
+            candidates = [
+                (sum(a * b for a, b in zip(query_vector, embedding)), document)
+                for embedding, document in zip(store.embeddings, store.documents)
+                if _paper_id_from_document(document) == target_paper_id
+            ]
+            candidates.sort(key=lambda item: item[0], reverse=True)
+            candidates = candidates[:search_limit]
         else:
+            lookup_started = time.perf_counter()
             with profile_stage("FAISS Index Search"):
-                candidates = store.search(query_vector, candidate_k)
-        ranked = [{"score": score, **document} for score, document in candidates]
+                candidates = store.search(query_vector, search_limit)
+            self.last_timings_ms["faiss_index_lookup_ms"] = (time.perf_counter() - lookup_started) * 1000
+        ranked = []
+        for raw_score, document in candidates:
+            if not reference_query and str(document.get("section_type", "")).upper() in {
+                "REFERENCE",
+                "REFERENCES",
+                "BIBLIOGRAPHY",
+            }:
+                continue
+            text = clean_extracted_text(str(document.get("text", "")))
+            if not text:
+                continue
+            similarity = float(raw_score)
+            if similarity >= minimum_similarity:
+                ranked.append({"score": similarity, **document, "text": text})
         ranked = [_ram_payload(item, index) | {"score": item.get("score", 0.0)} for index, item in enumerate(ranked)]
-        with profile_stage("Cross-Encoder Reranking"):
-            if self.reranker is not None and ranked:
-                scores = self.reranker.predict([(query, str(item.get("text", ""))) for item in ranked])
-                ranked = [dict(item, rerank_score=float(score)) for item, score in zip(ranked, scores)]
-                ranked.sort(key=lambda item: float(item["rerank_score"]), reverse=True)
-        return ranked[:top_k]
+        use_cross_encoder = os.getenv("RAG_ENABLE_CROSS_ENCODER_RERANKER", "0").lower() in {
+            "1",
+            "true",
+            "yes",
+        }
+        if use_cross_encoder and ranked:
+            rerank_started = time.perf_counter()
+            if self.reranker is None:
+                self.reranker = PassageReranker(self.reranker_model)
+            with profile_stage("Cross-Encoder Reranking"):
+                reranked = self.reranker.rerank(
+                    query,
+                    ranked,
+                    top_k=result_limit,
+                    candidate_k=candidate_limit,
+                )
+            self.last_timings_ms["cross_encoder_reranking_ms"] = (time.perf_counter() - rerank_started) * 1000
+        else:
+            reranked = ranked[:result_limit]
+        return [
+            item
+            for item in reranked
+            if float(item.get("score", 0.0)) >= minimum_similarity
+            and (
+                "rerank_score" not in item
+                or float(item["rerank_score"]) >= MIN_RERANKER_SCORE
+            )
+            and (
+                "rerank_score" in item
+                or _lexical_overlap(query, str(item.get("text", "")))
+                >= (0.15 if target_paper_id is not None else MIN_RETRIEVAL_SIMILARITY)
+            )
+        ]
 
 
 @_resource_cache

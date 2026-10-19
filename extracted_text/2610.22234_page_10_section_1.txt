@@ -1,0 +1,1 @@
+We present OS-Helix, a native hybrid computer-using agent trained end-to-end through scalable executable desktop task synthesis, hybrid SFT, and Step-balanced GSPO online RL, designed to na- tively coordinate heterogeneous GUI and code actions within a single policy. On OSWorld-Verified, 10

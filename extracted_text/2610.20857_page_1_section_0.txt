@@ -1,0 +1,1 @@
+Idea2Prior: Auditable Paper Retrieval and Ranking from Research Ideas Shitian Yang Ruijie Tao Jian Huang Department of Computer Science, Johns Hopkins University syang214@jh.edu, rtao12@jh.edu, jhuan243@jh.edu

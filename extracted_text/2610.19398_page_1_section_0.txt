@@ -1,0 +1,1 @@
+RCER: Reconstructing Cross-Evidence Relations for Iterative Retrieval-Augmented Generation Linyao Zheng1,∗ Xuhang Shi2 Zhifang Mao2 Xiuquan Hou1 Sai Zhou1 1Xi’an Jiaotong University 2Beijing University of Posts and Telecommunications ∗Corresponding author: zhengly@stu.xjtu.edu.cn

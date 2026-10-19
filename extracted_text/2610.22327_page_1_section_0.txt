@@ -1,0 +1,1 @@
+Preprint TWICE UPON A TIME: COMPLEMENTARY REPRESEN- TATIONS FOR TIME-SERIES REASONING Hedi Zisling∗ Ben-Gurion University Liran Nochumsohn∗ Ben-Gurion University Ilan Naiman Google Mihir Parmar Google Omri Azencot Ben-Gurion University

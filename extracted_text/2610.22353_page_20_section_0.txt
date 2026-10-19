@@ -1,0 +1,1 @@
+MirrorMoE: Rethinking Routing Exploration in Modern MoEs It remains to show that none of the selected experts has a vanishing score. For any selected expert 𝑒∈A𝑝, ¯𝜉𝑒= 𝜉𝑒 Í 𝑟∈A𝑝𝜉𝑟 ≥ 𝜉min (𝐾−𝑆)𝜉max > 1 (𝐾−𝑆)𝜅. Thus, every selected expert has a non-vanishing aggregation weight, which rules out functional path pruning. 20

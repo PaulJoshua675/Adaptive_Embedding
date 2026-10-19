@@ -1,0 +1,1 @@
+Preprint CASI: CREDIT ASSIGNMENT VIA SET INTERVENTION FOR AGENTIC RETRIEVAL Xinyi Cheng Tianfu Zhang Jiwen Li Xuesen Zhang Shihao Yu Pengfei Zhu Renhuan Heda Wang∗ Xiaohongshu Inc. {chengxinyi1, zhangtianfu, liuwei01, zhangxuesen, yushihao, zhupengfei, renhuan, zengshushu}@xiaohongshu.com

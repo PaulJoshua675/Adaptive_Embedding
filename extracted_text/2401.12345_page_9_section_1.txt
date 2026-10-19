@@ -1,0 +1,1 @@
+For the convenience of the technical treatment, we study the estimation problem in real spaces. Nonlinear estimators, which are suitable for non-Gaussian Px,s, are to be limited in reproducing kernel Hilbert spaces and feedforward multi-layer neural network function spaces. A. Reproducing Kernel Hilbert Spaces

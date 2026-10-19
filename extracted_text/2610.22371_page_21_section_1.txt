@@ -1,0 +1,1 @@
+Metric Evaluation. We follow the protocol of MonST3R (Zhang et al., 2025a) using the single global median scale alignment to the GT tracks in the frame-0 world coordinate over the 64-frame tracks. 21

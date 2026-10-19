@@ -1,0 +1,1 @@
+Attention over noisy examples Generalization and memorization in the exponential Hopfield network Francesco Alemanno Independent researcher, supported by SolarSud T.R.E. di Miccoli Antonia, Italy (https://solarsud.it). francescoalemanno710@gmail.com

@@ -1,0 +1,1 @@
+From Conceptual EneMonIE to an Executable Backend: A Modular Architecture for Energy Information Extraction and Grounded Question Answering Janik Lesage, Khadim Lô, and Jean-Sébastien Dessureault Département de mathématiques et d’informatique, Université du Québec à Trois-Rivières, Canada

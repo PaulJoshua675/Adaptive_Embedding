@@ -1,0 +1,1 @@
+Framework OpenCompass with a vLLM backend Hardware 1× NVIDIA H800 Decoding temperature 0.7, zero-shot prompting 26

@@ -1,0 +1,1 @@
+Generalization Guarantees of Randomized Block Coordinate Descent for Nonconvex Learning Ruixi Hu1, Liang Wu1 1Center of Statistical Research, School of Statistics and Data Science, Southwestern University of Finance and Economics, Chengdu, China r.hu191204@gmail.com, wuliang@swufe.edu.cn October 16, 2026

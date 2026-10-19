@@ -1,0 +1,1 @@
+Speculative Forcing for Efficient Autoregressive Video Generation Table 2: Comparison on 30s long videos with LongLive. Evaluated on VBench-Long. Method Mean Steps ↓ Through. (FPS) Drift ↓ Total Score ↑ Quality Score ↑ Semantic Score ↑ VBench-Long dimension scores ↑ Subject Consistency

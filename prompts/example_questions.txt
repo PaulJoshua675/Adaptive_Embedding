@@ -1,20 +1,10 @@
-1. What is the main purpose of retrieval-augmented generation in research paper QA?
-2. How do embedding models help retrieve related passages for scientific questions?
-3. Which retrieval techniques improve answer quality for long documents?
-4. How does FAISS support fast similarity search over research papers?
-5. Why is chunking important when processing long academic documents?
-6. What are the benefits of combining lexical and semantic retrieval?
-7. How can query reformulation improve retrieval performance?
-8. What is the role of re-ranking in question answering systems?
-9. How does contrastive learning help domain-specific retrieval?
-10. Why is source attribution important in evidence-based QA?
-11. How do multi-hop retrieval systems answer complex questions?
-12. What is the difference between dense retrieval and BM25?
-13. How can summarization improve retrieval for difficult questions?
-14. Why is domain adaptation useful for scientific embeddings?
-15. What is the role of citation graphs in paper retrieval?
-16. How do vector stores support interactive RAG applications?
-17. What are the limitations of retrieval under ambiguous queries?
-18. Why might persistent memory help RAG agents over time?
-19. How do chunk size and overlap affect retrieval quality?
-20. What makes a retrieval system trustworthy for scientific QA?
+cs.CV: How does the CNN in Automatic Image Colourizer predict colours from grayscale images (2312.09876)?
+cs.CV: What training-data challenges does Automatic Image Colourizer identify for CNN-based colour prediction (2312.09876)?
+cs.CL: How often were InstructGPT PPO-ptx outputs preferred to the 175B SFT model in 2203.02155?
+cs.CL: How does the 1.3B PPO-ptx model compare with GPT-3 in human evaluations in 2203.02155?
+cs.LG: How do the per-token KL penalty in PPO and the KL reward coefficient affect alignment and DROP/SQuAD performance in 2203.02155?
+cs.LG: How does PPO-ptx mix pretraining gradients with PPO updates to reduce the alignment tax in 2203.02155?
+cs.AI: What explains why retrieved passages are not read by search-augmented language models (2610.21731)?
+cs.AI: What does the multi-agent LLM system in 2610.13663 do to tune specialized neural-network models?
+cs.IR: How does AiSAQ-in-Filtering support DRAM-free filtered information retrieval (2610.17627)?
+cs.IR: What factors explain why retrieved passages are not read by search-augmented language models (2610.21731)?

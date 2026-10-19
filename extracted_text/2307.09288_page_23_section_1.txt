@@ -1,0 +1,1 @@
+tions that are then included in the general supervised fine-tuning process (Section 3.1). This teaches the model to align with our safety guidelines even before RLHF, and thus lays the foundation for high-quality human preference data annotation.

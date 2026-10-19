@@ -1,0 +1,1 @@
+Evolve on the Host, Predict on the Edge: Deploying Online Neuroevolutionary Architecture Search for Cross-sectional Stock Return Prediction Jonathan Chang1, Zimeng Lyu2 1 Union County Magnet High School 2Department of Computer Science and Technology, Kean University jonathanbokeunchang@gmail.com, zimeng.lyu@kean.edu

@@ -1,0 +1,1 @@
+AI Bengineering. Mine AI MCP: beating Minecraft with an LLM agent. https://github.com/ aibengineering/mine-ai-mcp, 2026. Dataset: https://huggingface.co/datasets/ aibengineering/beat-the-game-minecraft. Run that defeated the Ender Dragon, 2026- 09-15. Accessed 2026-10-13. 15

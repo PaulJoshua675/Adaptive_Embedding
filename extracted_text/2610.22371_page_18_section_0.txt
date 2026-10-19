@@ -1,0 +1,1 @@
+Preprint Figure 7: Additional Qualitative Results of motion tracking, point cloud reconstruction and camera pose estimation. 18

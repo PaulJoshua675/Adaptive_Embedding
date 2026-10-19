@@ -1,0 +1,1 @@
+GHADAR 15 and serves as a complement to classical metrics. A limitation in the VLM-based metric is that it is highly dependent on the ability of the VQA to understand the video and the instruction. With this work, we want to encourage future research in the human-attributed video understanding tasks that can be useful for various applications.

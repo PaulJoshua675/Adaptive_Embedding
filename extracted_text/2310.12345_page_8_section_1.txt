@@ -1,0 +1,1 @@
+Acc. (%) ResNet50 31.37 LAME 29.63 PTBN 54.53 TENT 54.48 TTT 51.43 Ours 56.70 Table 5: Results on the CIFAR-100-C dataset.

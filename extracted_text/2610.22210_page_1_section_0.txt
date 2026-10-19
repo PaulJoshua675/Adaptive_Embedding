@@ -1,0 +1,1 @@
+TRACE: Topology-Aware Reconnection via Prediction-Adaptive Connectivity Enforcement for Thin-Structure Segmentation Junho Moon Hanyang University Seoul, Republic of Korea jhmoon6807@hanyang.ac.kr Ikbeom Jang* Hankuk University of Foreign Studies Yongin, Republic of Korea ijang@hufs.ac.kr

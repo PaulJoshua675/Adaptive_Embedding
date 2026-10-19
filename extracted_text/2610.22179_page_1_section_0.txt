@@ -1,0 +1,1 @@
+LCT: LOSSLESSLY COMPRESSED TENSORS WITH GPU FRIENDLY EXECUTION FOR TRAINING Max Zhu1† Bohang Sun1 Pietro Liò1 Jialin Yu2 1 University of Cambridge 2 University of Oxford

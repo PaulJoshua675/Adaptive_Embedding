@@ -1,0 +1,1 @@
+E.4 ADDITIONAL PANOPTIC STUDIO HUMANS VISUALISATIONS Figure 15: Additional 4D tracking visualisations on Panoptic Studio Humans. Each row shows one clip, with tracks over 0.0–2.5 s and 2.5–5.0 s (left) and the two people’s reference-time HPM unions (right). Insets show image observations. 23

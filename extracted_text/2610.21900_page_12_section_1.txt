@@ -1,0 +1,1 @@
+TEM couples history-preserving fact storage with evidence that makes version status explicit. The update rule operates on complete version groups, and retrieval passes source order and historical labels to the generator. Across four backbones, retaining 12

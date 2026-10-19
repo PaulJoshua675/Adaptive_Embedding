@@ -1,0 +1,1 @@
+20 X. Lv et al. 29. Zheng, H.S., Mishra, S., Chen, X., Cheng, H.T., Chi, E.H., Le, Q.V., Zhou, D.: Take a step back: Evoking reasoning via abstraction in large language models. arXiv preprint arXiv:2310.06117 (2023) 30. Zhou, W., Zhang, J., Hasson, H., Singh, A., Li, W.: Hyqe: Ranking contexts with hypothetical query embeddings. arXiv preprint arXiv:2410.15262 (2024)

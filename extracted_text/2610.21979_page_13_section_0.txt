@@ -1,0 +1,1 @@
+P2TPO: Structure-Aligned Page-to-Token Credit Assignment for Full-Page Document Parsing Changda Zhou, Ziyue Gao, Xueqing Wang, Tingquan Gao, Cheng Cui, Jing Tang, and Yi Liu. Real5- OmniDocBench: A full-scale physical reconstruction benchmark for robust document parsing in the wild. arXiv preprint arXiv:2603.04205, 2026. URL https://arxiv.org/abs/2603.04205. 13

@@ -1,0 +1,1 @@
+FidLIF: Parallel Training of High-Fidelity Spiking Neurons with Exact BPTT Kaixiang He1, Yujie Wu1∗ 1Department of Computing, The Hong Kong Polytechnic University kaixiang.he@connect.polyu.hk, yu-jie.wu@polyu.edu.hk

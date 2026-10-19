@@ -1,0 +1,1 @@
+Figure 4: Population-level comparison of routing signals with N = 1 weak-model response. Each panel shows routing accuracy over the full budget range B ∈[0, 1] for a different dataset and weak–strong model pair. We compare optimal routing, corrected disagreement, raw weak–strong disagreement, and weak-model correctness. 30

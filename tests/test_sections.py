@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 import os
-import subprocess
-import sys
-import time
 from pathlib import Path
-from urllib.request import urlopen
 
 import fitz
 import pytest
@@ -14,9 +10,10 @@ pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_URL = "http://localhost:8511"
 ABSTRACT_LOG = ROOT / "tests" / "abstract_test.txt"
 FIGURE_PROOF = ROOT / "tests" / "figure30_rendered_proof.png"
+
+pytestmark = pytest.mark.integration
 
 
 def _create_fixture_dataset(root: Path) -> Path:
@@ -46,33 +43,20 @@ def _create_fixture_dataset(root: Path) -> Path:
 
 @pytest.fixture(scope="module")
 def streamlit_server(tmp_path_factory):
+    try:
+        from streamlit_test_utils import start_streamlit_server
+    except ImportError:
+        pytest.skip("The optional streamlit_test_utils helper is not installed.")
+
     workspace = tmp_path_factory.mktemp("section_fixture")
     _create_fixture_dataset(workspace)
     vector_store = workspace / "vector_store"
     static_dir = workspace / "static"
-    environment = os.environ.copy()
-    environment.update({"PYTHONUTF8": "1", "TRANSFORMERS_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false"})
-    command = [
-        sys.executable, "-m", "streamlit", "run", "app.py",
-        "--server.headless", "true", "--server.port", "8511", "--",
-        "--streamlit", "--dataset-dir", str(workspace / "dataset"),
-        "--vector-store-dir", str(vector_store),
-    ]
-    environment["RAG_STATIC_DIR"] = str(static_dir)
-    process = subprocess.Popen(command, cwd=ROOT, env=environment, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    deadline = time.time() + 45
-    while time.time() < deadline:
-        try:
-            with urlopen(BASE_URL, timeout=2):
-                break
-        except Exception:
-            time.sleep(0.5)
-    else:
-        process.terminate()
-        raise RuntimeError("Streamlit did not start")
-    yield BASE_URL
-    process.terminate()
-    process.wait(timeout=10)
+    with start_streamlit_server(
+        cli_args=("--dataset-dir", str(workspace / "dataset"), "--vector-store-dir", str(vector_store)),
+        env_overrides={"RAG_STATIC_DIR": str(static_dir)},
+    ) as base_url:
+        yield base_url
 
 
 def _open_repository(page: Page, url: str) -> None:

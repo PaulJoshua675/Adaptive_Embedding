@@ -1,0 +1,1 @@
+Scene Reconstruction Using Ubiquitous Wireless Signals N VISUAL DEMONSTRATION OF SCENE RECONSTRUCTION ALL MODELS Ground Truth Diffusion + FM (Ours) Marginal Prob. + FM (Ours) Marginal Prob. + Raw Meas. Diffusion + Raw Meas. Figure 9: Visual comparison of scene reconstructions produced by all models against the ground- truth scenes. 23

@@ -1,0 +1,1 @@
+Proof. Fix C ≥1. Define f(t) = log(1 + Ct) −C log(1 + t). Then f(0) = 0, f′(t) = C 1 + Ct − C 1 + t = −C(C −1)t (1 + t)(1 + Ct) ≤0. Therefore, f(t) ≤0 for all t ≥0.

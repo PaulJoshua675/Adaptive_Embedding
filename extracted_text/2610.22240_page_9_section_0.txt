@@ -1,0 +1,1 @@
+Limitations Refine increases evidence requirements along des- ignated reasoning chains, but filtering cannot rule out all shortcuts from parametric knowledge or alternative web evidence. Training depends on teacher and answer-judge quality, which may intro- duce noisy guidance. Open-web search also relies on changing content and tool availability, limiting reproducibility.

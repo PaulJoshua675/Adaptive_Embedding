@@ -1,0 +1,1 @@
+VoteGEO-Bench: Measuring the Impact of Generative Engine Optimization on Electoral Visibility Shiqi Zhang National University of Singapore Singapore sqzhang@nus.edu.sg Xiaokui Xiao National University of Singapore Singapore xkxiao@nus.edu.sg

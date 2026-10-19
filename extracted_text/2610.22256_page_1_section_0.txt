@@ -1,0 +1,1 @@
+BITSPARSE: COMPACT ACTIVATION STORAGE FOR ReLU FEED-FORWARD NETWORKS Max Zhu1* Bohang Sun1 Pietro Lio1 Jialin Yu2 1University of Cambridge 2University of Oxford

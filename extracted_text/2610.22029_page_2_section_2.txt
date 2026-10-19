@@ -1,0 +1,1 @@
+Self-evolution and update acceptance. STaR, Self-Instruct, and SPIN learn from self-generated supervision (Zelikman et al., 2022; Wang et al., 2023; Chen et al., 2024); Alami et al. (2024) regularize 2

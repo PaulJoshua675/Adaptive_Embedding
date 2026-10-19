@@ -1,0 +1,1 @@
+Every configuration (dataset × algorithm × variant × query mode × k) is executed as 20 independent SLURM allocations—20 separately scheduled jobs, not 20 repetitions inside one job. We reduce each allocation to one number (the median of its internal timed runs) and report 6

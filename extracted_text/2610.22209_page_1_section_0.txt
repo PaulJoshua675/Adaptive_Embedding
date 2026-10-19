@@ -1,0 +1,1 @@
+Beyond Downstream QA: Rethinking How We Evaluate Agent Memory Sebastian-Antonio Toma1,2∗, Jean de Kernier1, Mike Ply1, Oliviu Matei2 1Amazon Web Services 2Technical University of Cluj-Napoca, Romania Sebastian.Toma@campus.utcluj.ro

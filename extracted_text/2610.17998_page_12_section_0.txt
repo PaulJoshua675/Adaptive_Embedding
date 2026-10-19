@@ -1,0 +1,1 @@
+12 F. Panetta et al. 29. Zeiler, M.D., Fergus, R.: Visualizing and understanding convolutional networks. In: European conference on computer vision. pp. 818–833. Springer (2014)

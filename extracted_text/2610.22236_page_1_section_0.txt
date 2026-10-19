@@ -1,0 +1,1 @@
+Training-Free On-Policy Distillation Bangji Yang1,*, Jiajun Fan1,*, Zhaoyu Zhu1, Hongbo Ma2, Ge Liu1,† 1University of Illinois at Urbana-Champaign 2Tsinghua University *Equal contribution, †Corresponding author

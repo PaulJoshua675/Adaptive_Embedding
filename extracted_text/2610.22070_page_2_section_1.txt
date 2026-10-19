@@ -1,0 +1,1 @@
+Vision-Language Models. Vision-language models (VLMs) (Liu et al., 2023; Alayrac et al., 2022; Zhang et al., 2025b; Clark et al., 2026; Qwen Team, 2026) unify diverse visual understanding and reasoning tasks through a natural-language interface. Among these tasks, long-video understanding (Zhou et al., 2025; Wang et al., 2

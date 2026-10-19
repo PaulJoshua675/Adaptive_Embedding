@@ -1,0 +1,1 @@
+Collective Benefits and Efficiency in Coupled Echo State Networks Polyphony Bruna1† Rick Dale2 Michael J. Spivey1 Christopher T. Kello1 1University of California, Merced {pbruna, spivey, ckello}@ucmerced.edu 2University of California, Los Angeles rdale@ucla.edu †Corresponding author

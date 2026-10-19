@@ -1,0 +1,1 @@
+our knowledge, that analyses this tradeoff on a dataset with strong temporal dependencies such as the Google Speech Commands, in the framework of SNNs trained in the temporal dimension with synaptic delays.

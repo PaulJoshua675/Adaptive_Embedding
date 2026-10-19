@@ -1,0 +1,1 @@
+landscape-aware algorithm selection. Another promising direction is to combine modular CMA-ES variants with complementary optimization mechanisms, such as local search, surrogate models, or constraint handling techniques Dufoss´e and Hansen (2021), to further improve performance in scenarios where standard CMA-ES variants are suboptimal.

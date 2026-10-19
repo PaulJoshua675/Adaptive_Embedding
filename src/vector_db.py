@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-import math
+
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -26,11 +26,13 @@ _configure_faiss_threads = configure_faiss_threads
 
 def _new_index(dimension: int, vector_count: int):
     _configure_faiss_threads()
-    if vector_count < 3000:
-        return faiss.IndexIDMap(faiss.IndexFlatL2(dimension))
-    n_centroids = max(1, int(math.sqrt(vector_count)))
-    base_index = faiss.index_factory(dimension, f"IVF{n_centroids},Flat", faiss.METRIC_L2)
-    return faiss.IndexIDMap(base_index)
+    del vector_count
+    return faiss.IndexIDMap(faiss.IndexFlatIP(dimension))
+
+
+def _normalize_embedding(embedding: List[float]) -> List[float]:
+    norm = sum(value * value for value in embedding) ** 0.5
+    return [value / norm for value in embedding] if norm else list(embedding)
 
 
 class FaissVectorStore:
@@ -44,13 +46,19 @@ class FaissVectorStore:
     def add(self, documents: List[Dict[str, object]], embeddings: List[List[float]]) -> None:
         if len(documents) != len(embeddings):
             raise ValueError("The number of documents must match the number of embeddings")
+        existing_count = len(self.documents)
         self.documents.extend(documents)
-        self.embeddings.extend(embeddings)
+        normalized_embeddings = [_normalize_embedding(embedding) for embedding in embeddings]
+        self.embeddings.extend(normalized_embeddings)
         self.chunk_payloads = {index: document for index, document in enumerate(self.documents)}
-        if self.index is not None and embeddings:
+        if self.index is not None and normalized_embeddings:
+            if existing_count and self.index.is_trained:
+                self.index.add_with_ids(
+                    np.asarray(normalized_embeddings, dtype="float32"),
+                    np.arange(existing_count, len(self.documents), dtype="int64"),
+                )
+                return
             self.index = _new_index(self.dimension, len(self.embeddings))
-            if not self.index.is_trained:
-                self.index.train(np.asarray(self.embeddings, dtype="float32"))
             self.index.add_with_ids(
                 np.asarray(self.embeddings, dtype="float32"),
                 np.arange(len(self.embeddings), dtype="int64"),
@@ -61,17 +69,19 @@ class FaissVectorStore:
             return []
         limit = min(top_k, len(self.documents))
         if self.index is not None:
-            scores, indices = self.index.search(np.asarray([query], dtype="float32"), limit)
+            normalized_query = _normalize_embedding(query)
+            scores, indices = self.index.search(np.asarray([normalized_query], dtype="float32"), limit)
             return [
                 (float(score), self.chunk_payloads[int(index)])
                 for score, index in zip(scores[0], indices[0])
                 if int(index) in self.chunk_payloads
             ]
         scored = []
+        normalized_query = _normalize_embedding(query)
         for embedding, document in zip(self.embeddings, self.documents):
-            score = sum((a - b) ** 2 for a, b in zip(query, embedding))
+            score = sum(a * b for a, b in zip(normalized_query, embedding))
             scored.append((score, document))
-        return sorted(scored, key=lambda item: item[0])[:limit]
+        return sorted(scored, key=lambda item: item[0], reverse=True)[:limit]
 
     def save(self, directory: str | Path) -> None:
         path = Path(directory)
@@ -91,13 +101,27 @@ class FaissVectorStore:
         store = cls(dimension)
         store.documents = documents
         store.chunk_payloads = {index: document for index, document in enumerate(documents)}
-        store.embeddings = embeddings
+        store.embeddings = [_normalize_embedding(embedding) for embedding in embeddings]
         if faiss is not None and (path / "index.faiss").exists():
             if index_loader is None:
                 _configure_faiss_threads()
-                store.index = faiss.read_index(str(path / "index.faiss"))
+                loaded_index = faiss.read_index(str(path / "index.faiss"))
             else:
-                store.index = index_loader(str(path / "index.faiss"))
+                loaded_index = index_loader(str(path / "index.faiss"))
+            if getattr(loaded_index, "metric_type", None) == faiss.METRIC_INNER_PRODUCT:
+                store.index = loaded_index
+            else:
+                store.index = _new_index(dimension, len(store.embeddings))
+                if store.embeddings:
+                    store.index.add_with_ids(
+                        np.asarray(store.embeddings, dtype="float32"),
+                        np.arange(len(store.embeddings), dtype="int64"),
+                    )
+        elif store.index is not None and store.embeddings:
+            store.index.add_with_ids(
+                np.asarray(store.embeddings, dtype="float32"),
+                np.arange(len(store.embeddings), dtype="int64"),
+            )
         return store
 
 

@@ -1,0 +1,1 @@
+Neural Dimensional Analysis: Foundations of Dimensionless and Scale-Consistent Computation Appendix APPENDIX TABLE OF CONTENTS A Notation 14 B Limitations and scope 14 C Related work 15 D Discussion 17 E Additional theoretical statements 18 F Derivations 26 G Proofs 30 H Experimental details 37 I Full results 44

@@ -1,0 +1,1 @@
+Ba, J. L., J. R. Kiros, and G. E. Hinton (2016). Layer normalization. Berg, A., M. O’Connor, and M. T. Cruz (2021). Keyword transformer: A self-attention model for keyword spotting. arXiv preprint arXiv:2104.00769. 12

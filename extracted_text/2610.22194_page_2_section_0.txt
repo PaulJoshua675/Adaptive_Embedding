@@ -1,0 +1,1 @@
+AutoSFT: An Agentic System for Automated Data Research in Supervised Fine-Tuning Data pool Current pool Dₜ Initial data D₀ Earlier accepted batches … … + New accepted batches From synthesis subagent Updated pool Dₜ₊₁ … … Meta selects Next training recipe Rₜ₊₁ Synthesis subagent

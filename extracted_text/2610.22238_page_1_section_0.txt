@@ -1,0 +1,1 @@
+Query-Efficient Rejection Sampling for Parallel Masked Diffusion Shiyuan Zhang∗∗† Xuheng Li∗‡ Qiwei Di§ Quanquan Gu¶

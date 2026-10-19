@@ -1,0 +1,1 @@
+Table 13: KD-tree all-NN metric evaluations (k=1), all 12 datasets. Cover-tree counts for all 12 datasets appear in Appendix E. Dataset d KD-tree distance evaluations iris 4 1,126 wine 13 1,207 glass 9 1,534 bupa 6 2,914 pima 8 7,605 ionosphere 34 3,773 optdigits 64 417,599 pendigits 16 274,892 letter 16 2,111,157 corel 32 566,391 covtype 54 10,982,600 mnist 784 594,194,887 45

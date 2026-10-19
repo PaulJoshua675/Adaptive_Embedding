@@ -1,0 +1,1 @@
+Preprint PATHFM: FAST GENERATIVE FORECASTING OF MULTIVARIATE TRAJECTORIES Jiachen Yao1,∗ Xiyuan Zhang2,† Annan Yu2 Boran Han2 Abdul Fatir Ansari2 Shuai Zhang2 Michael Bohlke-Schneider2 Bernie Wang2 1California Institute of Technology 2Amazon

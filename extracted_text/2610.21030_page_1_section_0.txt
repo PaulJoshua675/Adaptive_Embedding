@@ -1,0 +1,1 @@
+Learning When to Think: Utility-Guided Adaptive Reasoning for Efficient Text Retrieval Yingtao Luo1 Kangyi Zhao2 Shiyi Du1 Yubo Li1 1Carnegie Mellon University 2University of Pittsburgh {yingtaol, shiyid, yubol}@andrew.cmu.edu kaz78@pitt.edu

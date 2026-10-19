@@ -1,0 +1,1 @@
+Not X, but When: Diagnosing a Mandarin LLM Writing Tic through Contextual Appropriateness Yihang Peng1∗Yi Jing1∗Dewen Liu2 Weihan Meng1 Ying Liu1† 1Tsinghua University 2Fudan University yingliu@tsinghua.edu.cn

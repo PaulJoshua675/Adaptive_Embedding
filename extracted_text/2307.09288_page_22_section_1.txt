@@ -1,0 +1,1 @@
+tions or false beliefs. We employ TruthfulQA (Lin et al., 2021) to measure how well our LLMs can generate reliable outputs that agree with factuality and common sense.

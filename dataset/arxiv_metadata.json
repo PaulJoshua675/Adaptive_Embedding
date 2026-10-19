@@ -1,0 +1,1812 @@
+{
+  "1706.03762": {
+    "title": "Provided proper attribution is provided, Google hereby grants permission to",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2203.02155": {
+    "title": "Training language models to follow instructions",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2301.10446": {
+    "title": "Scattering in algebraic approach to quantum",
+    "categories": [],
+    "classification_method": "local-title-abstract-keywords-v5"
+  },
+  "2305.11018": {
+    "title": "Sizing multimodal suspensions with differential dynamic",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2307.09288": {
+    "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2310.12345": {
+    "title": "CLUST3: INFORMATION INVARIANT TEST-TIME TRAINING",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2311.04512": {
+    "title": "IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS",
+    "categories": [
+      "cs.AI",
+      "cs.CV",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v4"
+  },
+  "2312.05678": {
+    "title": "Measuring sampling plan utility in",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2312.09876": {
+    "title": "Automatic Image Colourizer",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2401.12345": {
+    "title": "Distributionally Robust Receive Combining",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.09280": {
+    "title": "Evaluating the Transfer of Co-Evolved Communication from 2D to",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.09347": {
+    "title": "RELOCATING NONLINEARITY: HOW A DOWNSTREAM LEARNER",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.09699": {
+    "title": "The Modular CMA-ES: A Framework for Modern Evolution",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.10038": {
+    "title": "Evolve on the Host, Predict on the Edge: Deploying Online Neuroevolutionary",
+    "categories": [
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.10496": {
+    "title": "Evolutionary Architecture Search for Chlorophyll-𝑎",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.11546": {
+    "title": "Learning to Orchestrate Evolutionary Search:",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.12183": {
+    "title": "A CLOSER LOOK AT AGENTIC BBO: BENCHMARKING",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.12251": {
+    "title": "Universal Construction and Exact Self-Reproduction",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.12536": {
+    "title": "EliteTable: Self-Improving Program Search",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.13118": {
+    "title": "The value of information and the emergence of communication in",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.13471": {
+    "title": "REMBGO for Evaluation-Limited Optimization:",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.13663": {
+    "title": "A Multi-Agent LLM System for Automated Tuning of Specialized Neural Network Models",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG",
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.13918": {
+    "title": "DyssomniaNN: Multi-Scale Spiking Neural Modeling",
+    "categories": [
+      "cs.LG",
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.14258": {
+    "title": "Do Artificial Neural Networks Need Dendritic Nanotubes?",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.14409": {
+    "title": "Preprint. Under review",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.15106": {
+    "title": "RELAGRAM: Recursive Latent Graph Model for the",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.15146": {
+    "title": "Compute-Optimal Scaling Laws for Spiking Language",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.15307": {
+    "title": "FENAS: A Few-Shot Meta-Ensembling",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.15450": {
+    "title": "CoFlu-Brain: An fMRI Connectivity Foun-",
+    "categories": [
+      "cs.LG",
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.15513": {
+    "title": "REPRO: Reflective Evolutionary Prompt Optimizer for",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.15830": {
+    "title": "How Shared Representations Become Specialized:",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.16102": {
+    "title": "Where Polanyi Meets Galois:",
+    "categories": [
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.16158": {
+    "title": "Research Paper Track",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.16356": {
+    "title": "naspaclust: A hybridisation of spatial fuzzy clustering",
+    "categories": [
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.16822": {
+    "title": "DTA-GT: Direction- and Topology-Aware Graph",
+    "categories": [
+      "cs.CL",
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.16921": {
+    "title": "Time Window Optimization for Motor Imagery",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.16924": {
+    "title": "FidLIF: Parallel Training of High-Fidelity Spiking Neurons with Exact BPTT",
+    "categories": [
+      "cs.LG",
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.16940": {
+    "title": "KNN Implementation Details Can Dramatically",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.16979": {
+    "title": "WeGR: Unified Generative Retrieval for Industrial Search",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.16981": {
+    "title": "Tracing Money Flows in the Multi-Token",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.17243": {
+    "title": "From Conceptual EneMonIE to an Executable Backend:",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.17368": {
+    "title": "HASTE: Hierarchical and Attribute-aware Supervision for",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.17467": {
+    "title": "Computed, not Memorized: Bit-Factorized Identifiers for Efficient",
+    "categories": [
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.17506": {
+    "title": "Collective Benefits and Efficiency in Coupled Echo",
+    "categories": [
+      "cs.LG",
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords-v5"
+  },
+  "2610.17549": {
+    "title": "Reference Wording Shapes Retrieval",
+    "categories": [
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.17627": {
+    "title": "AiSAQ-in-Filtering for DRAM-free Filtered Information Retrieval",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.17673": {
+    "title": "RALI@iKAT 2026: Retrieval-aware User Profile Denoising via",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.17768": {
+    "title": "More Reader Data or a Better Teacher?",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.17813": {
+    "title": "SSEMB: TRAINING A GENERALIZABLE SPEECH RETRIEVAL MODEL USING ONLY",
+    "categories": [
+      "cs.CL",
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.17814": {
+    "title": "When Inputs Receive No Score: Evaluating Open-Web Event",
+    "categories": [
+      "cs.AI",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.17823": {
+    "title": "Mitigating Popularity Bias in Sequential Recommendations with",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.17841": {
+    "title": "FASHION-RQ: Mining Hierarchical Semantic Structure for Automated",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.17969": {
+    "title": "Neural Dimensional Analysis:",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.17986": {
+    "title": "WEB SCALE ON A BUDGET:",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.17998": {
+    "title": "Saliency-Guided Replay for Continual Learning in",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.18085": {
+    "title": "Same Function, Different Trajectory: No Standard Optimizer",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.18126": {
+    "title": "Fresh at Decision, Stale at Action: Routing New Information to LLM",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.18272": {
+    "title": "JevGPT: Thinking Fast and Slow in Autonomous Research",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.18308": {
+    "title": "SimInter: Evidence-Grounded User Simulation with Interview-Based",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.18354": {
+    "title": "Choosing LLMs for Strategic Agent Interactions",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.18410": {
+    "title": "Graph-free Retrieval with Graph-Modified",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.18526": {
+    "title": "Retrieval Disagreement as a Signal: Diagnosing and Steering",
+    "categories": [
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.18616": {
+    "title": "Knowledge Graphs as Files:",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.18622": {
+    "title": "Structural Segmentation for Brazilian Legal Document",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.18654": {
+    "title": "Kwai Summary Attention V2 Technical Report",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.19065": {
+    "title": "Revisiting Generative vs. Dense Retrieval:",
+    "categories": [
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.19068": {
+    "title": "Plan or Retrieve First? A Scale Study of Tool",
+    "categories": [
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.19220": {
+    "title": "Accepted at NeurIPS 2026 Workshop on Symmetry and Geometry in Neural Representations (NeurReps), non-archival",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.19398": {
+    "title": "RCER: Reconstructing Cross-Evidence Relations",
+    "categories": [
+      "cs.AI",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.19454": {
+    "title": "AdCoEvo: A Co-Evolving Multi-Agent Advertising",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.19487": {
+    "title": "How Long Is the Coast of a Neuron?",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.19528": {
+    "title": "Retrieve What Helps, Only When It Helps: Agentic Reinforcement",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.19578": {
+    "title": "Bridging the Topological Divide: Dual-Branch Graph",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.19608": {
+    "title": "Twenty Days Later: A Pre-Registered Test of History-Based",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.19730": {
+    "title": "Design and Analysis of Temporal Representations",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.19732": {
+    "title": "Controlling the latency in temporal coded spiking models for",
+    "categories": [
+      "cs.LG",
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.20048": {
+    "title": "Reading the Neighborhood: Text-Attentive Graph Reranking for",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.20122": {
+    "title": "XViewRank: Overlap-Conditioned Score Fusion",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.20191": {
+    "title": "HEM-Med: A Hierarchical Agentic Memory",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.20293": {
+    "title": "CASI: CREDIT ASSIGNMENT VIA SET INTERVENTION",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.20578": {
+    "title": "Creating SquashFS Images to",
+    "categories": [],
+    "classification_method": "local-title-abstract-keywords-v5"
+  },
+  "2610.20664": {
+    "title": "INFORMATION-GAIN CALIBRATED ON-POLICY DIS-",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.20857": {
+    "title": "Idea2Prior: Auditable Paper Retrieval and",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.20913": {
+    "title": "TransX Technical Report",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.21030": {
+    "title": "Learning When to Think: Utility-Guided Adaptive",
+    "categories": [
+      "cs.AI",
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21042": {
+    "title": "ReviewPilot: A Multi-Agent System for Screening and Data Extraction in",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.21113": {
+    "title": "SSR: Structural Signal Retriever for Scalable Agent",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.21220": {
+    "title": "RecSoup: Efficient Model Merging Approach",
+    "categories": [
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21267": {
+    "title": "TRACER: Trajectory-Aware Tool Retrieval for LLM Agents",
+    "categories": [
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21300": {
+    "title": "Making every stage of medical device document assessment with",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.21311": {
+    "title": "First Mathematical Runtime Analyses of",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.21330": {
+    "title": "VoteGEO-Bench: Measuring the Impact of Generative Engine",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.21665": {
+    "title": "Approaching Backpropagation Accuracy",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21731": {
+    "title": "Retrieved but Not Read: Understanding Why Search-Augmented LLMs",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.21807": {
+    "title": "Discover Networks",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v4"
+  },
+  "2610.21808": {
+    "title": "ROLEQ: ROLE-ALIGNED SCALES FOR CONVERTING",
+    "categories": [
+      "cs.CL",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21810": {
+    "title": "N-Gram Memories at Two Bits: Quantizing Lookup Tables in Large",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21862": {
+    "title": "Dynamic ordering in sequence generation in Transformers: experiments on",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21877": {
+    "title": "Aligning LLMs with Sparse Retrieval via",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.21893": {
+    "title": "GACC-Bench: Benchmarking Goal-Adaptive Context Compression",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.21900": {
+    "title": "TEM: Temporal State Tracking Memory for Large",
+    "categories": [
+      "cs.AI",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21941": {
+    "title": "Learning Speech Attribute Representations",
+    "categories": [
+      "cs.CL",
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.21979": {
+    "title": "P2TPO: Structure-Aligned Page-to-Token Credit",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.21984": {
+    "title": "GRID-Planner: Graph-Structured Relational Reward Shaping for",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.21990": {
+    "title": "VesperMUSE: Multi-Modal Fusion Vision",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords-v4"
+  },
+  "2610.21993": {
+    "title": "Data-Efficient ConvNeXt Pretraining for High-Resolution",
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22009": {
+    "title": "Visual Sanad: Auditing Vision–Language Models for",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22017": {
+    "title": "CARA: Causally Guided Retrieval Agent for Question Answering",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22018": {
+    "title": "When Models Misread Ink: Auditing VLMs for",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22019": {
+    "title": "PRIMING BASE MODELS FOR AGENTIC",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22029": {
+    "title": "SELECTION IS NOT LEARNING:",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22039": {
+    "title": "WEAVE: Weaving Real-World Code Evolution into Dependency-Structured Tasks",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22043": {
+    "title": "Momentum, Commentary Tone, and Earnings Surprise",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22046": {
+    "title": "Effectiveness of Hidden-State Probes",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22053": {
+    "title": "Name-Bias in Large Language Models",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22060": {
+    "title": "FeaTok: Feature-Loss Tokenization for",
+    "categories": [
+      "cs.CL",
+      "cs.CV",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22062": {
+    "title": "Documenting Trofinetide Treatment Phenotypes in Rett Syndrome",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22065": {
+    "title": "ABNAT: Attention-Based Noise-Aware Training for Robust",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22067": {
+    "title": "Characterising the Difficulty of Long-Context Reasoning",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22070": {
+    "title": "Memory as Weights: Internalizing Long-Term",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22071": {
+    "title": "The Right Byte First:",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v4"
+  },
+  "2610.22075": {
+    "title": "Preprint. Under review",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22077": {
+    "title": "CAN AI FORECAST THE EXTREMES?",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v5"
+  },
+  "2610.22083": {
+    "title": "Beyond the Hamming Cliff: Compact Spatial Encodings Preserving",
+    "categories": [
+      "cs.AI",
+      "cs.LG",
+      "cs.NE"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22084": {
+    "title": "Learning Changes the World and Then What Was Learned has Changed:",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22086": {
+    "title": "Multi-SFT: Permissively-Licensed Multilingual Instruction-Following",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22087": {
+    "title": "PATHOLOGY FOUNDATION MODELS",
+    "categories": [
+      "cs.CV",
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22091": {
+    "title": "BEYOND THE DOMINANT LABEL: RECOVERING COEXISTING LESION EVIDENCE",
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22094": {
+    "title": "SCCL-DT: Semantic-Conflict-Aware Contrastive Learning with Dual-Rule",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22099": {
+    "title": "TIPS: A Tiny Inference-time Policy",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22100": {
+    "title": "Patch where the text is new: a compression view of where",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22110": {
+    "title": "Unfragmenting Nawatl NMT: Single-Variant",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22120": {
+    "title": "Scene Reconstruction Using Ubiquitous Wireless Signals",
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22122": {
+    "title": "Beyond Fixed Acquisition Functions:",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22126": {
+    "title": "Causal Integrated Gradients:",
+    "categories": [
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22127": {
+    "title": "Explaining the Roles of Experts in Mixture-of-Experts LLMs for",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22131": {
+    "title": "Intern-Decision: Efficient Multimodal Decision",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22138": {
+    "title": "Believed but Not Said: Measuring Hidden Belief Collapse",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22143": {
+    "title": "FALCON: FPGA-Accelerated Latency-Certifiable Occupancy Networks",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords-v4"
+  },
+  "2610.22152": {
+    "title": "Specification Gaming and a Constrained Reinforcement",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22155": {
+    "title": "REALTIME-BENCH: CAN FRONTIER MODELS SOLVE",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22157": {
+    "title": "The importance of tensor handling and implementation of",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22158": {
+    "title": "PremiseSQL: Evaluating Premise Critique and Abstention in Text-to-SQL",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22160": {
+    "title": "September, 2026",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22163": {
+    "title": "Multi-sourced AI Tutor for Non-Native English Speaker Students",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22167": {
+    "title": "CLUE: Uncovering Social Context for Pragmatic Understanding",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22169": {
+    "title": "Lexical Reference Frames:",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22174": {
+    "title": "Mosaic: Multi-Session Agentic Reinforcement",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22177": {
+    "title": "Motion- and Gravity-Aware Feedforward 3D",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22178": {
+    "title": "REKI: REGISTERING KNOWLEDGE IN VLAS",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22179": {
+    "title": "LCT: LOSSLESSLY COMPRESSED TENSORS WITH GPU",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22182": {
+    "title": "LAMP: Layerwise Adaptive Mixing of Predictors for",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22184": {
+    "title": "Whole-Body Dexterity",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22186": {
+    "title": "EVA-Cap: Optimizing Audiovisual Video Captioning",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.CV",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22187": {
+    "title": "Change the Number, Change the Answer:",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22191": {
+    "title": "Attention over noisy examples",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22192": {
+    "title": "2610.22192",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22194": {
+    "title": "AutoSFT: An Agentic System for Automated Data",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22195": {
+    "title": "HTN-Orchestrate: A Hierarchical Task Network Framework for Multi-Agent",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22196": {
+    "title": "Hy-Memory-30B-A3B: Attributed Reinforcement Learning for",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22200": {
+    "title": "OpenGCUA: Toward a Fully Open Stack for Generalist Computer Use",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22201": {
+    "title": "Decentralized LLM Workflows via Sequential",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22209": {
+    "title": "Beyond Downstream QA: Rethinking How We Evaluate Agent Memory",
+    "categories": [
+      "cs.AI",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22210": {
+    "title": "TRACE: Topology-Aware Reconnection via Prediction-Adaptive Connectivity",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords-v4"
+  },
+  "2610.22211": {
+    "title": "A RESTART RULE FOR GENETIC ALGORITHMS",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22213": {
+    "title": "Generalization Guarantees of Randomized Block Coordinate",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22214": {
+    "title": "GNN-Guided Local Refinement for Efficient Layout",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22215": {
+    "title": "FutureLift: Lifting Trajectory Proposals into Bidirectional Future Graphs for",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22217": {
+    "title": "SKILL-DECOUPLED ON-POLICY EXPERT DISTILLA-",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22221": {
+    "title": "How Much Physics Can Vision Learn from Audio?",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22230": {
+    "title": "Architecting for Hardware Diversity: Meta’s End-to-End",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22232": {
+    "title": "WaveLLM: Wavelet-Domain LLM Entropy Modeling for Lossless",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22234": {
+    "title": "OS-HELIX: UNIFYING GUI INTERACTION AND CODE",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22236": {
+    "title": "Training-Free On-Policy Distillation",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22238": {
+    "title": "Query-Efficient Rejection Sampling for",
+    "categories": [
+      "cs.CL",
+      "cs.IR",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22240": {
+    "title": "MMSearch-OPD: Easy Made Hard, Hard Made Learnable for",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22242": {
+    "title": "SURVICL: A FOUNDATION MODEL FOR IN-CONTEXT",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22243": {
+    "title": "Shortcut Sensitivity in Agent-Safety Evaluations",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22244": {
+    "title": "Language Is a Security Surface for Agent Guards",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22245": {
+    "title": "Disagreement-Guided Weak-to-Strong Routing",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22249": {
+    "title": "Not X, but When: Diagnosing a Mandarin LLM Writing Tic",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22252": {
+    "title": "Explore Once, Evaluate Many: Multiple Policy Evaluation for",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22256": {
+    "title": "BITSPARSE: COMPACT ACTIVATION STORAGE FOR ReLU",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22258": {
+    "title": "Denoising Textures is a Different Ballgame",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22259": {
+    "title": "FPG-SEG: ANNOTATION-FREE RETINAL VESSEL TOPOLOGY SEGMENTATION",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22262": {
+    "title": "Topology-Inspired Fine-Tuning for Wind-Field Super-Resolution",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22263": {
+    "title": "Baselines and Score Centering in Policy Gradient Estimation",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22264": {
+    "title": "SCOPE: Semantic Bounded Credit Optimization for",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22267": {
+    "title": "Beyond Pairwise Repulsion: Collective Diversity",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22269": {
+    "title": "X-RIC: An Agentic RAN-Intelligent Controller",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22270": {
+    "title": "Unsupervised Clustering of Public Transport",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22273": {
+    "title": "Librarian Agents: Training LLMs to Curate Long-Context",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22276": {
+    "title": "MJev-Spatial: System One Spatial Intelligence",
+    "categories": [
+      "cs.CL",
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22280": {
+    "title": "LEASH: Uncertainty-Aware Weak-to-Strong",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22282": {
+    "title": "ROUTING POLICY OPTIMIZATION FOR ONLINE DIFFU-",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22285": {
+    "title": "Asking Smarter Questions: Targeted Active",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22287": {
+    "title": "Learning Rational Strategies",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22289": {
+    "title": "Improving Environment-Agnostic Coding Agents:",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22290": {
+    "title": "ELITEREPLAY: Preserving Diverse Solutions in RL Post-Training",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22292": {
+    "title": "CAT-ALYZING HONESTY: CONTINUOUS ADVERSAR-",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22293": {
+    "title": "Towards Continual Learning: Mitigating",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22294": {
+    "title": "Multi-Target Few-Shot Prompting with Diffusion Language Models",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22295": {
+    "title": "Grounded Human-Attributed Description and",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22296": {
+    "title": "Backward Compatibility in Zero-Bit Neural Audio",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22297": {
+    "title": "PRIVATE RETRIEVAL AUGMENTED GENERATION VIA RANDOM",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22298": {
+    "title": "A BENCHMARK OF LLM CLINICAL MULTIDISCIPLINARY",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22300": {
+    "title": "KNOWLEDGE THAT IS LINEAR BEFORE",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22306": {
+    "title": "ARC-SORT: Adaptive, Robust, Compensated Multi-Object Tracking",
+    "categories": [
+      "cs.AI",
+      "cs.CV",
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22311": {
+    "title": "VELOX: SPATIAL MEMORY MAKES",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22312": {
+    "title": "Can LLMs Predict How Discrete Worlds Change?",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22314": {
+    "title": "MindEval2: Clinically Grounded Patients and Rubrics for",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22316": {
+    "title": "Learning to Steer LLM Agents and Multi-Agent Systems",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22319": {
+    "title": "A team of Gemini 4 Argon agents beats",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22320": {
+    "title": "Not Just a Subject: Capturing Adaptive",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22321": {
+    "title": "AVC-REWARD: EVENT-CENTRIC AUDIO-VIDEO",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22322": {
+    "title": "LEARNING SELF-ORCHESTRATION IN",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22324": {
+    "title": "Preprint. Under Review",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22325": {
+    "title": "PIXEL-LEVEL 4D HUMAN CORRESPONDENCE",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22327": {
+    "title": "TWICE UPON A TIME: COMPLEMENTARY REPRESEN-",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22328": {
+    "title": "ACEdit: Stable Multi-Turn Image Editing via Asymmetric Conditioning",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22330": {
+    "title": "Designing Transformers for Continuous",
+    "categories": [
+      "cs.AI",
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22331": {
+    "title": "KnowGPO: Knowledge-Grouped Policy Optimization for Search Agents",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22333": {
+    "title": "Evaluation Awareness Beyond English:",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22336": {
+    "title": "Robust Reinforcement Learning for Dynamic Treatment Regimes",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22339": {
+    "title": "LEANGRAPHSEARCH",
+    "categories": [
+      "cs.IR"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22340": {
+    "title": "Dexterity from Supervised Play",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22341": {
+    "title": "3DCodeVerse: Exploring 3D Worlds as Code",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22343": {
+    "title": "GEOSTATE: LEARNING VIEW-DECOUPLED",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22344": {
+    "title": "MLExpert: Towards a Generalist Agentic Model",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22347": {
+    "title": "Speculative Forcing for Efficient Autoregressive Video Generation",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22350": {
+    "title": "FDE-Gym: The Last Mile of AI Delivery",
+    "categories": [
+      "cs.AI"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22352": {
+    "title": "3D Generation with Super-Aligned Texture",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22353": {
+    "title": "RETHINKING ROUTING EXPLORATION",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22355": {
+    "title": "OmniVerifier-C1: Decomposed Graded Verifier for Rule-Governed Generative World Modeling",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22356": {
+    "title": "DK-VLM: Geometry as Position for Spatial Reasoning in",
+    "categories": [
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22358": {
+    "title": "PATHFM: FAST GENERATIVE FORECASTING OF",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v4"
+  },
+  "2610.22360": {
+    "title": "Grounding Generative Verification in 3D Content",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22362": {
+    "title": "CoDA: Co-Evolution of Data Engines and Action Policies",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22363": {
+    "title": "PERCEIVE, PREDICT, AND PLAN:",
+    "categories": [
+      "cs.CL",
+      "cs.CV"
+    ],
+    "classification_method": "local-title-abstract-keywords"
+  },
+  "2610.22364": {
+    "title": "T2-Z: TEST-TIME OPTIMIZATION OF ENVIRONMENT",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22367": {
+    "title": "Discovering state-of-the-art quantum circuits with large language models",
+    "categories": [
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  },
+  "2610.22369": {
+    "title": "ADAPTIVE STEP SIZE CACHING FOR",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22370": {
+    "title": "Which Tokens to Merge? Diffusion Dynamics",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22371": {
+    "title": "GEN4P: VIDEO GENERATORS ARE 4D PERCEIVERS",
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v3"
+  },
+  "2610.22372": {
+    "title": "LIBERO-PeRM: Benchmarking Personalized",
+    "categories": [
+      "cs.LG"
+    ],
+    "classification_method": "local-title-abstract-keywords-v2"
+  }
+}

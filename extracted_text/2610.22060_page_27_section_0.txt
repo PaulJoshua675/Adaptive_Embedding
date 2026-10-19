@@ -1,0 +1,1 @@
+lighthouse (437) pickup truck (717) school bus (779) Figure 10 ImageNet qualitative samples (3/4). Rows: BAR-L, then FeaTok-L with SigLIP2, DINOv2, DINOv3, and SigLIP, at their respective guided settings (App. E). 27

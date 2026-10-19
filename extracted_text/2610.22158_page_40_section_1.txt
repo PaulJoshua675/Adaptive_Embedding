@@ -1,0 +1,1 @@
+Behavior: NO SQL GENERATED Metrics: GEN=0 ANALYSIS The model confuses missing sample rows with an inability to generate SQL. Figure 23: Original-query control under Base prompting, Claude Opus 5.5. The model treats the absence of a matching city in the supplied rows as grounds for withholding otherwise valid SQL (GEN=0). 40

@@ -1,0 +1,1 @@
+KnowGPO: Knowledge-Grouped Policy Optimization for Search Agents Siqi Chen1,2, Zhengxi Lu1, Yuchen Yan1, Xingyu Wu1,2, Qipeng Chen1, Xin Zhang2, Aiting Liu2, Chao Deng2, Jie Liu2, Jin Ma2, Weiming Lu1, Jun Xiao1, Yongliang Shen1* 1Zhejiang University, 2Tencent. {siqichen,syl}@zju.edu.cn, daniellwang@tencent.com

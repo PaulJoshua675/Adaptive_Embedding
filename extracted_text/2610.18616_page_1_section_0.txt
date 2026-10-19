@@ -1,0 +1,1 @@
+Knowledge Graphs as Files: An Agent Harness Where Tool Creation and Tool Use Co-Evolve Yuyang Bai1, Yu Wang2, Yu Zhang1 1Texas A&M University, 2University of Georgia {ybai, yuzhang}@tamu.edu

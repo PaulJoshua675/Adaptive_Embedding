@@ -1,0 +1,1 @@
+macaw (88) goose (99) golden retriever (207) Figure 8 ImageNet qualitative samples (1/4). Rows: BAR-L, then FeaTok-L with SigLIP2, DINOv2, DINOv3, and SigLIP, at their respective guided settings (App. E). 25

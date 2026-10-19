@@ -1,0 +1,1 @@
+Using geometric approach we formulate quantum theory in terms of Jordan algebras. We analyze the notion of (quasi)particle (=elementary excitation of translation-invariant stationary state) and the scattering of (quasi)particles in this framework. 1

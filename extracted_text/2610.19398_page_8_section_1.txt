@@ -1,0 +1,1 @@
+RCER reconstructs cross-evidence relations to guide retrieval, then combines complementary passages and inferences for compositional an- swering. Experiments on five QA benchmarks show improved performance. 8

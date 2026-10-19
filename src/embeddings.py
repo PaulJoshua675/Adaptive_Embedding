@@ -60,7 +60,7 @@ class EmbeddingEncoder:
         return vectors
 
     def encode_query(self, query: str) -> List[float]:
-        prefix = "query: " if self.key == "e5" else ""
+        prefix = "query: " if self.key == "e5" and self.using_transformer else ""
         return self.encode(prefix + query)[0]
 
 
@@ -78,6 +78,10 @@ class EmbeddingRegistry:
     def encode_documents(self, chunks: Iterable[Dict[str, object]]) -> Dict[str, List[List[float]]]:
         texts = [str(chunk.get("text", "")) for chunk in chunks]
         return {
-            key: encoder.encode([f"passage: {text}" for text in texts] if key == "e5" else texts)
+            key: encoder.encode(
+                [f"passage: {text}" for text in texts]
+                if key == "e5" and encoder.using_transformer
+                else texts
+            )
             for key, encoder in self.encoders.items()
         }

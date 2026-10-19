@@ -1,0 +1,1 @@
+Figure C.1: Lengths of sequences created by the preprocessing algorithm, for different labels of the GSC dataset. . 15

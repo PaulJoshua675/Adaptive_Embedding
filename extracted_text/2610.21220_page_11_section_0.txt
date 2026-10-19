@@ -1,0 +1,1 @@
+RecSoup: Efficient Model Merging Approach for Controllable Multi-Objective Recommendation CIKM ’26, November 07–11, 2026, Rome, Italy GenAI Usage Disclosure The authors used generative AI tools only for language polishing and improving clarity of expression. All AI-assisted edits were reviewed and verified by the authors, who take full responsibility for the final content.

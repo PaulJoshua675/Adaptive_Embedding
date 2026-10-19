@@ -1,0 +1,1 @@
+Pretrained representations for continuous generation. Continuous generators show that the pretraining objective of the features matters. RAE (Zheng et al., 2026b) and RAEv2 (Singh et al., 2026) train diffusion models in the feature spaces of pretrained vision encoders, paired with learned image decoders, and RAE finds that 8

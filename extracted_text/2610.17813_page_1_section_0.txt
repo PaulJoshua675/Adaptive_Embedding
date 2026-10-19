@@ -1,0 +1,1 @@
+SSEMB: TRAINING A GENERALIZABLE SPEECH RETRIEVAL MODEL USING ONLY AUTOMATIC SPEECH RECOGNITION DATA Sangkwon Park1, Dongwook Lee2, Youngho Cho2, Donghun Kang1, Heeseung Kim4†, Sungroh Yoon1,2,3† 1ECE, Seoul National University 2IPAI, Seoul National University 3AIIS, ASRI, INMC, and ISRC, Seoul National University 4University of Seoul

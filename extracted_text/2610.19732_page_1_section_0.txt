@@ -1,0 +1,1 @@
+Controlling the latency in temporal coded spiking models for neuromorphic datasets Alban Gattepaille Universit´e Cˆote d’Azur - CNRS - I3S, Nice, France alban.colas-gattepaille@univ-cotedazur.fr Alexandre Muzy International Laboratory on Learning Systems (ILLS) McGill - MILA - ETS - Universit´e Paris-Saclay - CentraleSupelec - CNRS, Montr´eal, Canada alexandre.muzy@cnrs.fr

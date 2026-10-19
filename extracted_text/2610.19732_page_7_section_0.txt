@@ -1,0 +1,1 @@
+Figure 5: Accuracy-Latency tradeoff. On top left: Accuracy for different values of R. On top right: Latency for different values of R. On bottom: accuracy as a function of latency. . 3.1.2

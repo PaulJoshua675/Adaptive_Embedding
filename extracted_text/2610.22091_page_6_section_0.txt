@@ -1,0 +1,1 @@
+5. COMPLIANCE WITH ETHICAL STANDARDS This study used only de-identified or coded pathology images from the released BRACS, EBRAINS, and TCGA resources; no new par- ticipants, specimens, or animals were involved. All data were used in accordance with the applicable access and data-use terms.

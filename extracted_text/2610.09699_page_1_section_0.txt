@@ -1,0 +1,1 @@
+The Modular CMA-ES: A Framework for Modern Evolution Strategies Jacob de Nobel Diederick Vermetten Anna V. Kononova Carola Doerr Thomas B¨ack

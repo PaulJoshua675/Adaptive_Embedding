@@ -1,0 +1,1 @@
+Preprint. Under review. RETROFITTING RECURRENT VISION–LANGUAGE MODELS FROM PRETRAINED BACKBONES Madhav Iyengar1 Andreas Geiger1,2 Hilde K¨uhne1 1University of T¨ubingen, T¨ubingen AI Center 2KE:SAI Project page: https://madhavesdios.github.io/recurrent-vlms

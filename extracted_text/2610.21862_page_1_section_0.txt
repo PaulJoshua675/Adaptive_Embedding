@@ -1,0 +1,1 @@
+Dynamic ordering in sequence generation in Transformers: experiments on low-resource Tagging scenarios Giacomo Bais Aalborg University gba@cs.aau.dk Tejaswini Deoskar Utrecht University t.deoskar@uu.nl

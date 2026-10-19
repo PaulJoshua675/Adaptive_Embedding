@@ -1,0 +1,1 @@
+Learning Changes the World and Then What Was Learned has Changed: Training and Deploying Neural Networks in the Control Loop Vittorio Lippi1 a 1Calejo Hybrid Intelligence AB, Mellansjö 109, 92592 Tärnaby, Sweden vittorio.lippi@calejo.ai Keywords: Neural Networks, Adaptive Control, Closed-Loop Identification, Distributional Shift

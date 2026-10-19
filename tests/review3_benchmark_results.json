@@ -1,0 +1,955 @@
+{
+  "generated_at": "2026-10-18T15:00:03.327031+00:00",
+  "index_dir": "D:\\enhanced rag model\\vector_store",
+  "chunk_count": 18352,
+  "source_count": 245,
+  "embedding_models": {
+    "bge": "BAAI/bge-small-en-v1.5",
+    "e5": "intfloat/e5-small-v2",
+    "minilm": "sentence-transformers/all-MiniLM-L6-v2"
+  },
+  "embedding_backend_setting": "feature-hash fallback",
+  "reranking": "disabled to isolate encoder/routing retrieval quality",
+  "judgment": "one manually mapped relevant paper per query; exploratory smoke benchmark, not a full relevance set",
+  "runs_per_query": 3,
+  "top_k": 3,
+  "cases": [
+    {
+      "query": "Explain scaled dot-product attention and multi-head attention.",
+      "relevant_source": "1706.03762",
+      "intent": "technical"
+    },
+    {
+      "query": "How does the Transformer use positional encodings?",
+      "relevant_source": "1706.03762",
+      "intent": "conceptual"
+    },
+    {
+      "query": "Attention Is All You Need",
+      "relevant_source": "1706.03762",
+      "intent": "entity"
+    },
+    {
+      "query": "What is the supervised fine-tuning stage in InstructGPT?",
+      "relevant_source": "2203.02155",
+      "intent": "conceptual"
+    },
+    {
+      "query": "Describe the reward model objective used for instruction following.",
+      "relevant_source": "2203.02155",
+      "intent": "technical"
+    },
+    {
+      "query": "Training language models to follow instructions with human feedback",
+      "relevant_source": "2203.02155",
+      "intent": "entity"
+    },
+    {
+      "query": "How was Llama 2 fine-tuned with human preference data?",
+      "relevant_source": "2307.09288",
+      "intent": "conceptual"
+    },
+    {
+      "query": "Compare the context windows reported for Llama 2 models.",
+      "relevant_source": "2307.09288",
+      "intent": "technical"
+    },
+    {
+      "query": "Llama 2",
+      "relevant_source": "2307.09288",
+      "intent": "entity"
+    }
+  ],
+  "summary": {
+    "BGE baseline": {
+      "hit@3": 0.1111111111111111,
+      "precision": 0.037037037037037035,
+      "recall": 0.1111111111111111,
+      "f1": 0.05555555555555555,
+      "median_latency_ms": 1.0641999979270622,
+      "query_count": 9
+    },
+    "E5 baseline": {
+      "hit@3": 0.4444444444444444,
+      "precision": 0.24074074074074073,
+      "recall": 0.4444444444444444,
+      "f1": 0.2962962962962963,
+      "median_latency_ms": 1.0696999997890089,
+      "query_count": 9
+    },
+    "MiniLM baseline": {
+      "hit@3": 0.3333333333333333,
+      "precision": 0.14814814814814814,
+      "recall": 0.3333333333333333,
+      "f1": 0.2037037037037037,
+      "median_latency_ms": 1.0140999984287191,
+      "query_count": 9
+    },
+    "Adaptive RAG": {
+      "hit@3": 0.4444444444444444,
+      "precision": 0.24074074074074073,
+      "recall": 0.4444444444444444,
+      "f1": 0.2962962962962963,
+      "median_latency_ms": 1.1072000015701633,
+      "query_count": 9
+    }
+  },
+  "results": {
+    "BGE baseline": [
+      {
+        "query": "Explain scaled dot-product attention and multi-head attention.",
+        "intent": "technical",
+        "relevant_source": "1706.03762",
+        "embedding_key": "bge",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.631742537021637,
+        "retrieved_sources": [
+          "2610.22065",
+          "1706.03762",
+          "2610.18654"
+        ],
+        "latency_median_ms": 0.5935000008321367,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "true_positives": 1.0,
+          "false_positives": 2.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "How does the Transformer use positional encodings?",
+        "intent": "conceptual",
+        "relevant_source": "1706.03762",
+        "embedding_key": "bge",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5316908359527588,
+        "retrieved_sources": [
+          "2610.13118",
+          "2610.13663",
+          "2610.22075"
+        ],
+        "latency_median_ms": 1.2826999991375487,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Attention Is All You Need",
+        "intent": "entity",
+        "relevant_source": "1706.03762",
+        "embedding_key": "bge",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.44488948583602905,
+        "retrieved_sources": [
+          "2610.22314",
+          "2610.22339"
+        ],
+        "latency_median_ms": 0.8452000001852866,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 2.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "What is the supervised fine-tuning stage in InstructGPT?",
+        "intent": "conceptual",
+        "relevant_source": "2203.02155",
+        "embedding_key": "bge",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.528796911239624,
+        "retrieved_sources": [
+          "2610.22300",
+          "2610.22234",
+          "2610.16102"
+        ],
+        "latency_median_ms": 1.0641999979270622,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Describe the reward model objective used for instruction following.",
+        "intent": "technical",
+        "relevant_source": "2203.02155",
+        "embedding_key": "bge",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.48282089829444885,
+        "retrieved_sources": [
+          "2610.13471",
+          "2610.22285",
+          "2610.22177"
+        ],
+        "latency_median_ms": 1.3933999980508815,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Training language models to follow instructions with human feedback",
+        "intent": "entity",
+        "relevant_source": "2203.02155",
+        "embedding_key": "bge",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.56263267993927,
+        "retrieved_sources": [
+          "2610.22294",
+          "2610.19068",
+          "2610.22236"
+        ],
+        "latency_median_ms": 1.0748999993666075,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "How was Llama 2 fine-tuned with human preference data?",
+        "intent": "conceptual",
+        "relevant_source": "2307.09288",
+        "embedding_key": "bge",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5696691274642944,
+        "retrieved_sources": [
+          "2610.09347",
+          "2610.22214",
+          "2610.22194"
+        ],
+        "latency_median_ms": 0.7403999989037402,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Compare the context windows reported for Llama 2 models.",
+        "intent": "technical",
+        "relevant_source": "2307.09288",
+        "embedding_key": "bge",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5593653917312622,
+        "retrieved_sources": [
+          "2610.14258",
+          "2610.22160"
+        ],
+        "latency_median_ms": 1.440200001525227,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 2.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Llama 2",
+        "intent": "entity",
+        "relevant_source": "2307.09288",
+        "embedding_key": "bge",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.4846094250679016,
+        "retrieved_sources": [
+          "2610.22062",
+          "2610.21030",
+          "2610.15146"
+        ],
+        "latency_median_ms": 0.9676000008767005,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      }
+    ],
+    "E5 baseline": [
+      {
+        "query": "Explain scaled dot-product attention and multi-head attention.",
+        "intent": "technical",
+        "relevant_source": "1706.03762",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.631742537021637,
+        "retrieved_sources": [
+          "1706.03762",
+          "2610.22065",
+          "2610.22344"
+        ],
+        "latency_median_ms": 0.7594999988214113,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "true_positives": 1.0,
+          "false_positives": 2.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "How does the Transformer use positional encodings?",
+        "intent": "conceptual",
+        "relevant_source": "1706.03762",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5316908359527588,
+        "retrieved_sources": [
+          "2610.22252",
+          "2307.09288",
+          "2610.22245"
+        ],
+        "latency_median_ms": 1.1280999970040284,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Attention Is All You Need",
+        "intent": "entity",
+        "relevant_source": "1706.03762",
+        "embedding_key": "e5",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.44488948583602905,
+        "retrieved_sources": [
+          "2610.19732",
+          "2610.22330"
+        ],
+        "latency_median_ms": 0.9315999996033497,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 2.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "What is the supervised fine-tuning stage in InstructGPT?",
+        "intent": "conceptual",
+        "relevant_source": "2203.02155",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.528796911239624,
+        "retrieved_sources": [
+          "2610.18526",
+          "2610.19487",
+          "2610.17467"
+        ],
+        "latency_median_ms": 1.1563000007299706,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Describe the reward model objective used for instruction following.",
+        "intent": "technical",
+        "relevant_source": "2203.02155",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.48282089829444885,
+        "retrieved_sources": [
+          "2610.22186",
+          "2610.22252",
+          "2610.22339"
+        ],
+        "latency_median_ms": 1.0696999997890089,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Training language models to follow instructions with human feedback",
+        "intent": "entity",
+        "relevant_source": "2203.02155",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.56263267993927,
+        "retrieved_sources": [
+          "2203.02155"
+        ],
+        "latency_median_ms": 1.118500000302447,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "true_positives": 1.0,
+          "false_positives": 0.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "How was Llama 2 fine-tuned with human preference data?",
+        "intent": "conceptual",
+        "relevant_source": "2307.09288",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5696691274642944,
+        "retrieved_sources": [
+          "2307.09288",
+          "2610.22122",
+          "2610.22083"
+        ],
+        "latency_median_ms": 0.9410999991814606,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "true_positives": 1.0,
+          "false_positives": 2.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "Compare the context windows reported for Llama 2 models.",
+        "intent": "technical",
+        "relevant_source": "2307.09288",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5593653917312622,
+        "retrieved_sources": [
+          "2307.09288",
+          "2610.22122"
+        ],
+        "latency_median_ms": 1.128799998696195,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "true_positives": 1.0,
+          "false_positives": 1.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "Llama 2",
+        "intent": "entity",
+        "relevant_source": "2307.09288",
+        "embedding_key": "e5",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.4846094250679016,
+        "retrieved_sources": [
+          "2610.22122",
+          "2610.22083"
+        ],
+        "latency_median_ms": 0.8471000001009088,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 2.0,
+          "false_negatives": 1.0
+        }
+      }
+    ],
+    "MiniLM baseline": [
+      {
+        "query": "Explain scaled dot-product attention and multi-head attention.",
+        "intent": "technical",
+        "relevant_source": "1706.03762",
+        "embedding_key": "minilm",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.631742537021637,
+        "retrieved_sources": [
+          "2610.22065",
+          "2610.22363",
+          "2610.22276"
+        ],
+        "latency_median_ms": 0.6849999990663491,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "How does the Transformer use positional encodings?",
+        "intent": "conceptual",
+        "relevant_source": "1706.03762",
+        "embedding_key": "minilm",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5316908359527588,
+        "retrieved_sources": [
+          "2610.22358",
+          "2610.12183",
+          "2610.22363"
+        ],
+        "latency_median_ms": 1.0828000013134442,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Attention Is All You Need",
+        "intent": "entity",
+        "relevant_source": "1706.03762",
+        "embedding_key": "minilm",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.44488948583602905,
+        "retrieved_sources": [
+          "2610.22314"
+        ],
+        "latency_median_ms": 0.8194000001822133,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 1.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "What is the supervised fine-tuning stage in InstructGPT?",
+        "intent": "conceptual",
+        "relevant_source": "2203.02155",
+        "embedding_key": "minilm",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.528796911239624,
+        "retrieved_sources": [
+          "2610.21990",
+          "2610.13663",
+          "2610.22295"
+        ],
+        "latency_median_ms": 1.2381999986246228,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Describe the reward model objective used for instruction following.",
+        "intent": "technical",
+        "relevant_source": "2203.02155",
+        "embedding_key": "minilm",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.48282089829444885,
+        "retrieved_sources": [
+          "2610.22163",
+          "2610.22324",
+          "2610.09280"
+        ],
+        "latency_median_ms": 1.0140999984287191,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Training language models to follow instructions with human feedback",
+        "intent": "entity",
+        "relevant_source": "2203.02155",
+        "embedding_key": "minilm",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.56263267993927,
+        "retrieved_sources": [
+          "2203.02155",
+          "2610.22321"
+        ],
+        "latency_median_ms": 1.0714999989431817,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "true_positives": 1.0,
+          "false_positives": 1.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "How was Llama 2 fine-tuned with human preference data?",
+        "intent": "conceptual",
+        "relevant_source": "2307.09288",
+        "embedding_key": "minilm",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5696691274642944,
+        "retrieved_sources": [
+          "2307.09288",
+          "2610.21030",
+          "2610.15146"
+        ],
+        "latency_median_ms": 0.8125999993353616,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "true_positives": 1.0,
+          "false_positives": 2.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "Compare the context windows reported for Llama 2 models.",
+        "intent": "technical",
+        "relevant_source": "2307.09288",
+        "embedding_key": "minilm",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5593653917312622,
+        "retrieved_sources": [
+          "2307.09288",
+          "2610.22174"
+        ],
+        "latency_median_ms": 0.943299997743452,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "true_positives": 1.0,
+          "false_positives": 1.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "Llama 2",
+        "intent": "entity",
+        "relevant_source": "2307.09288",
+        "embedding_key": "minilm",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.4846094250679016,
+        "retrieved_sources": [
+          "2610.22062",
+          "2610.21030",
+          "2610.15146"
+        ],
+        "latency_median_ms": 1.0318999993614852,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      }
+    ],
+    "Adaptive RAG": [
+      {
+        "query": "Explain scaled dot-product attention and multi-head attention.",
+        "intent": "technical",
+        "relevant_source": "1706.03762",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.631742537021637,
+        "retrieved_sources": [
+          "1706.03762",
+          "2610.22065",
+          "2610.22344"
+        ],
+        "latency_median_ms": 0.5899999996472616,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "true_positives": 1.0,
+          "false_positives": 2.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "How does the Transformer use positional encodings?",
+        "intent": "conceptual",
+        "relevant_source": "1706.03762",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5316908359527588,
+        "retrieved_sources": [
+          "2610.22252",
+          "2307.09288",
+          "2610.22245"
+        ],
+        "latency_median_ms": 1.1072000015701633,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Attention Is All You Need",
+        "intent": "entity",
+        "relevant_source": "1706.03762",
+        "embedding_key": "minilm",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.44488948583602905,
+        "retrieved_sources": [
+          "2610.22314"
+        ],
+        "latency_median_ms": 0.7607000006828457,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 1.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "What is the supervised fine-tuning stage in InstructGPT?",
+        "intent": "conceptual",
+        "relevant_source": "2203.02155",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.528796911239624,
+        "retrieved_sources": [
+          "2610.18526",
+          "2610.19487",
+          "2610.17467"
+        ],
+        "latency_median_ms": 1.119299999118084,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Describe the reward model objective used for instruction following.",
+        "intent": "technical",
+        "relevant_source": "2203.02155",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.48282089829444885,
+        "retrieved_sources": [
+          "2610.22186",
+          "2610.22252",
+          "2610.22339"
+        ],
+        "latency_median_ms": 1.177300000563264,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      },
+      {
+        "query": "Training language models to follow instructions with human feedback",
+        "intent": "entity",
+        "relevant_source": "2203.02155",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.56263267993927,
+        "retrieved_sources": [
+          "2203.02155"
+        ],
+        "latency_median_ms": 1.1281999977654777,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "true_positives": 1.0,
+          "false_positives": 0.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "How was Llama 2 fine-tuned with human preference data?",
+        "intent": "conceptual",
+        "relevant_source": "2307.09288",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5696691274642944,
+        "retrieved_sources": [
+          "2307.09288",
+          "2610.22122",
+          "2610.22083"
+        ],
+        "latency_median_ms": 0.9093000007851515,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "true_positives": 1.0,
+          "false_positives": 2.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "Compare the context windows reported for Llama 2 models.",
+        "intent": "technical",
+        "relevant_source": "2307.09288",
+        "embedding_key": "e5",
+        "adaptive_route": "e5",
+        "adaptive_route_confidence": 0.5593653917312622,
+        "retrieved_sources": [
+          "2307.09288",
+          "2610.22122"
+        ],
+        "latency_median_ms": 1.1684000019158702,
+        "metrics": {
+          "hit@3": 1.0,
+          "accuracy": 1.0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "true_positives": 1.0,
+          "false_positives": 1.0,
+          "false_negatives": 0.0
+        }
+      },
+      {
+        "query": "Llama 2",
+        "intent": "entity",
+        "relevant_source": "2307.09288",
+        "embedding_key": "minilm",
+        "adaptive_route": "minilm",
+        "adaptive_route_confidence": 0.4846094250679016,
+        "retrieved_sources": [
+          "2610.22062",
+          "2610.21030",
+          "2610.15146"
+        ],
+        "latency_median_ms": 0.7875000010244548,
+        "metrics": {
+          "hit@3": 0.0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "true_positives": 0.0,
+          "false_positives": 3.0,
+          "false_negatives": 1.0
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+Table 1 Performance comparison on general audiovisual video captioning benchmarks. Following previous works [4, 5], we adopt GPT-4.1 [1] as the judge model for the video-SALMONN-2 testset, and GPT-4o [17] for UGC-VideoCap

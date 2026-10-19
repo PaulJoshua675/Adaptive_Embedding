@@ -1,0 +1,1 @@
+Visual Sanad: Auditing Vision–Language Models for False Acceptance of Qur’anic Citations Niaz Mohaiman Abtahi1, Reyana Shahid2, Evan Maksud1 1Advanced AI Lab Limited 2United International University Correspondence to: tahiniaz@gmail.com GitHub/Visual-Sanad

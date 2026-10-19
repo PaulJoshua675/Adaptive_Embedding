@@ -1,0 +1,1 @@
+Standard, cat Standard, stove Informed Prior, cat Informed Prior, stove Figure 8: The three highest-ranked test trajectories executed on the Franka Emika FR3 arm after K = 10 preference queries, for Informed Prior and Standard when cat (top two rows) or stove (bottom two rows) was initially underspecified. Each panel traces the path of the knife in orange. 18

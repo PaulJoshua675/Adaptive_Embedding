@@ -1,0 +1,1 @@
+Reading the Neighborhood: Text-Attentive Graph Reranking for Automated Subject Indexing Lakshmi Rajendram Bashyam l.rajendram-bashyam@zbw.eu ZBW – Leibniz Information Centre for Economics Kiel, Germany Ralf Krestel rkr@informatik.uni-kiel.de ZBW – Leibniz Information Centre for Economics & Kiel University Kiel, Germany

@@ -1,0 +1,1 @@
+VesperMUSE: Multi-Modal Fusion Vision Transformer for Image Semantic Segmentation Under Diverse Light Conditions A dissertation submitted to The University of Manchester for the degree of Bachelor of Science in Computer Science in the Faculty of Science and Engineering Year of submission 2026 Author Raul Balmez Supervisor Tingting Mu Department of Computer Science

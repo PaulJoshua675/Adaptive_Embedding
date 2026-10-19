@@ -1,0 +1,1 @@
+Characterising the Difficulty of Long-Context Reasoning These findings establish evidence scope, evidence dispersion, and reasoning depth as measures of long-context reasoning difficulty that complement context length, and provide a basis for diagnosing model failures and designing more informative long-context evaluations. 2

@@ -1,0 +1,1 @@
+Accepted at NeurIPS 2026 Workshop on Symmetry and Geometry in Neural Representations (NeurReps), non-archival Riding the Fixed-Point Curve: Image Classification in the Continuous Thought Machine Thomas Hannagan thomas.hannagan@stellantis.com Stellantis

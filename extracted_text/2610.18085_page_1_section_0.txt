@@ -1,0 +1,1 @@
+Same Function, Different Trajectory: No Standard Optimizer Is Equivariant to Transformer Reparameterization Bum Jun Kim∗ The University of Tokyo bumjun.kim@weblab.t.u-tokyo.ac.jp

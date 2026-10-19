@@ -1,0 +1,1 @@
+We presented a lightweight framework for aligning LLM representations with sparse lexical retrieval through input-adaptive α-truncation. By selecting input-

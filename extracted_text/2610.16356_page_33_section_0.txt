@@ -1,0 +1,1 @@
+(a) Harris-Hawk Optimisation (b) Intelligent Firefly Algorithm (c) Particle Swarm Optimisation (d) Teaching-Learning Based Optimisation Figure 4: Spatial map on social vulnerability (case 3) clustering in Indonesia at district level using 3 clusters based on optimisation algorithms (Continued) 33

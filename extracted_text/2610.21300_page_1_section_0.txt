@@ -1,0 +1,1 @@
+Making every stage of medical device document assessment with large language models deterministic Ryosuke Suzuki1* 1*GFLOPS Co., Ltd., Tokyo, Japan. Corresponding author(s). E-mail(s): ryosuzuki@gflops-ai.com;

@@ -1,0 +1,1 @@
+(a) Competitor (player_0), best algorithms (b) Competitor (player_0), all algorithms (c) Competitor (player_1), best algorithms (d) Competitor (player_1), all algorithms Figure 13: Territory: per-agent satisfaction (mean and 95% CIs over five seeds). Left: best variant per learner family; right: all objective-trained variants.

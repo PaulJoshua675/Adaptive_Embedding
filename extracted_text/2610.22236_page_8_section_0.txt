@@ -1,0 +1,1 @@
+0 25 50 75 100 Share of the specialist's rollouts (%) Answers Tokens 7% truncated in a loop 23% 0 10 20 30 40 AIME25 accuracy (%) Math specialist Task arithmetic all answers loops removed correct, loop-free student reads them specialist reads them math weight ×3 hard-problem mix 1 hard-problem mix 2

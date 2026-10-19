@@ -1,0 +1,1 @@
+Validation PPL is computed on the WikiText-103 validation set or the corresponding OpenWebText validation set, using non-overlapping windows at the experiment’s configured sequence length, usually 256 or 512. Standard evaluation traverses the validation loader; any experiment-specific evaluation limits are specified in

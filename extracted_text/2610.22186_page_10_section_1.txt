@@ -1,0 +1,1 @@
+This paper presents EVA-Cap, an audiovisual video captioning model with a training framework that transforms holistic caption optimization into event-centric alignment. To support event-level supervision, 10

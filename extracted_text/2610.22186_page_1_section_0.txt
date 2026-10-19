@@ -1,0 +1,1 @@
+EVA-Cap: Optimizing Audiovisual Video Captioning via Event-Centric Alignment Jiapeng Shi1,*, Qiuxia Hou2,*, Jiaqi Leng1, Junke Wang1, Yanhao Zhang2, Haonan Lu2, Ziyi Ye1,†, Zuxuan Wu1,† 1Fudan University, 2OPPO AI Center, OPPO Inc.

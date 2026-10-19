@@ -13,6 +13,8 @@ Hardware Architecture
 
 Distributed training, edge AI, systems
 
+Response language
+
 Central corpus: D:\enhanced rag model\dataset
 
 Deploy
@@ -32,24 +34,39 @@ adaptiv...l_test.pdf
 1.2KB
 add
 
-Indexed adaptive_retrieval_test.pdf in memory with page-level provenance.
+Indexed adaptive_retrieval_test.pdf from disk with page-level provenance.
+
+Active upload index: vector_store\runtime_uploads
 
 Research question
 
 Query uploaded paper
 
-Route: conceptual_general | Embedding: e5 | Retrieved passages: 1
+ML route: conceptual_general (59.9%) | Embedding backend: e5 | Retrieved passages: 1
 
 Executive Insights
 
-The technical method compares dense retrieval with keyword fallback and routes technical questions to an embedding model selected by query intent. The system uses semantic chunking, multi-model embeddings, and page-level provenance. Evaluation measures retrieval relevance, answer faithfulness, and citation coverage across research domains.
+The technical method compares dense retrieval with keyword fallback and routes technical questions to an embedding model selected by query intent. The system uses semantic chunking, multi-model embeddings, and page-level provenance.
 
 Technical Breakdown
-Retrieved and synthesized 1 relevant passage(s) from UNSECTIONED (1 passage).
-The response prioritizes the requested section and preserves page-level provenance.
-Claims are paraphrased into an analytical explanation rather than reproduced as raw source text.
-
-The analysis is grounded exclusively in the retrieved passages and preserves their page-level provenance.
-
+Key Concept and Methodology
+Point 1: Evaluation measures retrieval relevance, answer faithfulness, and citation coverage across research domains.
+Point 2: Adaptive retrieval research paper This study evaluates retrieval augmented generation for scientific question answering.
+Point 3: Additional algorithmic concept or structural method should be verified against the retrieved research context.
+Experimental Metrics and Variables
+Point 1: Additional metric, parameter, variable, or quantitative result should be verified against the retrieved research context.
+Point 2: Additional metric, parameter, variable, or quantitative result should be verified against the retrieved research context.
+Point 3: Additional metric, parameter, variable, or quantitative result should be verified against the retrieved research context.
+Procedural Steps and Core Differences
+Point 1: Additional operational step, comparison, or sequencing detail should be verified against the retrieved research context.
+Point 2: Additional operational step, comparison, or sequencing detail should be verified against the retrieved research context.
+Point 3: Additional operational step, comparison, or sequencing detail should be verified against the retrieved research context.
+Technical Evidence and Core Analysis
+Point 1: Additional evidence, limitation, ablation, or behavioral finding should be verified against the retrieved research context.
+Point 2: Additional evidence, limitation, ablation, or behavioral finding should be verified against the retrieved research context.
+Point 3: Additional evidence, limitation, ablation, or behavioral finding should be verified against the retrieved research context.
 Verified Source Citations
-adaptive_retrieval_test.pdf | Page 1 | UNSECTIONED (words 0-57) - Open Local Paper
+Custom Uploaded Document | Page 1 | Section: ABSTRACT
+Retrieval evaluation
+
+Accuracy: 1.000 Precision: 1.000 Recall: 1.000 F1-Score: 1.000

@@ -1,0 +1,1 @@
+We evaluate optimization performance over the full best-so-far trajectory rather than only the fi- nal solution. Following the normalized anytime evaluation protocol used in RSI-Exam (RSI-Exam 5

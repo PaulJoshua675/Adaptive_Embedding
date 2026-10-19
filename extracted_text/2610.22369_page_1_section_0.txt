@@ -1,0 +1,1 @@
+Preprint SOFTCACHE: ADAPTIVE STEP SIZE CACHING FOR DIFFUSION TRANSFORMERS Shimon Malnick1, Nadav Orenstein1, Ohad Fried2, Shai Avidan1 1Tel Aviv University 2Reichman University Project page: malnick.net/softcache

@@ -8,3 +8,9 @@ sentence-transformers
 faiss-cpu
 transformers
 torch
+arxiv
+requests
+playwright
+scikit-learn
+fastapi
+uvicorn[standard]

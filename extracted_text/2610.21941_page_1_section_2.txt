@@ -1,0 +1,1 @@
+A. Post-training of speech foundation models Recent work has increasingly viewed post-training as a distinct stage in the lifecycle of speech foundation models, complementing large-scale self-supervised pre-training. Rather than modifying the expensive pre-training process, post-training adapts a generic speech arXiv:2610.21941v1 [cs.CL] 15 Oct 2026

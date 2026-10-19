@@ -1,0 +1,1 @@
+Preprint Table 6: Multi-domain action-codec reconstruction quality on held-out validation data. All values are dataset means; lower is better.

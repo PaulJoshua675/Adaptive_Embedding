@@ -1,0 +1,1 @@
+Baselines and Score Centering in Policy Gradient Estimation Shuo Han∗1 and Ziqing Hu†2 1University of Illinois Chicago 2Perplexity AI October 15, 2026

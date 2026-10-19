@@ -1,0 +1,1 @@
+Preprint PRIMING BASE MODELS FOR AGENTIC POST-TRAINING: AN OPEN MIDTRAINING RECIPE Soumye Singhal∗, Joseph Jennings∗, Ka Shun Shum∗†, Alexander Bukharin∗, Khushi Bhardwaj∗ Zirui Liu, Venkat Srinivasan, Jonathan Li, Yash Jain, Kezhi Kong, Markus Kliegl, Olivier Delalleau, Sanjeev Satheesh, Mostofa Patwary NVIDIA

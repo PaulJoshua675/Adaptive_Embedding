@@ -1,0 +1,1 @@
+2026-10-16 OpenGCUA: Toward a Fully Open Stack for Generalist Computer Use Hanzhang Zhou*, Long Li*, Quyu Kong*, Lei Wang*, Panrong Tong*, Long Chen, Tianyu Xia, Gongjie Zhang, Xu Zhang, Chen Liu, Jianan Zhang, Chenglin Cai, Zhengwen Zeng, Steven Hoi, Yue Wang† Alibaba Token Hub, Alibaba Group OpenGCUA GitHub Project Website & Interactive Lab

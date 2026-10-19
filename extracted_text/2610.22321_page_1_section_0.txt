@@ -1,0 +1,1 @@
+arXiv preprint AVC-REWARD: EVENT-CENTRIC AUDIO-VIDEO CONSISTENCY EVALUATION Yuruo Wu1∗, Kaihang Pan1∗, Kai Shen1∗, Jiacheng Li2, Shuyuan Tu3, Jisheng Dang4, Li Tuoyu1, Juncheng Li1†, Siliang Tang1 1Zhejiang University, 2HiThink Research, 3Fudan University, 4Lanzhou University

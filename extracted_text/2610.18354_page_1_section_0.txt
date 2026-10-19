@@ -1,0 +1,1 @@
+Choosing LLMs for Strategic Agent Interactions Arastun Mammadli University of Exeter United Kingdom am2169@exeter.ac.uk Herbert Woisetschläger IBM Research Switzerland h.woisetschlaeger@ibm.com Jawad Fayaz University of Exeter United Kingdom j.fayaz@exeter.ac.uk Shiqiang Wang University of Exeter United Kingdom s.wang9@exeter.ac.uk

@@ -1,0 +1,1 @@
+KNOWLEDGE THAT IS LINEAR BEFORE FINE-TUNING GENERALIZES AFTER IT Faridoun Mehri & Hinrich Schütze Center for Information and Language Processing, LMU Munich Munich Center for Machine Learning (MCML) feraidoon@cis.lmu.de

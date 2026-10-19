@@ -10,6 +10,8 @@ from urllib.request import urlopen
 
 import pytest
 
+pytestmark = pytest.mark.integration
+
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, sync_playwright
 
@@ -22,37 +24,8 @@ PROOF_PATH = ROOT / "tests" / "evaluation_run_proof.json"
 
 
 @pytest.fixture(scope="module")
-def evaluation_server():
-    try:
-        with urlopen(BASE_URL, timeout=2):
-            yield BASE_URL
-            return
-    except Exception:
-        pass
-
-    environment = os.environ.copy()
-    environment.update({"PYTHONUTF8": "1", "TRANSFORMERS_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false"})
-    process = subprocess.Popen(
-        [sys.executable, "-m", "streamlit", "run", "app.py", "--server.headless", "true", "--server.port", "8501", "--", "--streamlit"],
-        cwd=ROOT,
-        env=environment,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
-    deadline = time.time() + 45
-    while time.time() < deadline:
-        try:
-            with urlopen(BASE_URL, timeout=2):
-                break
-        except Exception:
-            time.sleep(0.5)
-    else:
-        process.terminate()
-        raise RuntimeError("Streamlit did not start for evaluation test")
-    yield BASE_URL
-    process.terminate()
-    process.wait(timeout=10)
+def evaluation_server(streamlit_app_url):
+    return streamlit_app_url
 
 
 def _ask(page: Page, query: str) -> str:

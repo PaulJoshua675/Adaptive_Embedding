@@ -1,0 +1,1 @@
+Preprint. Under Review. TRAINING REASONING MODELS TO GENERATE DI- VERSE SCIENTIFIC IDEAS Manya Wadhwa♠∗, Pranav Narayanan Venkit♢, Hiroaki Hayashi♢, Yu Li♢, Tuhin Chakrabarty♣, Chien-Sheng Wu♢ ♠New York University, ♣Stony Brook University, ♢Salesforce AI Research mw4141@nyu.edu

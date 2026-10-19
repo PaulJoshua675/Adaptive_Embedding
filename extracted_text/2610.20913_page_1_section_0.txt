@@ -1,0 +1,1 @@
+TransX TransX Technical Report Scaling Sequence Transduction for Recommendation Da Xu∗, Liyan Fang, Divya Venugopalan, Sunny Hsu, Xukai Wang, Rishav Chowdhury, Cindy Liang, Nishant Lakshmikanth LinkedIn

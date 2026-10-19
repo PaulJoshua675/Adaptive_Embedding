@@ -1,0 +1,1 @@
+DTA-GT: Direction- and Topology-Aware Graph Transformer for Neural Network Representation Learning∗ Yuxiang Zeng1, Kun Xie1†, Yang Wang1, Jigang Wen2, Xiaocan Li1, Guangxing Zhang3, Gaogang Xie3, Jiannong Cao4 1Hunan University 2Hunan University of Science and Technology 3Chinese Academy of Sciences 4The Hong Kong Polytechnic University {zengyuxiang@hnu.edu.cn, xiekun@hnu.edu.cn}

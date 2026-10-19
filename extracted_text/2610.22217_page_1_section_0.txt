@@ -1,0 +1,1 @@
+Preprint. SKILL-DECOUPLED ON-POLICY EXPERT DISTILLA- TION FOR UNIFIED VISION-LANGUAGE MODELS Yuqi Xiong1,∗, Chunyi Peng1,∗, Zhipeng Xu2, Qing Yang1 Zhenghao Liu1,†, Zulong Chen2, Yu Gu1, Ge Yu1 1School of Computer Science and Engineering, Northeastern University, Shenyang, China 2Alibaba Group, Hangzhou, China

@@ -1,0 +1,1 @@
+Behavior: SQL GENERATED Metrics: GEN=1 ANALYSIS The model separates SQL generation from answer existence. Because the schema supports joining city_name to games_year, it correctly generates SQL. Figure 21: Original-query control under Base prompting, ChatGLM-5.1. The model constructs the valid schema- supported join and generates SQL (GEN=1). 38

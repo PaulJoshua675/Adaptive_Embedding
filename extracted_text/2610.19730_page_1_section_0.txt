@@ -1,0 +1,1 @@
+Design and Analysis of Temporal Representations in Neural Networks Alban Gattepaille Universit´e Cˆote d’Azur - CNRS - I3S, Nice, France alban.colas-gattepaille@univ-cotedazur.fr Alexandre Muzy International Laboratory on Learning Systems (ILLS) McGill - MILA - ETS - Universit´e Paris-Saclay - CentraleSupelec - CNRS, Montr´eal, Canada alexandre.muzy@cnrs.fr

@@ -1,0 +1,1 @@
+Figure H.8: The PRISMA 2020 flow that ReviewPilot generates for the run, from 3,000 identified records to 1,341 included and categorized studies, with exclusion counts by reason. 44

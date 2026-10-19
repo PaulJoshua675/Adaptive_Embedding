@@ -1,0 +1,1 @@
+tuning. We find that Pre-linearity is a better predictor of Generalization than Recall, and survives controls for Recall, relation size and subject frequency.

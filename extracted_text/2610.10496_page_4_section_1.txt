@@ -1,0 +1,1 @@
+Bergstra, J. and Bengio, Y. (2012). Random search for hyper-parameter optimization. Journal of Machine Learning Research, 13:281–305. 4

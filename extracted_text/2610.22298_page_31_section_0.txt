@@ -1,0 +1,1 @@
+AI Consilium: a Benchmark of LLM Clinical Multidisciplinary Second Opinions A PREPRINT Table 16: Model-specific criterion profile for Gemma-4-31B. Criterion Role reasoning Structured Role clinical opinion Structured

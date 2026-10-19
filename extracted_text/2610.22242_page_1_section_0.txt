@@ -1,0 +1,1 @@
+Preprint. SURVICL: A FOUNDATION MODEL FOR IN-CONTEXT SURVIVAL ANALYSIS Julie Alberge ∗ Inria de Saclay France Linus Bleistein EPFL Switzerland Judith Ab´ecassis Inria de Saclay France Marine Le Morvan Inria de Saclay France Ga¨el Varoquaux Inria de Saclay, :probabl. France David Holzm¨uller Inria de Saclay France

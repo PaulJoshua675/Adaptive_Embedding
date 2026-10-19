@@ -1,0 +1,1 @@
+GNN-Guided Local Refinement for Efficient Layout Decomposition with DSA-MP Yu Feng1 Liyi Zhou1 Haoyu Wang1 Yiming Xu1 Hao Geng2 Shaozhi Deng3 Ningsheng Xu1 Shisheng Xiong1,† 1Fudan University 2ShanghaiTech University 3Sun Yat-sen University

@@ -1,0 +1,1 @@
+HTN-Orchestrate Agent Team by 2.45 and 4.69 percentage points, re- spectively. Ablations on BrowseComp demonstrate the contributions of result-informed planning, local multi- agent orchestration, and task-network rebuilding.

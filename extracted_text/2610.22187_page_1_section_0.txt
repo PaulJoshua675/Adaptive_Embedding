@@ -1,0 +1,1 @@
+Change the Number, Change the Answer: Assessing Rating Scale Sensitivity in LLM-Based Text Scoring Wonjeong Jo UC Davis wjo@ucdavis.edu Gyuwan Kim UC Santa Barbara gyuwankim@ucsb.edu Ming Shan Hee MBZUAI mingshan.hee@gmail.com

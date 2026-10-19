@@ -1,0 +1,1 @@
+HTN-Orchestrate J. SUPERChem: A multimodal reasoning benchmark in chemistry. arXiv preprint arXiv:2512.01274, 2025. Zhou, D., Schärli, N., Hou, L., Wei, J., Scales, N., Wang, X., Schuurmans, D., Cui, C., Bousquet, O., Le, Q., and Chi, E. Least-to-most prompting enables complex reasoning in large language models. In ICLR, 2023. 13

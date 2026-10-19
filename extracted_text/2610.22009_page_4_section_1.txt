@@ -1,0 +1,1 @@
+Visual Sanad shows that Qur’anic citation verification in images is a culturally grounded test of multimodal factuality: strong models can solve it, while many open-weight VLMs show weak dis- crimination, high VALID bias, and model-dependent cue sensitivity. Acknowledgments. This work received no external funding. The authors declare no competing interests. 4

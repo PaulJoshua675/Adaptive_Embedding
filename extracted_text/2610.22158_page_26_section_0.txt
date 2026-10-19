@@ -1,0 +1,1 @@
+PREMISESQL CASE STUDY E1.1 Ambiguity: Flawed query USER INPUT “What are all the titles?” SCHEMA EVIDENCE Both Songs and Albums contain a Title column, so the requested entity is unresolved. MODEL OUTPUT Llama 4 Maverick Response excerpt “The question asks for all song titles, which can be retrieved from the Songs table.” SQL behavior SELECT Title FROM Songs;

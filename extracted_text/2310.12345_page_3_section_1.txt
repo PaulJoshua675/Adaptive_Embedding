@@ -1,0 +1,1 @@
+In this section, we present a formal definition of Test-Time Training, followed by the description of our ClusT3 method. 3.1 Problem formulation Let P(Xs, Ys) be the joint distribution that represents the source domain, where Xs and Ys are the input and label spaces, respectively. Similarly, P(Xt, Yt) corresponds to the target domain distribution, with inputs and labels Xt 3

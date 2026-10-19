@@ -1,0 +1,1 @@
+Training-free decoding order and adaptive parallelism. Masked diffusion allows many reveal orders, which can materially affect generation quality (Sahoo et al., 2024; Kim et al., 2025a). Samplers often prescribe 8

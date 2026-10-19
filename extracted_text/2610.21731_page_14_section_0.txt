@@ -1,0 +1,1 @@
+Model Failures Recovered Rate gemma-4-31b-think 7 4 57.1 Luna 9 3 33.3 gpt-oss-20b 34 11 32.4 qwen3-8b 61 16 26.2 gpt-oss-120b 24 6 25.0 gemma-4-31b 22 1 4.5 Total 157 41 26.1 Table 16: Failed fact-sheet checks recovered when the question is restated after each opened page (rate in %), after the exclusions used throughout; as run, before exclusions, 55 of 222 (24.8%). 14

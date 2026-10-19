@@ -1,0 +1,1 @@
+We start by describing the standard reinforcement learning setting for language models we build on. A policy parameterized as an LM πθ maps a prompt x to a distribution over textual outputs y. Given a reward function R(x, y) ∈R, training aims to maximize expected reward: max θ Ex∼D, y∼πθ(·|x)  R(x, y)  . (1) 2

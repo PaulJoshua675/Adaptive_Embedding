@@ -1,0 +1,1 @@
+2.1 3D WORLD MODELS Recent world models increasingly move beyond pixel-space prediction toward structured 3D scene modeling and forecasting. Copilot4D (Zhang et al., 2024) and ViDAR (Yang et al., 2024) forecast future point clouds, while OccWorld (Zheng et al., 2024) and DOME (Gu et al., 2024) predict scene 2

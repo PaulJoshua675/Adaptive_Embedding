@@ -1,0 +1,1 @@
+Compute-Optimal Scaling Laws for Spiking Language Models Dan Saunders Luma AI danjsaund@gmail.com Benjamin Ren X School ultraman1234502@gmail.com Catherine He X School catherinezhanghe@gmail.com

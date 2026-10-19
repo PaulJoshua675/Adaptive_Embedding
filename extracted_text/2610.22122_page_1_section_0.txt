@@ -1,0 +1,1 @@
+Beyond Fixed Acquisition Functions: Temporal Difference Active Learning for Perturbation Discovery Xudong Zhang1,2,∗ Jianzhe Li1,2,∗ Yitong Tang1 Peijie Zhou1,2,† 1Center for Machine Learning Research, Peking University, Beijing, China 2AI for Science Institute (AISI), Beijing, China xudongzhang25@stu.pku.edu.cn ∗Equal contribution. †Corresponding author.

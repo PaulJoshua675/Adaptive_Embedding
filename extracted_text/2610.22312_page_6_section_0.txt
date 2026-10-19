@@ -1,0 +1,1 @@
+event histories, and prompts specifying the rules and task instructions. Predictions are checked against the same reference states. Table 2 summarizes the evaluation coverage.

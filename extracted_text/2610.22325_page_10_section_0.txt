@@ -1,0 +1,1 @@
+relevance to real images. Evaluation of scene integration remains open as well: our visualisations demonstrate effective integration with scene point clouds, but its accuracy has not yet been measured quantitatively.

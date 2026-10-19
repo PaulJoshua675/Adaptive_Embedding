@@ -1,0 +1,1 @@
+Which Tokens to Merge? Diffusion Dynamics for Efficient Image Generation SeungJu Cha Ye-Chan Kim HyunGee Kim Sungho Koh Dong-Jin Kim† Hanyang University, South Korea {sju9020, dpcksdl78, khjiiii2002, ksh000906, djdkim}@hanyang.ac.kr † Corresponding author

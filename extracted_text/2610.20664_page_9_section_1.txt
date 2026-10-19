@@ -1,0 +1,1 @@
+We have presented IG-OPD, a novel distillation framework designed to address Evidence-Blind Supervision (EBS) in deep search agents. By diagnosing the structural mismatches in traditional On-Policy Distillation (OPD), IG-OPD introduces two synergistic, evidence-aware calibrations: 9

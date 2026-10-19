@@ -1,0 +1,1 @@
+N-Gram Memories at Two Bits: Quantizing Lookup Tables in Large Language Models Donghoon Han1 Minseop Jung1 Dong Woo Kwak1 SeungJae Lee1 Junhoo Lee2 1Dnotitia Inc. 2KAIST {dhk1349, msjung, HelloDongWoo, seungjae.lee}@dnotitia.com junhoo.lee@kaist.ac.kr

@@ -1,0 +1,1 @@
+Acknowledgments. Thanks to the anonymous reviewers of the NeurIPS’26 MLxOR workshop. This work was partially supported by the EFFILOAT project under the MOOI programme, funded by the Netherlands Enterprise Agency (RVO).

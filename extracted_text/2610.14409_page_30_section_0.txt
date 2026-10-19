@@ -1,0 +1,1 @@
+Preprint. Under review. Figure 8: CIFAR-10 samples from the backpropagation arm, FID 3.54 at τs = 3.25. Figure 9: CIFAR-10 samples from the implicit-solve arm, FID 3.64 at τs = 3.25. Parameter gradi- ents come from implicit differentiation of the PCN’s equilibrium rather than from backpropagation through a forward pass. 30

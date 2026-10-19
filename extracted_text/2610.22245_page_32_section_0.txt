@@ -1,0 +1,1 @@
+Figure 6: Population-level comparison of routing signals with N = 8 weak-model responses per prompt. Panels and routing signals follow Figure 4. 32

@@ -1,0 +1,1 @@
+AI Consilium: a Benchmark of LLM Clinical Multidisciplinary Second Opinions A PREPRINT Table 6: Descriptive Judge-score summaries across the three evaluation components in the eight-model evaluation on 190 cases per model. Model Role reasoning Structured Role clinical opinion Structured

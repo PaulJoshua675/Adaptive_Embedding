@@ -1,0 +1,1 @@
+(a) Classic FGWC (b) Artificial Bee Colony (c) Flower Pollination Algorithm (d) Gravitational Search Algorithm Figure 3: Spatial map on social vulnerability (case 3) clustering in Indonesia at district level using 3 clusters based on optimisation algorithms 32

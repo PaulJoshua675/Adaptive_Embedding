@@ -1,0 +1,1 @@
+AI Consilium: a Benchmark of LLM Clinical Multidisciplinary Second Opinions A PREPRINT Table 8: Criterion-specific profiles pooled across the eight models. Criterion Role reasoning Structured Role clinical opinion Structured

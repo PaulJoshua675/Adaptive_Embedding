@@ -9,6 +9,8 @@ from urllib.request import urlopen
 
 import pytest
 
+pytestmark = pytest.mark.integration
+
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, sync_playwright
 
@@ -18,49 +20,8 @@ REPORT_PATH = ROOT / "tests" / "ultra_fast_report.md"
 
 
 @pytest.fixture(scope="module")
-def live_server():
-    try:
-        with urlopen(BASE_URL, timeout=2):
-            yield BASE_URL
-            return
-    except Exception:
-        pass
-    environment = os.environ.copy()
-    environment.update({"PYTHONUTF8": "1", "TRANSFORMERS_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false"})
-    port = BASE_URL.rsplit(":", 1)[-1]
-    process = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "streamlit",
-            "run",
-            "app.py",
-            "--server.headless",
-            "true",
-            "--server.port",
-            port,
-            "--",
-            "--streamlit",
-        ],
-        cwd=ROOT,
-        env=environment,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
-    deadline = time.time() + 45
-    while time.time() < deadline:
-        try:
-            with urlopen(BASE_URL, timeout=2):
-                break
-        except Exception:
-            time.sleep(0.5)
-    else:
-        process.terminate()
-        raise RuntimeError("Streamlit did not start")
-    yield BASE_URL
-    process.terminate()
-    process.wait(timeout=10)
+def live_server(streamlit_app_url):
+    return streamlit_app_url
 
 
 def test_targeted_query_is_sub_second(live_server: str) -> None:

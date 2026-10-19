@@ -1,0 +1,1 @@
+SUPRA-TEX: 3D Generation with Super-Aligned Texture Chen Yang1* Jiemin Fang1*† Fanpeng Meng1* Zihao Huang1 Jichen Pang2 Guanjun Wu3 Zhikuan Bao1 Qi Tian1 1Huawei Inc. 2Shanghai Jiao Tong University 3Huazhong University of Science and Technology *Equal contribution †Project lead Corresponding authors

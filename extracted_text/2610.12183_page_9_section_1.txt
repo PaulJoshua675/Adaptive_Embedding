@@ -1,0 +1,1 @@
+We introduce AgenticBBO-Bench, a cross-domain benchmark for evaluating LLM agents in black- box optimization under a unified protocol. Across five optimization domains, Agentic configuration consistently improves over direct LLM optimization and is competitive with established numerical 9

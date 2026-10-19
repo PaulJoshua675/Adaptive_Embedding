@@ -1,0 +1,1 @@
+How Much Physics Can Vision Learn from Audio? Probing and Distilling Damping Structure Zainab Afolabi Amazon Web Services zafolabi@amazon.co.uk Vadim Selyutin * Amazon Web Services seliutin@amazon.ae Zhao Gao * Amazon Web Services orangez@amazon.co.uk Babs Khalidson * Amazon Web Services khalbabs@amazon.co.uk Mohamed Ghoneim Amazon Web Services ghoneimm@amazon.co.uk

@@ -1,0 +1,1 @@
+explicit semantic features as foundational structural anchors, this design empirically alleviates the optimization complexity inherent in cross-modal alignment. Consequently, it substantially enhances the fidelity of the approximate collaborative projections generated for cold-start items. 6

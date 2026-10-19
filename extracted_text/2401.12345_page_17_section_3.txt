@@ -1,0 +1,1 @@
+increases; cf. Figs. 2(a) and 2(c). However, the ZF beamformer becomes less satisfactory when the SNR decreases; cf. Figs. 2(c) and 2(d). The Capon beamformer is also unsatisfactory when N is small or the SNR is low.

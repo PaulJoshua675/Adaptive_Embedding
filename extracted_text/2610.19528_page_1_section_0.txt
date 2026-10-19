@@ -1,0 +1,1 @@
+Retrieve What Helps, Only When It Helps: Agentic Reinforcement Learning for Selective Retrieval-Augmented Machine Translation Shijun Li1*, Yang Liu2, Najmeh Sadoughi2, Dongmei Wang2, Xinjie Li2, Zhu Liu2, Rohith Mysore Vijaya Kumar2, Yuzong Liu2 1The University of Texas at Austin, 2Amazon shijunli@utexas.edu

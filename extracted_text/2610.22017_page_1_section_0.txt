@@ -1,0 +1,1 @@
+CARA: Causally Guided Retrieval Agent for Question Answering Weicheng Liu, Xiangcheng Wu, Depeng Xu, Haopeng Zhang, Xi Niu University of North Carolina at Charlotte {wliu23, xwu20, dxu7, hzhang55, xniu2}@charlotte.edu

@@ -1,0 +1,1 @@
+Neural Dimensional Analysis: Foundations of Dimensionless and Scale-Consistent Computation Bum Jun Kim∗ Makoto Kawano Yusuke Iwasawa Yutaka Matsuo The University of Tokyo

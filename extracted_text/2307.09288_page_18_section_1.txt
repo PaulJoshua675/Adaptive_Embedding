@@ -1,0 +1,1 @@
+As shown in Figure 12, Llama 2-Chat models outperform open-source models by a significant margin on both single turn and multi-turn prompts. Particularly, Llama 2-Chat 7B model outperforms MPT-7B-chat on 60% of the prompts. Llama 2-Chat 34B has an overall win rate of more than 75% against equivalently sized Vicuna-33B and Falcon 40B models. 18

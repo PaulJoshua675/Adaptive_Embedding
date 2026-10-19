@@ -1,0 +1,1 @@
+Preprint GEOSTATE: LEARNING VIEW-DECOUPLED GEOMETRY STATES FOR 3D WORLD MODELING Hongchang Liu1, Jian Liu1, Yujuan Ding2, Liang Peng3, Xun Jiang1, Fei Ma4, Xing Xu1, Yi Bin1,∗ 1Tongji University 2Hong Kong Polytechnic University 3Tencent 4Guangdong Laboratory of Artificial Intelligence and Digital Economy (SZ) Hongchang_Liu@outlook.com, yi.bin@hotmail.com

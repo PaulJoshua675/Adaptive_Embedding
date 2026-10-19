@@ -2,12 +2,34 @@ from __future__ import annotations
 
 import math
 import re
+import logging
+from functools import lru_cache
 from typing import List
 
 try:
     from sentence_transformers import SentenceTransformer  # type: ignore
 except ImportError:  # pragma: no cover - optional dependency
     SentenceTransformer = None
+
+try:
+    import streamlit as st
+except ImportError:  # pragma: no cover - optional runtime dependency
+    st = None
+
+LOGGER = logging.getLogger(__name__)
+
+
+def _resource_cache(function):
+    if st is None:
+        return lru_cache(maxsize=4)(function)
+    return st.cache_resource(show_spinner=False)(function)
+
+
+@_resource_cache
+def _load_sentence_transformer(model_name: str):
+    if SentenceTransformer is None:
+        raise RuntimeError("sentence-transformers is not installed")
+    return SentenceTransformer(model_name)
 
 
 class EmbeddingModel:
@@ -18,8 +40,9 @@ class EmbeddingModel:
         self.backend = None
         if model_name and model_name.lower() != "simple-bow" and SentenceTransformer is not None:
             try:
-                self.backend = SentenceTransformer(model_name)
-            except Exception:
+                self.backend = _load_sentence_transformer(model_name)
+            except Exception as exc:
+                LOGGER.warning("Embedding model %s is unavailable; using the local bag-of-words backend: %s", model_name, exc)
                 self.backend = None
 
     def build_from_texts(self, texts: List[str]) -> None:

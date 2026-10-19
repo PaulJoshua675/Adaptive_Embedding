@@ -1,0 +1,1 @@
+Figure 12: Ablation study of gravity injection locations within the VGGT model. Performance of the default injection point is evaluated against in- jection occurring both before and after the aggregator module. 28

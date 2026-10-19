@@ -1,0 +1,1 @@
+or inference-time modifications. Its transferability across backbones and compatibility with existing topology-aware methods further demonstrate that TRACE is a practical plug- and-play approach for thin-structure segmentation. 9

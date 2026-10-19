@@ -1,0 +1,1 @@
+Multi-SFT: Permissively-Licensed Multilingual Instruction-Following Daniela Baiamonte1, Kamyar Zeinalipour2,3, Elena Fano1, Stefano Simonazzi1, Andrea Zugarini1 1villanova.ai, 2Yukai!, 3University of Siena Correspondence: kamyar.zeinalipour2@unisi.it

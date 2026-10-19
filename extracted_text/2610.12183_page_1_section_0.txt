@@ -1,0 +1,1 @@
+Preprint. A CLOSER LOOK AT AGENTIC BBO: BENCHMARKING LLM AGENTS FOR BLACK-BOX OPTIMIZATION Ming Chen1,2, Rong-Xi Tan1,2, Ke Xue1,2∗, Yu-Jie Zhou1,2, Taiye Lu1,2, Zhi-Xuan Gao1,2, Peng Xie1,2, Zijun Shen1,2, Chen Lu1,2, Haopu Shang1,2 & Chao Qian1,2∗ 1State Key Laboratory of Novel Software Technology, Nanjing University 2School of Artificial Intelligence, Nanjing University

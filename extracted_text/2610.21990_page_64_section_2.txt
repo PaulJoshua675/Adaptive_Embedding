@@ -1,0 +1,1 @@
+Hand-Drill Backpack Fire-Ext. Survivor OVERALL mIoU +0.1% -1.4% -3.8% +11.6% +21.1% +5.5% Improvement (+ ) Degradation (- ) Overall Change Fig. 4.9. Semantic segmentation performance deltas between VesperMUSE LLIE and VesperMUSE trained and tested on low-light images, highlighting the role of LLIE enhancement on the PST900 dataset [8]. 64

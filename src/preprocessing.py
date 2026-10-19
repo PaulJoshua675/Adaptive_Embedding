@@ -17,8 +17,15 @@ except ImportError:  # pragma: no cover
     pytesseract = None
 
 from .utils import iter_supported_files, load_text
+from .extract_pdf import clean_extracted_text
 
-__all__ = ["process_custom_pdf_path", "extract_page_images", "query_requests_visuals", "extract_pdf_pages"]
+__all__ = [
+    "process_custom_pdf_path",
+    "extract_uploaded_pdf_pages",
+    "extract_page_images",
+    "query_requests_visuals",
+    "extract_pdf_pages",
+]
 
 _VISUAL_QUERY = re.compile(r"\b(?:image|figure|fig\.?|chart|plot|graph|diagram|architecture|visual|table|picture)\b", re.I)
 _FIGURE_CAPTION = re.compile(
@@ -262,6 +269,20 @@ def process_custom_pdf_path(
         doc.close()
 
 
+def extract_uploaded_pdf_pages(
+    file_path: str,
+    paper_id: str | None = None,
+    figures_dir: str | Path = "vector_store/figures",
+) -> List[Dict[str, object]]:
+    """Extract section-scoped page records for an uploaded PDF on disk."""
+    source_path = Path(file_path)
+    return process_custom_pdf_path(
+        str(source_path),
+        paper_id=paper_id or source_path.stem,
+        figures_dir=figures_dir,
+    )
+
+
 def _render_page_canvas(page, scan_path: Path) -> object:
     pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
     scan_path.parent.mkdir(parents=True, exist_ok=True)
@@ -294,7 +315,7 @@ def _extract_document_pages(document, pdf_path: Path, output_dir: Path, source_t
     current_section = "DOCUMENT"
     for page in document:
         scan_path = output_dir / f"{pdf_path.stem}_page_{page.number + 1}_scan.png"
-        raw_text = _extract_page_text(page, scan_path)
+        raw_text = clean_extracted_text(_extract_page_text(page, scan_path))
         image_count = len(page.get_images(full=True))
         page_sections, current_section = _split_text_by_sections(raw_text, current_section)
         for section_index, section in enumerate(page_sections):

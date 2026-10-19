@@ -1,0 +1,1 @@
+Revisiting Generative vs. Dense Retrieval: A Static Value Prior Reverses the Gap CIKM ’26, November 7–11, 2026, Rome, Italy

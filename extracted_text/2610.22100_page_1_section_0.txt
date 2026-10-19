@@ -1,0 +1,1 @@
+Patch where the text is new: a compression view of where byte-level models should spend compute Nicolás Vera Zúñiga Independent Researcher, Chile nicovera@quetru.cl

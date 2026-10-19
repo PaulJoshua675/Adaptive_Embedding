@@ -1,0 +1,1 @@
+SLA constraints. TLM-RL and X-RIC300 show intermediate reductions (vCW: 0.75 and 0.67; vRB: 9.5–10.5 and 9.0– 9.8 blocks, respectively), indicating that dual filtering extracts high-quality examples that guide policies toward efficient allocations as the demonstration buffer grows.

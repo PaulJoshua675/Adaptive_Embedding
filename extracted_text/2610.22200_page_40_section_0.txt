@@ -1,0 +1,1 @@
+Supplement Provenance. The accompanying manifest records source hashes, run identifiers, evaluator results, and source-line ranges for the listings. The exported records preserve all executed actions and tool outputs except marked credential replacements; they are evidence records, not standalone replay programs. 40

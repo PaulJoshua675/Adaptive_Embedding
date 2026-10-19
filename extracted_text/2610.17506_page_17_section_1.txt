@@ -1,0 +1,1 @@
+Models of both natural and artificial collective intelligence have been gaining traction in recent years with advances in data collection and analysis (Centola, 2022; McMillen & Levin, 2024) as well as computational resources and techniques (Casadei, 2023; Flint et al., 2026; Kong et al., 2026). Ensemble reservoir computing offers a viable approach to modeling collective 17

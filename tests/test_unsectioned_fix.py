@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.integration
+
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, sync_playwright
 
@@ -19,11 +21,11 @@ def _ask(page: Page, query: str) -> None:
     page.get_by_text("Technical Breakdown", exact=True).wait_for(timeout=60_000)
 
 
-def test_indexing_prompt_and_figure_regression() -> None:
+def test_indexing_prompt_and_figure_regression(streamlit_app_url: str) -> None:
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
-        page.goto(BASE_URL, wait_until="domcontentloaded")
+        page.goto(streamlit_app_url, wait_until="domcontentloaded")
         page.get_by_text("Browse Central Repository", exact=True).wait_for()
 
         _ask(page, "What is the technical breakdown of the methodology section?")
@@ -40,7 +42,7 @@ def test_indexing_prompt_and_figure_regression() -> None:
 
         REPORT_PATH.write_text(
             "Pipeline regression report\n\n"
-            f"URL: {BASE_URL}\n"
+            f"URL: {streamlit_app_url}\n"
             "UNSECTIONED absent: yes\n"
             "Technical explanation present: yes\n"
             f"Figure image source: {figure.get_attribute('src')}\n",

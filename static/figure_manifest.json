@@ -1,0 +1,777 @@
+{
+  "The Transformer - model architecture.": {},
+  ", respectively.": {},
+  "(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.": {},
+  "). The input consists of queries and keys of dimension dk, and values of dimension dv. We compute the dot products of the query with all keys, divide each by \u221adk, and apply a softmax function to obtain the weights on the values.": {},
+  "A diagram illustrating the three steps of our method: (1) supervised \ufb01ne-tuning (SFT), (2) reward model (RM) training, and (3) reinforcement learning via proximal policy optimization (PPO) on this reward model. Blue arrows indicate that this data is used to train one of our models. In Step 2, boxes A-D are samples from our models that get ranked by labelers. See Section 3 for more details on our method.": {},
+  "Screenshots of our labeling interface. (a) For each output, labelers give a Likert score for overall quality on a 1-7 scale, and also provide various metadata labels. (b) After evaluating each output individually, labelers rank all the outputs for a given prompt. Ties are encouraged in cases where two outputs seem to be of similar quality.": {},
+  "Theoretical squared form factor, P2(kR), for a monodisperse sphere of radius R as a function of the scattering vector or Fourier component k non-dimensionalised by the radius, kR, Eq. 2, with minima positions given. The red curve is the Guinier approximation.": {},
+  ". P(kR) displays successive zeros, with the first at k0R = 4.493. Two con- sequences follow from Eq. 2. First, in the dilute limit, the DLS signal scales as Nb2(k) for N particles in the scattering volume,13": {},
+  ", then gives a(k) \u223cV 2p e\u2212k2R2": {},
+  "a illustrates the information extracted by fitting these models to a simulated ISF from a bidisperse distribution of diffu- sivities. Model (1) finds an essentially meaningless \u2018average\u2019 that misses both populations. Model (2) suffers from the same prob- lem as far as the mean value is concerned, but gives a credible de- scription of the notional \u2018polydispersity\u2019. Model (3) returns more or less correct average sizes and contributions for the two popu- lations, but does not deal with the polydispersity within each.": {},
+  "Extracted particle diffusivity distributions, P(D), from a simulated ISF based on a defined bimodal P(D) (red curves, \u00b51 = 1, \u00b52 = 3, \u03c31 = 0.25, \u03c32 = 0.4, C1 = 0.25). ISF generated with Gaussian noise at each f(k,\u03c4); \u03c3 = 10\u22125. (a) Graphical representation of output from three different least squares fits; monodisperse (blue), bidisperse (orange), and a cumulant expansion (green). (b) Output from a CONTIN fit.": {},
+  "b illustrates the result of this procedure in fitting the ISF from a bimodal distribution of diffusivities, inputting only the desired binning of the output histogram. CONTIN\u2019s regularisa- tion selection works exceptionally well because the only noise ap- plied to the simulated f(k,\u03c4) is Gaussian with a known amplitude (\u03c3 = 10\u22125), and is independent for each k-\u03c4 pair. With real exper- imental noise, the selection of \u03b1 is generally more difficult.": {},
+  "DDM results for polystyrene spheres of different sizes. (a) Ex- tracted diffusion coefficients as a function of manufacturer provided ra- dius. Dashed line shows Stokes-Einstein prediction (b) Average nor- malised (see main text) A(k) against particle radius. Green triangles indicate average A(k) as extracted from videos. Black crosses are the same data corrected for form factor effects. The dashed line has slope 3. In both plots there are 5 points for each size, which often overlap.": {},
+  "a. We can therefore size particles over two orders of magnitude of R without changing experimental settings, even though A(k) < B(k) for the smaller particles.": {},
+  "b shows that for R \u22720.55\u00b5m, A(k) \u221dR3 at constant \u03c8 (and therefore \u03c6), verifying Eq. 12. Since N \u221d\u03c8/R3 and we have previously confirmed experimentally34 that A(k) \u221dN, this is equivalent to a signal of R6 per particle, matching DLS scal- ing (assuming Rayleigh scatterers) and our theoretical prediction. This R6 scaling sets the weight of signal contributions in the case of mixtures with multiple particle sizes. Note however, that the": {},
+  "b. As already suggested at the end of Section 2, this is not unexpected as several assumptions of our simple model start to fail.": {},
+  ". Comparison with values obtained from fitting a monodisperse model to the unmixed samples, Fig. 4a, shows that the method works well pro- vided that the \u2018low-signal component\u2019\u00a7 contributes at least \u22482%. We found little quantitative difference in taking C1 in model 3 to be constant or allowing it to vary with k, confirming minimal form factor effects. Practically, allowing C1 to vary increased process- ing time and occasionally caused issues with convergence.": {},
+  "Results of DDM analysis of 240 nm/1.1 \u00b5m sphere mixtures with different compositions, showing five measurements at each composition. Red crosses indicate results of least-squares fits to an explicit bimodal PDD, blue triangles are extracted from CONTIN fits. CONTIN results are shifted slightly along the x-axis for clarity, and are only plotted where each population is expected to contribute \u22735% of the DICF. a) Diffusion coefficients (points) compared to average values for the monomodal sus- pensions (dotted lines). b) Signal fraction from large particles (points), and theoretical expectations for DDM, Eq. 12 (solid line) and DLS at various angles (dashed lines).": {},
+  "b, with \u03b8 = 12.8\u25e6and 173\u25e6being typical of some popular commercial devices. Note that these curves assume that each population is monodisperse; any polydispersity would cause significant shifts.": {},
+  ". Since we remain at low k far from the form factor minimum, polydispersity of the individual populations can be neglected in calculating this curve. Thus, our protocol can give direct information on the composition of the sample.": {},
+  "CONTIN results for various 240 nm/1.1 \u00b5m sphere mixtures (see legend) with expected signal contributions from large particles of 5%, 37%, 87%, and 95% respectively. Purple vertical lines show average diffusivities from least-squares fits to the monodisperse suspensions.": {},
+  "(Ap- pendix F.3) shows the result for each sample in Table 1. Figure 5 shows the PDDs from the third video of each mixture in which the large particles contribute 0.1%, 1%, 10%, and 25% of the particle mass (or 5%, 37%, 87%, and 95% of the signal).": {},
+  ". The variation in these properties is comparable to the equivalent least-squares values, and the more stringent sig- nal contribution requirements are visible as the signal reaches \u22485%. These fits also return a polydispersity; but there are sig-": {},
+  "Schematic of a trimodal suspension showing how by selecting a suitable region of interest, we can enhance the DDM signal from smaller particles by removing the contribution from large particles.": {},
+  ", because the regularisation parameter \u03b1 is highly noise sensitive. However, CONTIN fits the data to an integral of the PDD, so that there is a priori reason to surmise that the area of each peak may be far less noise sensitive than either the peak width or height. The peak area is a measure of the (weighted) number of particles, Eq. 12. Figure 4b validates this surmise. So, a CONTIN analysis is able to deliver the sizes and relative number of the two populations in our 1:4.6 bidisperse suspension.": {},
+  "(Appendix F.1).": {},
+  ". This can be accomplished either by combining dilution and control of magnification or by using a spatially-resolved analysis. We demonstrate these two approaches using a trimodal stock, Table 2.": {},
+  "CONTIN fits to videos of the trimodal system defined in Table 2 and dilutions. Each pair of graphs shows the result with 10\u00d7 magni- fication (top) and 60\u00d7 magnification (bottom) for the labelled dilution. Vertical dotted lines show expected peak positions.": {},
+  "shows the fitted P(D) from each repeat using the two different objectives with the stock suspension and three successive dilutions.": {},
+  "CONTIN fits to data extracted from 60x magnification videos of the (undiluted) mixture in table 2, and from a 128\u00d7128 pixel selected ROI. Dashed vertical lines show the diffusivities of the monomodal sus- pensions. Inset shows example frame and the selected ROI.": {},
+  "compares the PDDs obtained from one of the 60\u00d7 magni- fication videos of the stock suspension when we analysed the full video (512\u00d7512 pixels), and when we analysed a smaller ROI (128\u00d7128 pixels) chosen to exclude all large particles. Not sur- prisingly, the former PDD shows only the largest particles, while the latter shows the two smaller populations.": {},
+  "in Appendix F.2 reports the PDD obtained as the size of the ROI is progressively reduced for 60\u00d7 magnification videos of the stock solution, again showing five runs at each stage. That the two smaller populations show up strongly after reducing the ROI by a factor of 42 is consistent with diluting the stock by 32- 33 times to give optimal performance, Fig. 7. The full data set, Fig. 13, illustrates the superiority of this method compared to di- lution. Here, the user varies the ROI size and position in real time while analysing a single data set until correct sizing is achieved; dilution requires multiple experiments in which the user must \u2018hit\u2019 the right dilution window and sample position by chance.": {},
+  "b) that their raw images consist of speckle (= random interference) patterns.": {},
+  "shows the extracted DDM signals (in the form of the DICF, g(k,\u03c4)) for two monomodal suspensions and a mixture of the pair. By eye, it is not obvious that the DICF for the bimodal suspension is not monomodal, however by fitting appropriate models it is possible to extract both sizes and their relative con- tribution to the signal (see section 5).": {},
+  "Representative differential image correlation functions, g(k,\u03c4), at selected k values for the monomodal and bimodal suspensions discussed in section 5, along with the corresponding least-squares (LS) and CONTIN fits. The top and bottom frames show the signal from suspensions of 240 nm and 1.1 \u00b5m respectively, and the middle frame corresponds to a mixture which is 1% large particles by mass (contributing \u224837% of the signal).": {},
+  "shows least-squares results from fitting an explicit bidis- perse model (model 3 in Section 3.2.1) to bimodal suspensions with compositions in Table 1, obtaining good results for each par- ticle size. If we did not know a priori of bimodality, we may instead fit model 2 in Section 3.2.1, Fig. 10. Such a cumulant fit to the same data extracts moments comparable with the Eq. 12 weighted mean and variance of the diffusion coefficient distribu- tion; in other words, the fit returns reasonable first and second moments of the PDD. The reported variance is slightly less accu- rate than the mean, which is expected as the accuracy of terms in cumulant fits is known to decrease with increasing order,29": {},
+  "Fitted PDD moments for the bimodal mixtures described in Ta- ble 1 (section 5), obtained using 3rd order cumulant fits to the ISF. Each data point is the result from fits to a single video, with corresponding uncertainties as error bars. Top \u2013 mean diffusion coefficients, the dot- ted horizontal lines show the average fitted diffusion coefficient for the monomodal suspensions, the dashed green line shows the mean diffu- sion coefficient, weighted by the expected signal contributions. Bottom \u2013 corresponding variance from the same fits. Dashed green line shows the weighted variance predicted (assuming monodispersity of each pop- ulation).": {},
+  ". We see that in the five repeats the bimodal suspension shows significant variability, switching between accurate results and underestimated values for both populations. This grouping could be an indication of local minima in \u03c72.": {},
+  "Parameters obtained from bidisperse least squares fits of the DICFs from 4:1, 1:1, and 1:4 mixtures (by mass) of 240 nm and 500 nm particles. Each data point is the result from fits to a single video, with corresponding uncertainties as error bars. a) Fitted diffusion coefficients, the dotted horizontal lines show the average fitted diffusion coefficient for the monomodal suspensions. b) Fitted signal fraction from the large particles, with a prediction based on the NR6 scaling of Eq. 12.": {},
+  ". Again we see two populations when the contribution of the minority signal component \u22735%, with diffusion coefficients comparable to the values obtained by LS fits (Fig. 11).": {},
+  "CONTIN results for mixtures of 240 nm and 500 nm spheres mixed in different proportions. Each plot is labelled and had identical analyses performed, the vertical dotted lines show the average diffusion coefficient fit to videos of the separate populations.": {},
+  "shows all results for the ROI selection to exclude large particles from a trimodal suspension. An example for a single video with full and 128\u00d7128 ROI was shown in Fig. 8 of Sec- tion 6. In Fig. 13 we plot all 5 repeats for each video and selected subregions of various sizes. As the ROI is reduced, the largest particles are removed with increasing levels of success, until at 128\u00d7128 pixels the two smaller populations are clearly visible in all repeats with no contribution from the large particles. As with the bimodal CONTIN experiments, we see significant variation in shape between repeats, although the overall trend is clear.": {},
+  "CONTIN fits applied to sub-regions of the 60\u00d7 magnification videos of the original stock mixture from Table 2. Each plot is labelled with the size of the ROI, which is illustrated for the first video in each set by the blue box in the inset. Vertical dotted lines show expected peak positions, labelled with particle diameter.": {},
+  "shows the results for CONTIN fits to every one of the videos recorded to produce Figs. 4 and 5 in Section 5. The CON- TIN particle diffusivity distributions (PDDs) agree reasonably well with the least-squares fits as discussed in the main text, and as long as the signal from a population exceeds 5% the peak is con- sistently present in the PDD, and as the signal drops towards this limit the position and presence of the peak becomes much less re- liable. In addition, we can see variation in the width of the peaks between repeats, which we attribute to variability in the selection of the regularisation parameter \u03b1. This could potentially be elim- inated in certain situations (e.g. repeatedly sizing a suspension for consistency as part of quality control) by selecting a fixed \u03b1 for the analysis.": {},
+  "Complete CONTIN results for mixtures of 240 nm and 1.1 \u00b5m spheres mixed in different proportions listed in Table 1 (Section 5). Each PDD in each plot is from a single video and had identical analyses performed. The vertical dotted lines show the average diffusion coefficient from least-squares fits to videos of the separate populations.": {},
+  "Helpfulness human evaluation results for Llama 2-Chat compared to other open-source and closed-source models. Human raters compared model generations on ~4k prompts consisting of both single and multi-turn prompts. The 95% confidence intervals for this evaluation are between 1% and 2%. More details in Section 3.4.2. While reviewing these results, it is important to note that human evaluations can be noisy due to limitations of the prompt set, subjectivity of the review guidelines, subjectivity of individual raters, and the inherent difficulty of comparing generations.": {},
+  "Win-rate % for helpfulness and safety between commercial-licensed base- lines and Llama 2-Chat, according to GPT- 4. To complement the human evaluation, we used a more capable model, not subject to our own guidance. Green area indicates our model is better according to GPT-4. To remove ties, we used win/(win + loss). The orders in which the model responses are presented to GPT-4 are randomly swapped to alleviate bias.": {},
+  "Safety human evaluation results for Llama 2-Chat compared to other open-source and closed- source models. Human raters judged model generations for safety violations across ~2,000 adversarial prompts consisting of both single and multi-turn prompts. More details can be found in Section 4.4. It is important to caveat these safety results with the inherent bias of LLM evaluations due to limitations of the prompt set, subjectivity of the review guidelines, and subjectivity of individual raters. Additionally, these safety evaluations are performed using content standards that are likely to be biased towards the Llama 2-Chat models.": {},
+  "Training of Llama 2-Chat: This process begins with the pretraining of Llama 2 using publicly available online sources. Following this, we create an initial version of Llama 2-Chat through the application of supervised fine-tuning. Subsequently, the model is iteratively refined using Reinforcement Learning with Human Feedback (RLHF) methodologies, specifically through rejection sampling and Proximal Policy Optimization (PPO). Throughout the RLHF stage, the accumulation of iterative reward modeling data in parallel with model enhancements is crucial to ensure the reward models remain within distribution.": {},
+  "(a) shows the training loss for Llama 2 with these hyperparameters.": {},
+  "Issues with multi-turn memory (left) can be improved with GAtt (right).": {},
+  "(left).": {},
+  "(right).": {},
+  "Human evaluation results for Llama 2-Chat models compared to open- and closed-source models across ~4,000 helpfulness prompts with three raters per prompt.": {},
+  "Pretraining data toxicity. To allow for better downstream generalization, we chose not to scrub toxic data from pretraining. The HateBERT classifier assigns a toxicity likelihood of 0.5 or higher to about 0.2% of documents in our pretraining corpus.": {},
+  "shows the distribution of scores in a 10% random sample of the full corpus. About 0.2% of documents evaluated are assigned a likelihood score of 0.5 or higher, meaning there is a small amount of toxicity in our pretraining data.": {},
+  "Context distillation analysis. Left: Distribution of safety RM scores from the base model, when adding a generic preprompt, and when adding a preprompt based on the risk category with tailored answer template. While a generic preprompt increases safety RM scores, a preprompt with tailored answer template helps even more. Right: Context distillation increases the RM score significantly for samples that initially have a low score, but can also have a detrimental effect on samples that initially have a high score. We therefore only apply context distillation on targeted samples when it increases RM score.": {},
+  "b).": {},
+  "Overall safety measures. Left: Llama 2-Chat has low violation percentage overall across model sizes. Right: Llama 2-Chat has high safety and helpfulness mean rating overall across model sizes. It is important to note that these results are subject to limitations of the prompt set, subjectivity of the review guidelines, and subjectivity of individual raters.": {},
+  "Single-turn and multi-turn violation percentage. Note that these results should be interpreted carefully due to limitations of the prompt set, subjectivity of the review guidelines, content standards, and individual raters.": {},
+  ". Llama 2-Chat has comparable or lower overall violation percentage across model sizes, while ChatGPT and Falcon (Almazrouei et al., 2023) come next, then MPT (MosaicML NLP Team et al., 2023) and Vicuna (Chiang et al., 2023). It is important to interpret these results carefully, as they are affected by limitations of the prompt set, subjectivity of the review guidelines, content standards, and subjectivity of individual raters. Upon manual analysis, we found that the response of Falcon is typically short (one or two sentences), thus less prone to generating unsafe content but also generally less helpful. This is reflected by a large number of responses of Falcon with rating= 3. As a result, we note that in Figure 17b the average rating of Falcon is much lower than Llama 2-Chat (34B) although their violation percentages look similar (3.88 vs 4.45).": {},
+  "Violation percentage per risk category. Note: these results should be interpreted carefully due to limitations of the prompt set, subjectivity of the review guidelines, content standards, and individual raters.": {},
+  ", we report the violation percentage on single- and multi-turn conversations, respectively. A trend across models is that multi-turn conversations are more prone to inducing unsafe responses. That said, Llama 2-Chat still performs well compared to baselines, especially on multi-turn conversations. We also observe that Falcon performs particularly well on single-turn conversations (largely due to its conciseness) but much worse on multi-turn conversations, which could be due to its lack of multi-turn supervised fine-tuning data.": {},
+  ", we show the per-category safety violation percentage of different LLMs. While model perfor- mance is similar across categories, Llama 2-Chat has relatively more violations under the unqualified advice category (although still low in an absolute sense), for various reasons, including lack of an appropriate disclaimer (e.g., \u201cI am not a professional\u201d) at times. For the other two categories, Llama 2-Chat achieves comparable or lower violation percentage consistently regardless of model sizes.": {},
+  "RLHF learns to adapt the temperature with regard to the type of prompt. Lower Self-BLEU corresponds to more diversity: RLHF eliminates diversity in responses to factual prompts but retains more diversity when generating responses to creative prompts. We prompt each model with a diverse set of 10 creative and 10 factual instructions and sample 25 responses. This is repeated for the temperatures T \u2208{k/10 | k \u2208N : 1 \u2264k \u226415}. For each of the 25 responses we compute the Self-BLEU metric and report the mean and standard deviation against the temperature.": {},
+  "Time awareness \u2014 illustration of our model generalizing the notion of time, with 1,000 SFT time-focused data.": {},
+  ". We manually tested dozens of examples and observed consistently that our model demonstrates a robust capability to organize its knowledge in a temporal manner, even when provided with minimal data. To instill a concept of time in Llama 2-Chat, we collected a set of 1,000 SFT examples that were related to specific dates. These examples included questions like \u201cHow long ago did Barack Obama become president?\u201d Each was associated with two critical pieces of metadata: the date when the query was posed \u2014 which influenced the response \u2014 and the event date, a point in time prior to which the question would be nonsensical.": {},
+  "Tool use emergence. Llama 2-Chat is able to understand the tools\u2019s applications, and the API arguments, just through the semantics, despite never having been trained to use tools.": {},
+  "exhibits an instance where the model demonstrated the capability to utilize a sequence of tools in a zero-shot context.": {},
+  "Multi-query variants enable higher throughput with larger batch sizes, and show similar latency on smaller batches. Output length is fixed at 128 tokens. The first data point corresponds to batch size 1, and then we double it until the model runs out of memory. The MHA variant triggers an out-of- memory error at a batch size of 1024 for a context of 256 tokens and at a batch size of 128 for 2k context, whereas MQA and GQA have successful runs in those settings.": {},
+  "shows how inference speed changed for the 30B GQA and MQA ablation models compared to the MHA baseline, in an experiment using 8 x 80 GiB A100s with tensor parallelism. In these runs we simply duplicated the KV heads for MQA in all GPUs, so the KV cache size for MQA became equal to the GQA and the two variants behaved very similar (with MQA just having a slightly larger FFN dimension).": {},
+  "GAtt zero-shot generalisation. Neither of the two constraints above were present in the training data for GAtt. Yet, they are perfectly fulfilled trough all the turns.": {},
+  "Average reward model score vs model response quality rating (7-point Likert scale) from triple human review. The left and right plots are on helpfulness and safety test sets, respectively. The shaded areas represent \u00b11 standard deviation.": {},
+  "Impact of system prompt on human evaluation results for ChatGPT (Left). Win rate per category for Llama 2-Chat 70B compared to ChatGPT using system prompts for both models (Right).": {},
+  "Win rate of Llama 2-Chat versus ChatGPT analyzed by number of turns (Left) in the prompt and word count (Right) for the prompt and generation combined. For the word count plot, we report the win rate for each quintile. The maximum total word count (prompt and generation) is 2432. We do not see any trends in win rate with either word count or turn count.": {},
+  ", Llama 2-Chat win rate increases from 36% to 44%. Additionally, the win rate for single turn prompts show a dramatic increase from 36% to nearly 49%. In 30, we also show the category wise breakdown of win rate for different categories of prompts. It is interesting to note that ChatGPT outperforms Llama 2-Chat 70B on language assistance while Llama 2-Chat 70B outperforms ChatGPT on factual questions. While analyzing the results for factual questions, we noticed that examples where both models get the answer correct but annotators preferred Llama 2-Chat response due to the style of the response. These results on factual questions do not indicate the hallucination rate of either model. In 31, we also share the win rate by number of turns and total word count for prompts and generation. We do not see any trends in win rate in either case.": {},
+  "are two scatter plots of helpfulness and safety reward model scores on the safety test set for safe and unsafe responses. The tension can be observed at the bottom right corner (i.e., high safety score but low helpfulness score) in the safe response plot (left) and the top left corner (i.e., low safety score but high helpfulness score) in the unsafe response plot (right). We also list two qualitative examples where safety and helpfulness reward models don\u2019t agree with each other in Table 35.": {},
+  "Illustration of our Information Invariant TTT method on a 1D feature space. (a) The clustering of source features x (blue) into K =10 regions, maximizing the entropy of the cluster marginal distribution H(Z), is such that regions have the same probability mass in the source distribution. At test-time, the probability density function of the target domain (red) is shifted, which results in a different clustering of features. (b) The optimal clustering corresponds to dividing the cumulative density function (CDF) in even steps, giving a cluster marginal entropy of H(Z) = log2(K) \u22483.332. (c) Since the CDF of the target is not divided in even steps, the mutual information between features x and clusters z is no longer maximized. Note: we assume that cluster assignments are confident, i.e., H(Z|X)\u22480 and thus I(Z; X) = H(Z)\u2212H(Z|X) \u2248H(Z).": {},
+  "). Toward this goal, we introduce an auxiliary task that performs information-maximization clustering while training on the source examples. At test time, we use the MI between the features and cluster assignments as a measure of representation quality, and maximize the MI as objective for test-time adaptation. Unlike previous TTT approaches, which rely on problem-specific, self-supervised learning strategies, our auxiliary clustering task is problem-agnostic and could be added on top of any model via a low-dimensional linear projection. Test-time adaptation could also be done using only the test samples, without any type of distilled information from the source domain. On the technical side, minimal architectural changes are needed, and the joint training approach is more efficient than proceeding with multiple, complex and time-consuming steps.": {},
+  "t-SNE plots of gaussian noise for the features at the output of the extractor from ClusT3 with one projector on Layer 1 and 2 each. (a) prediction of the model without adaptation. (b) prediction of the model after 20 iterations of adaptation. (c) ground truth labels without adaptation. (d) ground truth labels of adapted representations.": {},
+  ". Motivation of FFINet. (a) Traditional methods often generate incompatible trajectory predictions. (b) Human drivers generate feedback control to revise their feedforward control.": {},
+  "(a), they forecast the motion of a single agent in a single feedforward pass and construct its correlation relationships with surroundings independently, which leads to the model ignoring the possible future collisions between predictions of agents.": {},
+  "(b), according to the historical information of neighbors and the current topology structure of a scene, they usually predict the agents\u2019 motion using an internal dynamics model to assess possible risks. Those initial assessments in turn help them generate feedback controls, such as acceleration and deceleration, to correct the discrepancies introduced by their feedforward control [13]. The key to human success lies on the assessments and feed- back of possible future interaction between future trajectories, which are further utilized to revise the current predictions.": {},
+  ". Framework of FFINet, in which: (1) position vectors and current positions are embedded by separated encoders; (2) four interaction modules are introduced to aggregate cross-temporal interaction features; (3) numbers with circle represent the order to perform interactions.": {},
+  ", the architecture of our FFINet is consists of: (1) Spatial-Temporal Encoding is employed to embed the position vectors and current positions of a scene, providing rich motion features for the following cross- temporal aggregation. (2) Cross-temporal Aggregation inte- grates the features subsequently with a current fusion module, observation interaction module, future feedback module and global fusion module. The Current Fusion Module fuses the current position features within the nearest agent-lane pairs. They are further added with corresponding vector features and integrated into the Observation Interaction Module. The Future Feedback Module is equipped with a future interac- tion, a feedback interaction and a feedforward interaction. It propagates the information between future features and observation interaction features of agents. The Global Fusion": {},
+  ", we decompose the absolute coordinates of trajectories and lanes into position vectors, current positions and relative relationship.": {},
+  ". Multi-agent data decomposition of a scene. (a) Decomposition the trajectories of agents. (b) Decomposition the coordinates of lane segments.": {},
+  ". Illustration of Relative-correlation Interaction Block.": {},
+  ", we take the interaction between lane segments and their surrounding agents as an example. Firstly, a neighbor agent\u2019s relative distance and angle are encoded and concatenated with the feature of this agent and lane segment. This process repeats on each neighbor agent of the lane segments. Secondly, we aggregate the concatenated features of all neighbors and update the raw feature of this lane segment with them.": {},
+  ". Results visualization of LaneGCN and FFINet on Argoverse validation set. The top row shows the predictions of LanGCN and the bottom raw presents the results of FFINet. The yellow, red, green and grey solid lines represent historical trajectory, ground truth trajectory, final predictions, and lanes respectively. For better visualization, we mark the endpoint of a trajectory with a star and the current position with a yellow point.": {},
+  ", we compare the visualization results of our FFINet with LaneGCN on the same": {},
+  ". Visualization of initial trajectories. The first two columns reveal the possible collision between agents. The third column reflects the motion tendency of agents.": {},
+  ". As we expected, the initial trajectories not only reflect the agent\u2019s motion tendency, but also reveal the possible col- lision risks of agents. After encoding those initial trajectories, we aggregate the future features of neighbors into the features of predicted agent, so as to realize the encoding of future possible interaction.": {},
+  ". In particular, the first three columns show that the final predicted trajectories are more accurate than the initial predictions. The fourth column shows that the separated initial prediction of the successor and predecessor reasonably refine the final predictions at the crossroads. The predecessor regresses to the correct lane, and the successor accelerates straightly or turns right decreasingly. The last column illustrates a slowdown of the successor after previewing that the predecessor is almost motionless, which indicates that the feedback of future": {},
+  ". Visualization on joint prediction of multiple agents. For comparison of the initial prediction and final predictions, we represent them with a purple and green solid line, respectively.": {},
+  ". Visualizations of the baseline without three interaction modules, the baseline without future interaction feedback and the final model with future interaction feedback": {},
+  ". It indicates that our core future interaction feedback module can significantly improve prediction results.": {},
+  "Illustration of weights for t = 30% and m \u2208{0.05, 0.2, 0.4, 0.6, 0.95}.": {},
+  "Illustration of utility for different plans as the size of the next set of tests, N, increases in intervals of four tests.": {},
+  "(left) shows the utility for each plan as the total number of tests, N, increases in": {},
+  "Utility-informed plans and a utility comparison with the uniform and fixed ap- proaches in the existing and all-provinces settings. The utility comparisons show the number of samples saved under the utility-informed plan, at 100 samples, to attain the same utility under other approaches. Variance in utility estimates stems from the use of different MCMC sets of SFP rates at each 10-test interval of the budget; see Appendix B for details.": {},
+  "Prior densities at SFP rates for seven designations of SFP risk, as introduced in Nkansah et al. (2017), using variance \u03bb = 2.": {},
+  "1706.03762": {
+    "Figure 1": {
+      "caption": "The Transformer - model architecture.",
+      "file_path": "static/extracted_figures/1706.03762_fig_1.png",
+      "page_number": 3
+    },
+    "Figure 2": {
+      "caption": "(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several",
+      "file_path": "static/extracted_figures/1706.03762_fig_2.png",
+      "page_number": 4
+    },
+    "Figure 3": {
+      "caption": "An example of the attention mechanism following long-distance dependencies in the",
+      "file_path": "static/extracted_figures/1706.03762_fig_3.png",
+      "page_number": 13
+    },
+    "Figure 4": {
+      "caption": "Two attention heads, also in layer 5 of 6, apparently involved in anaphora resolution. Top:",
+      "file_path": "static/extracted_figures/1706.03762_fig_4.png",
+      "page_number": 14
+    },
+    "Figure 5": {
+      "caption": "Many of the attention heads exhibit behaviour that seems related to the structure of the",
+      "file_path": "static/extracted_figures/1706.03762_fig_5.png",
+      "page_number": 15
+    }
+  },
+  "2203.02155": {
+    "Figure 1": {
+      "caption": "Human evaluations of various models on our API prompt distribution, evaluated by how",
+      "file_path": "static/extracted_figures/2203.02155_fig_1.png",
+      "page_number": 2
+    },
+    "Figure 2": {
+      "caption": "A diagram illustrating the three steps of our method: (1) supervised \ufb01ne-tuning (SFT), (2)",
+      "file_path": "static/extracted_figures/2203.02155_fig_2.png",
+      "page_number": 3
+    },
+    "Figure 3": {
+      "caption": "Preference results of our models, measured by winrate against the 175B SFT model. Left:",
+      "file_path": "static/extracted_figures/2203.02155_fig_3.png",
+      "page_number": 11
+    },
+    "Figure 4": {
+      "caption": "Metadata results on the API distribution. Note that, due to dataset sizes, these results are",
+      "file_path": "static/extracted_figures/2203.02155_fig_4.png",
+      "page_number": 12
+    },
+    "Figure 5": {
+      "caption": "Comparing our models with FLAN and T0 in terms of Likert scores on a 1-7 scale, on the",
+      "file_path": "static/extracted_figures/2203.02155_fig_5.png",
+      "page_number": 12
+    },
+    "Figure 6": {
+      "caption": "Results on the TruthfulQA dataset. Gray bars indicate ratings of truthfulness; colored bars",
+      "file_path": "static/extracted_figures/2203.02155_fig_6.png",
+      "page_number": 13
+    },
+    "Figure 7": {
+      "caption": "Comparing human evaluations and automatic evaluations (Perspective API scores) on",
+      "file_path": "static/extracted_figures/2203.02155_fig_7.png",
+      "page_number": 14
+    },
+    "Figure 8": {
+      "caption": "Examples of generalization in the 175B PPO-ptx model (InstructGPT 175B) compared to",
+      "file_path": "static/extracted_figures/2203.02155_fig_8.png",
+      "page_number": 15
+    },
+    "Figure 9": {
+      "caption": "Simple mistakes in the 175B PPO-ptx model (InstructGPT 175B) compared to GPT-3 175B",
+      "file_path": "static/extracted_figures/2203.02155_fig_9.png",
+      "page_number": 16
+    },
+    "Figure 10": {
+      "caption": "Excerpt from the instructions given to labelers for \ufb01nal evaluations of model outputs on",
+      "file_path": "static/extracted_figures/2203.02155_fig_10.png",
+      "page_number": 37
+    },
+    "Figure 11": {
+      "caption": "Complete instructions given to labelers for evaluating model outputs for toxicity on the",
+      "file_path": "static/extracted_figures/2203.02155_fig_11.png",
+      "page_number": 38
+    },
+    "Figure 12": {
+      "caption": "Screenshots of our labeling interface. (a) For each output, labelers give a Likert score for",
+      "file_path": "static/extracted_figures/2203.02155_fig_12.png",
+      "page_number": 39
+    },
+    "Figure 13": {
+      "caption": "Tuning FLAN and T0 based on reward model scores",
+      "file_path": "static/extracted_figures/2203.02155_fig_13.png",
+      "page_number": 43
+    },
+    "Figure 14": {
+      "caption": "Winogender: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_14.png",
+      "page_number": 45
+    },
+    "Figure 15": {
+      "caption": "CrowS-Pairs: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_15.png",
+      "page_number": 45
+    },
+    "Figure 16": {
+      "caption": "RealToxicityPrompts: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_16.png",
+      "page_number": 45
+    },
+    "Figure 17": {
+      "caption": "TruthfulQA: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_17.png",
+      "page_number": 46
+    },
+    "Figure 18": {
+      "caption": "DROP: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_18.png",
+      "page_number": 46
+    },
+    "Figure 19": {
+      "caption": "QuAC: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_19.png",
+      "page_number": 47
+    },
+    "Figure 20": {
+      "caption": "Squadv2: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_20.png",
+      "page_number": 47
+    },
+    "Figure 21": {
+      "caption": "Hellaswag: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_21.png",
+      "page_number": 48
+    },
+    "Figure 22": {
+      "caption": "RTE: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_22.png",
+      "page_number": 48
+    },
+    "Figure 23": {
+      "caption": "SST: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_23.png",
+      "page_number": 48
+    },
+    "Figure 24": {
+      "caption": "WSC: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_24.png",
+      "page_number": 49
+    },
+    "Figure 25": {
+      "caption": "WMT Fr \u2192En 15: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_25.png",
+      "page_number": 49
+    },
+    "Figure 26": {
+      "caption": "CNN/DM: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_26.png",
+      "page_number": 49
+    },
+    "Figure 27": {
+      "caption": "TL;DR: prompting, examples, and dataset features.",
+      "file_path": "static/extracted_figures/2203.02155_fig_27.png",
+      "page_number": 50
+    },
+    "Figure 28": {
+      "caption": "Zero-shot performance of our models on various public NLP datasets. The 175B PPO",
+      "file_path": "static/extracted_figures/2203.02155_fig_28.png",
+      "page_number": 51
+    },
+    "Figure 29": {
+      "caption": "Few-shot performance of our models on various public NLP datasets (compare to zero-shot",
+      "file_path": "static/extracted_figures/2203.02155_fig_29.png",
+      "page_number": 52
+    },
+    "Figure 30": {
+      "caption": "Metadata ratings as a function of model type and model size",
+      "file_path": "static/extracted_figures/2203.02155_fig_30.png",
+      "page_number": 53
+    },
+    "Figure 31": {
+      "caption": "Likert scores for each of our models",
+      "file_path": "static/extracted_figures/2203.02155_fig_31.png",
+      "page_number": 54
+    },
+    "Figure 32": {
+      "caption": "Bias results on Winogender and CrowS-Pairs.",
+      "file_path": "static/extracted_figures/2203.02155_fig_32.png",
+      "page_number": 54
+    },
+    "Figure 33": {
+      "caption": "Evaluation on public NLP datasets as a function of pretraining loss coef\ufb01cient. There is a",
+      "file_path": "static/extracted_figures/2203.02155_fig_33.png",
+      "page_number": 55
+    },
+    "Figure 34": {
+      "caption": "Evaluation on public NLP datasets as a function of KL reward coef\ufb01cient. Increasing the",
+      "file_path": "static/extracted_figures/2203.02155_fig_34.png",
+      "page_number": 55
+    },
+    "Figure 35": {
+      "caption": "Evaluation on public NLP datasets as a function of training episodes",
+      "file_path": "static/extracted_figures/2203.02155_fig_35.png",
+      "page_number": 57
+    },
+    "Figure 36": {
+      "caption": "Likert scores as a function of KL reward coef\ufb01cient. The blue line indicates the reward",
+      "file_path": "static/extracted_figures/2203.02155_fig_36.png",
+      "page_number": 57
+    },
+    "Figure 37": {
+      "caption": "Human likert scores for PPO with different init models.",
+      "file_path": "static/extracted_figures/2203.02155_fig_37.png",
+      "page_number": 57
+    },
+    "Figure 38": {
+      "caption": "Human evaluation metrics as a function of learning rates.",
+      "file_path": "static/extracted_figures/2203.02155_fig_38.png",
+      "page_number": 58
+    },
+    "Figure 39": {
+      "caption": "Toxicity scores on RealToxicityPrompts as a function of input prompt toxicity. PPO",
+      "file_path": "static/extracted_figures/2203.02155_fig_39.png",
+      "page_number": 59
+    },
+    "Figure 40": {
+      "caption": "Continuity and relative toxicity ratings for the RealToxicityPrompts experiment.",
+      "file_path": "static/extracted_figures/2203.02155_fig_40.png",
+      "page_number": 60
+    },
+    "Figure 41": {
+      "caption": "Win rates of PPO-ptx and SFT against 175B GPT-3 in RealToxicityPrompts.",
+      "file_path": "static/extracted_figures/2203.02155_fig_41.png",
+      "page_number": 60
+    },
+    "Figure 42": {
+      "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+      "file_path": "static/extracted_figures/2203.02155_fig_42.png",
+      "page_number": 62
+    },
+    "Figure 43": {
+      "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+      "file_path": "static/extracted_figures/2203.02155_fig_43.png",
+      "page_number": 63
+    },
+    "Figure 44": {
+      "caption": "Model samples on a prompt cherry-picked to show instruction following on potentially",
+      "file_path": "static/extracted_figures/2203.02155_fig_44.png",
+      "page_number": 63
+    },
+    "Figure 45": {
+      "caption": "Model samples on a prompt cherry-picked to show ability to follow instructions to describe",
+      "file_path": "static/extracted_figures/2203.02155_fig_45.png",
+      "page_number": 64
+    },
+    "Figure 46": {
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "static/extracted_figures/2203.02155_fig_46.png",
+      "page_number": 65
+    },
+    "Figure 47": {
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "static/extracted_figures/2203.02155_fig_47.png",
+      "page_number": 65
+    },
+    "Figure 48": {
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "static/extracted_figures/2203.02155_fig_48.png",
+      "page_number": 66
+    },
+    "Figure 49": {
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "static/extracted_figures/2203.02155_fig_49.png",
+      "page_number": 67
+    },
+    "Figure 50": {
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "static/extracted_figures/2203.02155_fig_50.png",
+      "page_number": 68
+    }
+  },
+  "2301.10446": {},
+  "2305.11018": {
+    "Fig. 1": {
+      "caption": "Theoretical squared form factor, P2(kR), for a monodisperse sphere",
+      "file_path": "static/extracted_figures/2305.11018_fig_1.png",
+      "page_number": 2
+    },
+    "Figure 2": {
+      "caption": "b illustrates the result of this procedure in fitting the",
+      "file_path": "static/extracted_figures/2305.11018_fig_2.png",
+      "page_number": 4
+    },
+    "Fig. 2": {
+      "caption": "Extracted particle diffusivity distributions, P(D), from a simulated",
+      "file_path": "static/extracted_figures/2305.11018_fig_2.png",
+      "page_number": 4
+    },
+    "Fig. 3": {
+      "caption": "DDM results for polystyrene spheres of different sizes. (a) Ex-",
+      "file_path": "static/extracted_figures/2305.11018_fig_3.png",
+      "page_number": 5
+    },
+    "Figure 3": {
+      "caption": "b shows that for R \u22720.55\u00b5m, A(k) \u221dR3 at constant",
+      "file_path": "static/extracted_figures/2305.11018_fig_3.png",
+      "page_number": 5
+    },
+    "Fig. 4": {
+      "caption": "Results of DDM analysis of 240 nm/1.1 \u00b5m sphere mixtures with",
+      "file_path": "static/extracted_figures/2305.11018_fig_4.png",
+      "page_number": 6
+    },
+    "Fig. 5": {
+      "caption": "CONTIN results for various 240 nm/1.1 \u00b5m sphere mixtures (see",
+      "file_path": "static/extracted_figures/2305.11018_fig_5.png",
+      "page_number": 6
+    },
+    "Fig. 6": {
+      "caption": "Schematic of a trimodal suspension showing how by selecting a",
+      "file_path": "static/extracted_figures/2305.11018_fig_6.png",
+      "page_number": 7
+    },
+    "Fig. 7": {
+      "caption": "CONTIN fits to videos of the trimodal system defined in Table",
+      "file_path": "static/extracted_figures/2305.11018_fig_7.png",
+      "page_number": 7
+    },
+    "Fig. 8": {
+      "caption": "CONTIN fits to data extracted from 60x magnification videos of",
+      "file_path": "static/extracted_figures/2305.11018_fig_8.png",
+      "page_number": 8
+    },
+    "Figure 8": {
+      "caption": "compares the PDDs obtained from one of the 60\u00d7 magni-",
+      "file_path": "static/extracted_figures/2305.11018_fig_8.png",
+      "page_number": 8
+    },
+    "Figure 13": {
+      "caption": "shows all results for the ROI selection to exclude large",
+      "file_path": "static/extracted_figures/2305.11018_fig_13.png",
+      "page_number": 14
+    },
+    "Fig. 13": {
+      "caption": "CONTIN fits applied to sub-regions of the 60\u00d7 magnification",
+      "file_path": "static/extracted_figures/2305.11018_fig_13.png",
+      "page_number": 14
+    },
+    "Figure 9": {
+      "caption": "shows the extracted DDM signals (in the form of the",
+      "file_path": "static/extracted_figures/2305.11018_fig_9.png",
+      "page_number": 11
+    },
+    "Fig. 9": {
+      "caption": "Representative differential image correlation functions, g(k,\u03c4), at",
+      "file_path": "static/extracted_figures/2305.11018_fig_9.png",
+      "page_number": 11
+    },
+    "Figure 4": {
+      "caption": "shows least-squares results from fitting an explicit bidis-",
+      "file_path": "static/extracted_figures/2305.11018_fig_4.png",
+      "page_number": 12
+    },
+    "Fig. 10": {
+      "caption": "Fitted PDD moments for the bimodal mixtures described in Ta-",
+      "file_path": "static/extracted_figures/2305.11018_fig_10.png",
+      "page_number": 12
+    },
+    "Fig. 11": {
+      "caption": "Parameters obtained from bidisperse least squares fits of the",
+      "file_path": "static/extracted_figures/2305.11018_fig_11.png",
+      "page_number": 13
+    },
+    "Fig. 12": {
+      "caption": "CONTIN results for mixtures of 240 nm and 500 nm spheres",
+      "file_path": "static/extracted_figures/2305.11018_fig_12.png",
+      "page_number": 14
+    },
+    "Figure 14": {
+      "caption": "shows the results for CONTIN fits to every one of the",
+      "file_path": "static/extracted_figures/2305.11018_fig_14.png",
+      "page_number": 14
+    },
+    "Fig. 14": {
+      "caption": "Complete CONTIN results for mixtures of 240 nm and 1.1 \u00b5m spheres mixed in different proportions listed in Table 1 (Section 5). Each",
+      "file_path": "static/extracted_figures/2305.11018_fig_14.png",
+      "page_number": 15
+    }
+  },
+  "2307.09288": {
+    "Figure 1": {
+      "caption": "Helpfulness human evaluation results for Llama",
+      "file_path": "static/extracted_figures/2307.09288_fig_1.png",
+      "page_number": 3
+    },
+    "Figure 2": {
+      "caption": "Win-rate % for helpfulness and",
+      "file_path": "static/extracted_figures/2307.09288_fig_2.png",
+      "page_number": 3
+    },
+    "Figure 3": {
+      "caption": "Safety human evaluation results for Llama 2-Chat compared to other open-source and closed-",
+      "file_path": "static/extracted_figures/2307.09288_fig_3.png",
+      "page_number": 4
+    },
+    "Figure 4": {
+      "caption": "Training of Llama 2-Chat: This process begins with the pretraining of Llama 2 using publicly",
+      "file_path": "static/extracted_figures/2307.09288_fig_4.png",
+      "page_number": 5
+    },
+    "Figure 5": {
+      "caption": "Training Loss for Llama 2 models. We compare the training loss of the Llama 2 family of models.",
+      "file_path": "static/extracted_figures/2307.09288_fig_5.png",
+      "page_number": 6
+    },
+    "Figure 6": {
+      "caption": "Scaling trends for the reward model. More data and a larger-size model generally improve",
+      "file_path": "static/extracted_figures/2307.09288_fig_6.png",
+      "page_number": 13
+    },
+    "Figure 7": {
+      "caption": "Max and median reward among N samples, N \u2208[1, . . . , 100] averaged over our training set of",
+      "file_path": "static/extracted_figures/2307.09288_fig_7.png",
+      "page_number": 14
+    },
+    "Figure 8": {
+      "caption": "RLHF impact of the temperature when sampling N outputs and scoring them with a reward model.",
+      "file_path": "static/extracted_figures/2307.09288_fig_8.png",
+      "page_number": 14
+    },
+    "Figure 9": {
+      "caption": "Issues with multi-turn memory (left) can be improved with GAtt (right).",
+      "file_path": "static/extracted_figures/2307.09288_fig_9.png",
+      "page_number": 16
+    },
+    "Figure 10": {
+      "caption": "Attention visualization for a dialogue with and without GAtt. We considered the maximum",
+      "file_path": "static/extracted_figures/2307.09288_fig_10.png",
+      "page_number": 17
+    },
+    "Figure 11": {
+      "caption": "reports the progress of our different SFT and then RLHF versions for",
+      "file_path": "static/extracted_figures/2307.09288_fig_11.png",
+      "page_number": 18
+    },
+    "Figure 12": {
+      "caption": "Human evaluation results for Llama 2-Chat models compared to open- and closed-source models",
+      "file_path": "static/extracted_figures/2307.09288_fig_12.png",
+      "page_number": 19
+    },
+    "Figure 13": {
+      "caption": "Pretraining data toxicity. To allow for better downstream generalization, we chose not to scrub",
+      "file_path": "static/extracted_figures/2307.09288_fig_13.png",
+      "page_number": 21
+    },
+    "Figure 14": {
+      "caption": "Impact of safety RLHF measured by reward model score distributions. Left: safety reward",
+      "file_path": "static/extracted_figures/2307.09288_fig_14.png",
+      "page_number": 25
+    },
+    "Figure 15": {
+      "caption": "Safety data scaling trends. Left: as we increase the amount of safety data in model training, the",
+      "file_path": "static/extracted_figures/2307.09288_fig_15.png",
+      "page_number": 26
+    },
+    "Figure 16": {
+      "caption": "Context distillation analysis. Left: Distribution of safety RM scores from the base model, when",
+      "file_path": "static/extracted_figures/2307.09288_fig_16.png",
+      "page_number": 28
+    },
+    "Figure 17": {
+      "caption": "Overall safety measures. Left: Llama 2-Chat has low violation percentage overall across model",
+      "file_path": "static/extracted_figures/2307.09288_fig_17.png",
+      "page_number": 30
+    },
+    "Figure 18": {
+      "caption": "Single-turn and multi-turn violation percentage. Note that these results should be interpreted",
+      "file_path": "static/extracted_figures/2307.09288_fig_18.png",
+      "page_number": 30
+    },
+    "Figure 19": {
+      "caption": "Violation percentage per risk category. Note: these results should be interpreted carefully due to",
+      "file_path": "static/extracted_figures/2307.09288_fig_19.png",
+      "page_number": 31
+    },
+    "Figure 20": {
+      "caption": "Distribution shift for progressive versions of Llama 2-Chat, from SFT models towards RLHF.",
+      "file_path": "static/extracted_figures/2307.09288_fig_20.png",
+      "page_number": 32
+    },
+    "Figure 21": {
+      "caption": "RLHF learns to adapt the temperature with regard to the type of prompt. Lower Self-BLEU",
+      "file_path": "static/extracted_figures/2307.09288_fig_21.png",
+      "page_number": 33
+    },
+    "Figure 22": {
+      "caption": "We manually tested dozens of examples and observed consistently that our model demonstrates a",
+      "file_path": "static/extracted_figures/2307.09288_fig_22.png",
+      "page_number": 33
+    },
+    "Figure 23": {
+      "caption": "Tool use emergence. Llama 2-Chat is able to understand the tools\u2019s applications, and the API",
+      "file_path": "static/extracted_figures/2307.09288_fig_23.png",
+      "page_number": 34
+    },
+    "Figure 24": {
+      "caption": "shows how inference speed changed for the 30B GQA and MQA ablation models compared to the",
+      "file_path": "static/extracted_figures/2307.09288_fig_24.png",
+      "page_number": 48
+    },
+    "Figure 25": {
+      "caption": "Distribution of human preference data rating over batches. Over time, the share of samples",
+      "file_path": "static/extracted_figures/2307.09288_fig_25.png",
+      "page_number": 53
+    },
+    "Figure 26": {
+      "caption": "Annotation curriculum. Evolution for each new batch of the maximum and median score given a",
+      "file_path": "static/extracted_figures/2307.09288_fig_26.png",
+      "page_number": 53
+    },
+    "Figure 28": {
+      "caption": "GAtt zero-shot generalisation. Neither of the two constraints above were present in the training",
+      "file_path": "static/extracted_figures/2307.09288_fig_28.png",
+      "page_number": 55
+    },
+    "Figure 27": {
+      "caption": "Reward model score distribution shift caused by incorporating preference rating based margin",
+      "file_path": "static/extracted_figures/2307.09288_fig_27.png",
+      "page_number": 54
+    },
+    "Figure 29": {
+      "caption": "Average reward model score vs model response quality rating (7-point Likert scale) from triple",
+      "file_path": "static/extracted_figures/2307.09288_fig_29.png",
+      "page_number": 55
+    },
+    "Figure 30": {
+      "caption": "Impact of system prompt on human evaluation results for ChatGPT (Left). Win rate per category",
+      "file_path": "static/extracted_figures/2307.09288_fig_30.png",
+      "page_number": 57
+    },
+    "Figure 31": {
+      "caption": "Win rate of Llama 2-Chat versus ChatGPT analyzed by number of turns (Left) in the prompt and",
+      "file_path": "static/extracted_figures/2307.09288_fig_31.png",
+      "page_number": 58
+    },
+    "Figure 32": {
+      "caption": "Safety and Helpfulness reward model scores on a set of safe (left) and unsafe (right) responses",
+      "file_path": "static/extracted_figures/2307.09288_fig_32.png",
+      "page_number": 64
+    },
+    "Figure 33": {
+      "caption": "The false model refusal rate increases with the percentage of safety data. Left: false refusal rate",
+      "file_path": "static/extracted_figures/2307.09288_fig_33.png",
+      "page_number": 67
+    }
+  },
+  "2310.12345": {
+    "Figure 1": {
+      "caption": "Illustration of our Information Invariant TTT method on a 1D feature space. (a) The clustering of",
+      "file_path": "static/extracted_figures/2310.12345_fig_1.png",
+      "page_number": 2
+    },
+    "Figure 2": {
+      "caption": "The configuration of ClusT3. A projector g\u03d5 is plugged to the output of a feature extractor layer block to",
+      "file_path": "static/extracted_figures/2310.12345_fig_2.png",
+      "page_number": 3
+    },
+    "Figure 3": {
+      "caption": "Evolution of accuracy for all corruptions in CIFAR-10-C.",
+      "file_path": "static/extracted_figures/2310.12345_fig_3.png",
+      "page_number": 8
+    },
+    "Figure 4": {
+      "caption": "t-SNE plots of gaussian noise for the features at the output of the extractor from ClusT3 with one projector on",
+      "file_path": "static/extracted_figures/2310.12345_fig_4.png",
+      "page_number": 9
+    }
+  },
+  "2311.04512": {
+    "Fig. 1": {
+      "caption": "(a), they forecast the motion of a single agent in a single",
+      "file_path": "static/extracted_figures/2311.04512_fig_1.png",
+      "page_number": 1
+    },
+    "Fig. 2": {
+      "caption": "Framework of FFINet, in which: (1) position vectors and current positions are embedded by separated encoders; (2) four interaction modules are",
+      "file_path": "static/extracted_figures/2311.04512_fig_2.png",
+      "page_number": 3
+    },
+    "Fig. 3": {
+      "caption": "Multi-agent data decomposition of a scene. (a) Decomposition the",
+      "file_path": "static/extracted_figures/2311.04512_fig_3.png",
+      "page_number": 4
+    },
+    "Fig. 4": {
+      "caption": ", we take the interaction between lane segments and their",
+      "file_path": "static/extracted_figures/2311.04512_fig_4.png",
+      "page_number": 4
+    },
+    "Fig. 5": {
+      "caption": "Results visualization of LaneGCN and FFINet on Argoverse validation set. The top row shows the predictions of LanGCN and the bottom raw",
+      "file_path": "static/extracted_figures/2311.04512_fig_5.png",
+      "page_number": 7
+    },
+    "Fig. 6": {
+      "caption": "As we expected, the initial trajectories not only reflect",
+      "file_path": "static/extracted_figures/2311.04512_fig_6.png",
+      "page_number": 7
+    },
+    "Fig. 7": {
+      "caption": "Visualization on joint prediction of multiple agents. For comparison of the initial prediction and final predictions, we represent them with a purple",
+      "file_path": "static/extracted_figures/2311.04512_fig_7.png",
+      "page_number": 8
+    },
+    "Fig. 8": {
+      "caption": "Visualizations of the baseline without three interaction modules, the",
+      "file_path": "static/extracted_figures/2311.04512_fig_8.png",
+      "page_number": 9
+    }
+  },
+  "2312.05678": {
+    "Figure 1": {
+      "caption": "PMS iterative process for a designated product class.",
+      "file_path": "static/extracted_figures/2312.05678_fig_1.png",
+      "page_number": 10
+    },
+    "Figure 2": {
+      "caption": "Example of two echelons of a supply chain with PMS testing results. Data are",
+      "file_path": "static/extracted_figures/2312.05678_fig_2.png",
+      "page_number": 13
+    },
+    "Figure 3": {
+      "caption": "Illustration of weights for t = 30% and m \u2208{0.05, 0.2, 0.4, 0.6, 0.95}.",
+      "file_path": "static/extracted_figures/2312.05678_fig_3.png",
+      "page_number": 19
+    },
+    "Figure 4": {
+      "caption": "(left) shows the utility for each plan as the total number of tests, N, increases in",
+      "file_path": "static/extracted_figures/2312.05678_fig_4.png",
+      "page_number": 21
+    },
+    "Figure 5": {
+      "caption": "Greedy heuristic example with three test nodes (TNs).",
+      "file_path": "static/extracted_figures/2312.05678_fig_5.png",
+      "page_number": 27
+    },
+    "Figure 6": {
+      "caption": "Utility-informed plans and a utility comparison with the uniform and fixed ap-",
+      "file_path": "static/extracted_figures/2312.05678_fig_6.png",
+      "page_number": 29
+    },
+    "Figure 7": {
+      "caption": "Prior densities at SFP rates for seven designations of SFP risk, as introduced",
+      "file_path": "static/extracted_figures/2312.05678_fig_7.png",
+      "page_number": 48
+    }
+  },
+  "2312.09876": {},
+  "2401.12345": {
+    "Fig. 1": {
+      "caption": "True data-generating distributions might be time-varying in a frame.",
+      "file_path": "static/extracted_figures/2401.12345_fig_1.png",
+      "page_number": 14
+    },
+    "Fig. 2": {
+      "caption": "Testing MSE against training pilot sizes under different numbers",
+      "file_path": "static/extracted_figures/2401.12345_fig_2.png",
+      "page_number": 17
+    },
+    "Fig. 3": {
+      "caption": "Testing SER against training pilot sizes under different numbers",
+      "file_path": "static/extracted_figures/2401.12345_fig_3.png",
+      "page_number": 17
+    }
+  }
+}

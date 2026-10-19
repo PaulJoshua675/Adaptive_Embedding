@@ -1,0 +1,1 @@
+Preprint CAT-ALYZING HONESTY: CONTINUOUS ADVERSAR- IAL TRAINING FOR TRANSFERABLE LLM HONESTY Yuan-Chen Chang1,2 Niklas Herbster1,2,3 Gauthier Gidel1,2 Tommaso Tosato1,2 1Tara Research 2Mila – Quebec AI Institute 3Technical University of Munich Correspondence to: Tommaso Tosato, tommaso@tararesearch.org

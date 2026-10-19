@@ -1,0 +1,1 @@
+Preprint. Under review. Figure 10: CIFAR-10 samples from the EP arm, FID 3.64 at τs = 3.25 — a model trained without backpropagation in either phase. Figure 11: CIFAR-10 samples from the norm- and attention-free architecture of Section 5.1, FID 3.51 at τs = 5.0. Every operation in this network is a fixed weighted sum or a pointwise nonlinearity. 31

@@ -1,0 +1,1 @@
+Video World Models and World Action Models. Action-conditioned world models predict single images (Sudhakar et al., 2024) or roll out videos (Akkerman et al., 2025; DreamX Team et al., 2026; 2

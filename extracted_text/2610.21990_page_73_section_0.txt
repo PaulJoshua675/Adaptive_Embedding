@@ -1,0 +1,1 @@
+features have a high feature similarity), other inference methods like mixed precision (fp16), quanti- sation (by reducing the precision of the weights to a smaller container like int8/int16) can be taken into account for both the LLIE and semantic segmentation modules.

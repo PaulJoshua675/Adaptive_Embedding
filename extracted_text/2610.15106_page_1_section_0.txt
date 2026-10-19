@@ -1,0 +1,1 @@
+RELAGRAM: Recursive Latent Graph Model for the Capacitated Vehicle Routing Problem Vladimir Kirill Bickov Delft University of Technology, The Netherlands me@nevolodia.com Neil Yorke-Smith Delft University of Technology, The Netherlands n.yorke-smith@tudelft.nl

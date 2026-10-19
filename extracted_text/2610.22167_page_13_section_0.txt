@@ -1,0 +1,1 @@
+Figure 8: Annotation interface for selecting conversational evidence and rating anonymized reasoning excerpts. 13

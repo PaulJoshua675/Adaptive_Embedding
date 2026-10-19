@@ -1,0 +1,1 @@
+the number N of receive antennas, the smaller the MSE; cf. Figs. 2(a) and 2(c). This fact is well-established and is due to the benefit of antenna diversity. In addition, for fixed N and M, the higher the SNR, the smaller the MSE; cf. Figs. 2(c) and 2(d); this is also well believed.

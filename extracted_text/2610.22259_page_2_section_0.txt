@@ -1,0 +1,1 @@
+Fig. 2: FPG segmentation pipeline: input image, Frangi filter, probability map, extracted graph/skeleton, segmentation.

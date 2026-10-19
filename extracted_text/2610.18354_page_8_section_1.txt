@@ -1,0 +1,1 @@
+[1] P. Aggarwal, A. Madaan, A. Anand, S. P. Potharaju, S. Mishra, P. Zhou, A. Gupta, D. Rajagopal, K. Kappaganthu, Y. Yang, et al. AutoMix: Automatically mixing language models. In Advances in Neural Information Processing Systems (NeurIPS), volume 37, pages 131000–131034, 2024. 8

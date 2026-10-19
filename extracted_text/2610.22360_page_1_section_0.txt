@@ -1,0 +1,1 @@
+Grounding Generative Verification in 3D Content Shuanglin Li1,2 Jiaying Lin3 Shuquan Ye2 1Southeast University 2Shenzhen Loop Area Institute 3The Hong Kong University of Science and Technology

@@ -1,0 +1,1 @@
+AI Consilium: a Benchmark of LLM Clinical Multidisciplinary Second Opinions A PREPRINT Table 19: Model-specific criterion profile for DeepSeek-V4-Pro. Criterion Role reasoning Structured Role clinical opinion Structured

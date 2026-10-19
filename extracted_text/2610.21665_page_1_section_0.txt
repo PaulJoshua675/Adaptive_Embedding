@@ -1,0 +1,1 @@
+Approaching Backpropagation Accuracy with Weight Perturbation on MNIST Patrick Inoue∗

@@ -1,0 +1,1 @@
+Large language models have already demonstrated substantial progress on complex diagnostic tasks. GPT-4 generated clinically meaningful differential diagnoses for cases from the Case Records of the Massachusetts General Hospital, arXiv:2610.22298v1 [cs.CL] 15 Oct 2026

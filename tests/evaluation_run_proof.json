@@ -1,5 +1,5 @@
 {
-  "url": "http://localhost:8501",
+  "url": "http://127.0.0.1:50386",
   "queries": [
     "Explain the transformer architecture and attention mechanism.",
     "What does retrieval mean in this paper?",

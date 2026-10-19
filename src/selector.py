@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Dict
 
-from .query_analyzer import QueryType, analyze_query
+from .classifier import classify_query
+from .query_analyzer import QueryType
 
 ROUTE_BY_TYPE: Dict[QueryType, str] = {
     QueryType.TECHNICAL: "bge",
@@ -12,9 +13,10 @@ ROUTE_BY_TYPE: Dict[QueryType, str] = {
 
 
 def select_embedding(query: str) -> str:
-    return ROUTE_BY_TYPE[analyze_query(query)]
+    return str(classify_query(query)["embedding_key"])
 
 
 def select_embedding_details(query: str) -> tuple[QueryType, str]:
-    query_type = analyze_query(query)
-    return query_type, ROUTE_BY_TYPE[query_type]
+    prediction = classify_query(query)
+    query_type = QueryType(str(prediction["query_type"]))
+    return query_type, str(prediction["embedding_key"])

@@ -1,0 +1,1 @@
+Preprint Figure 11: Questionnaire response interface. Each dimension has a 1–5 rating and an unobservable option, with optional notes. 23

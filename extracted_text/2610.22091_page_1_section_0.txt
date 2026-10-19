@@ -1,0 +1,1 @@
+BEYOND THE DOMINANT LABEL: RECOVERING COEXISTING LESION EVIDENCE WITH MULTIPLE INSTANCE LEARNING Lubin Gan1 Jing Zhang2,∗ Xinming Zhang1 Chengpeng Xu1 Siying Wu2 Xiaoyan Sun1,2,∗ 1USTC, Anhui, China 2Anhui Province Key Laboratory of Biomedical Imaging and Intelligent Processing Institute of Artificial Intelligence, Hefei Comprehensive National Science Center, Anhui, China

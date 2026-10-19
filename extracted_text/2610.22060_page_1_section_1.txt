@@ -1,0 +1,1 @@
+Image generation enables machines to create new visual content, supporting applications ranging from creative design to multimodal interaction. A growing body of work represents images as discrete tokens and models them autoregressively (Sun et al., 2024; Tian et al., 2024; Yu et al., 2026). Discrete tokens share the interface 1 arXiv:2610.22060v1 [cs.CV] 15 Oct 2026

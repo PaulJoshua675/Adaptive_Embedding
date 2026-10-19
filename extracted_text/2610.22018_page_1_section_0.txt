@@ -1,0 +1,1 @@
+When Models Misread Ink: Auditing VLMs for Arabic Calligraphy Recognition Niaz Mohaiman Abtahi1, Evan Maksud1, Reyana Shahid2 1Advanced AI Lab Limited 2United International University Correspondence to: tahiniaz@gmail.com GitHub/When-Models-Misread-Ink

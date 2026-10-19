@@ -1,0 +1,1 @@
+Due to several practical benefits of linear estimation, for example, the simplicity of hardware structures, the clarity of physical meaning (i.e., constructive and destructive interfer- ence through beamforming), and the easiness of computations, investigating distributionally robust linear estimation problems is important. This section particularly studies Problem (19).

@@ -1,0 +1,1 @@
+WeGR: Unified Generative Retrieval for Industrial Search Systems in WeChat Jiajun Han∗, Guoxin Ma∗, Felix∗†, Liangsheng Xu#, Ruiqi Yu#, Yingdi Guo, Zongbing Wang, Xinhua Ye, Chenyan Hua, Xin Xie, Pengcheng Yang, Haijun Wu

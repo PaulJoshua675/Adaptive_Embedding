@@ -1,0 +1,1 @@
+Explicit Prompt. The database schema is as follows: {schema} Question: {question} The question is logically flawed and con- tains incorrect premises. You must crit- ically examine its assumptions. Then explain the problem. { "sql": string or null, "is_valid": boolean, "reason": string } Return structured JSON only. B.2 Evaluation Rubrics Automatic

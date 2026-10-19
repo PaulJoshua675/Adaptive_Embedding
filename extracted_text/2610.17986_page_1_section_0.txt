@@ -1,0 +1,1 @@
+Preprint WEB SCALE ON A BUDGET: TAIL-AWARE RETRIEVAL EVALUATION Boaz Meivar Tel Aviv University boazmeivar@mail.tau.ac.il Shai Avidan Tel Aviv University avidan@eng.tau.ac.il

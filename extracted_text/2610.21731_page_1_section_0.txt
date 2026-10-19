@@ -1,0 +1,1 @@
+Retrieved but Not Read: Understanding Why Search-Augmented LLMs Fail to Use Available Evidence Owen Walters* Lihu Chen Francesca Toni Department of Computing, Imperial College London, UK {lihu.chen, ft}@imperial.ac.uk

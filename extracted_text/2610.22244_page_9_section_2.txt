@@ -1,0 +1,1 @@
+[1] E. Debenedetti, J. Zhang, M. Balunovi´c, L. Beurer-Kellner, M. Fischer, and F. Tramèr. Agent- Dojo: A dynamic environment to evaluate prompt injection attacks and defenses for LLM agents. In NeurIPS Datasets and Benchmarks, 2024. arXiv:2406.13352. 9

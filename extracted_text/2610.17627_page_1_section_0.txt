@@ -1,0 +1,1 @@
+AiSAQ-in-Filtering for DRAM-free Filtered Information Retrieval Kento Tatsuno Kioxia Corporation Japan Daisuke Miyashita Kioxia Corporation Japan Kazunari Sumiyoshi Kioxia Corporation Japan Hiroaki Yamanaka Kioxia Corporation Japan Kosuke Nakata Kioxia Corporation Japan Jun Deguchi Kioxia Corporation Japan

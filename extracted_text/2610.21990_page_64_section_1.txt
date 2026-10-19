@@ -1,0 +1,1 @@
+Hand-Drill Backpack Fire-Ext. Survivor Invisible Padding 0.0 0.2 0.4 0.6 0.8 1.0 1.2 Intersection over Union (IoU) VM VM LLIE VM LL Fig. 4.8. Semantic segmentation performance between different input configuration using: RGB (VM), LLIE RGB (VM LLIE), and low-light RGB without any enhancement (VM LL) on the PST900 dataset [8]. 5 0 5 10 15 20 Absolute Performance Change ( IoU %)

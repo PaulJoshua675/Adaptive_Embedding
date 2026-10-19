@@ -1,0 +1,1 @@
+Xuechunzi Bai, Angelina Wang, Ilia Sucholutsky, and Thomas L. Griffiths. 2025. Explicitly unbi- ased large language models still form biased as- sociations. Proceedings of the National Academy of Sciences, 122(8):e2416228122. Marianne Bertrand and Sendhil Mullainathan. 2004. Are emily and greg more employable than

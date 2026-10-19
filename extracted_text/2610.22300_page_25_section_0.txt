@@ -1,0 +1,1 @@
+J SELECTION OF SIX TINY MODELS Six models come from the leaderboard of tiny open-weight models of Artificial Analysis: https://artificialanalysis.ai/models/open-source/tiny inspected on 18 September 2026, when we chose the models; archived in the supplementary mate- rial. We skipped K2 Horizon 3.7B, which our code does not support. 25

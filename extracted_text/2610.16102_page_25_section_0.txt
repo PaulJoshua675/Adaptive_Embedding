@@ -1,0 +1,1 @@
+available only through a community? And what interface lets the three layers of §8 work together in practice, so that a researcher can move from an LLM’s proposal to a VaCoAl/PyVaCoAl trace to a seminar without losing the thread? 10

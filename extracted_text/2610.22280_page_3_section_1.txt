@@ -1,0 +1,1 @@
+Efficient Computer-Use Agents. Model routing and cascading offer a promising way to balance inference cost and performance, as demonstrated by FrugalGPT and RouteLLM (Chen et al., 2023; 3

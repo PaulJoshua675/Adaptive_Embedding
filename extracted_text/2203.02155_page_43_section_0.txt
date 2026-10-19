@@ -1,0 +1,1 @@
+6.5 6 5.5 Reward mean LR = 4e-6 Model FLAN T0 250000 500000 750000 1000000 1250000 Elapsed examples 6.5 6 5.5 LR = 6e-6 Figure 13: Tuning FLAN and T0 based on reward model scores batch size of 64, a learning rate of 6e-6 and 1 million examples. Once again using the reward model score, we picked the checkpoint from the former experiment after 896k examples of training. 43

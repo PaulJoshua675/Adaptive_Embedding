@@ -1,0 +1,1 @@
+E Additional CCG Examples Some more illustrative examples of supertags and their order of tagging by TagInsert, where the Vanilla or BERT models made a mistake, but were correctly tagged by TagInsert. 14

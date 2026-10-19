@@ -1,0 +1,1 @@
+MindEval2: Clinically Grounded Patients and Rubrics for Evaluating Language Models in Mental Health Support John Mendonça1,*, Daniel Tschernutter1,*, José Pombal1, 3, *, Areti Vassilopoulos1, 4 Catarina Botelho1, Ignacio Sarasua2, Maya D’Eon1, Nuno Guerreiro1, Ricardo Rei1 1Sword Health 2NVIDIA 3Instituto Superior Técnico 4Yale University # ai.research@sword.com

@@ -1,0 +1,1 @@
+SCOPE: Semantic Bounded Credit Optimization for Prompt Engineering in Text-to-image Generation Yufei Jiao1,*, Jinfa Huang2,*, Zeyue Xue4, Tianyu Xie1, Yuexiao Ma3, Rongrong Ji1, Xiawu Zheng1, B, Jiebo Luo2 1Xiamen University 2University of Rochester 3Nanyang Technological University 4The University of Hong Kong * Equal Contributions

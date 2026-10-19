@@ -1,0 +1,1 @@
+Mosaic: Multi-Session Agentic Reinforcement Learning Yilong Xu1, Minrui Xu1, Xinyu Zhou1, Xiang Long, Haochen Tan2,3†‡ and Zhijiang Guo1,4‡ 1LARK, HKUST(GZ), 2Foundation Model Lab, Huawei, 3City University of Hong Kong, 4HKUST †Project Leader ‡Corresponding Author Github Page: https://lark-ai-lab.github.io/Mosaic/

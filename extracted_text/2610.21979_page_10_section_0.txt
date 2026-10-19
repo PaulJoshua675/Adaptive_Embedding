@@ -1,0 +1,1 @@
+P2TPO: Structure-Aligned Page-to-Token Credit Assignment for Full-Page Document Parsing while preserving the source block’s credit budget. Distinguishing individual token contributions within these regions is a direction for finer localization, with its effects on optimization to be evaluated.

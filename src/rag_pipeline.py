@@ -9,12 +9,12 @@ from typing import Callable, Dict, Iterable, List
 
 from config import DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, DEFAULT_TOP_K, EMBEDDING_MODELS, VECTOR_STORE_DIR
 from .chunk_documents import chunk_documents
-from .classifier import classify_query
 from .embeddings import EmbeddingRegistry
 from .embedding_model import EmbeddingModel
 from .extract_pdf import extract_documents_from_path
 from .generator import AnswerGenerator
 from .cache import response_cache
+from .router import route_query
 from .retrieval import (
     AdaptiveRetriever,
     inject_visual_payload,
@@ -80,9 +80,10 @@ def _cached_exact_response(
     if not _cacheable_query(query):
         return None
     lookup_started = time.perf_counter()
-    cached = response_cache.get_exact(query, namespace_prefix)
+    cached = _lookup_exact_response(query, namespace_prefix, response_cache.generation)
     if cached is None:
         return None
+    cached = dict(cached)
     cached["semantic_cache_hit"] = True
     cached["performance_timings_ms"] = {
         "semantic_cache_lookup_ms": (time.perf_counter() - lookup_started) * 1000,
@@ -90,6 +91,16 @@ def _cached_exact_response(
     if stream_consumer is not None:
         stream_consumer(iter((str(cached.get("answer", "")),)))
     return cached
+
+
+@lru_cache(maxsize=500)
+def _lookup_exact_response(
+    query: str,
+    namespace_prefix: str,
+    cache_generation: int,
+) -> Dict[str, object] | None:
+    del cache_generation
+    return response_cache.get_exact(query, namespace_prefix)
 
 
 def _cacheable_query(query: str) -> bool:
@@ -185,7 +196,16 @@ def answer_query_from_index(
     if not isinstance(stores, MultiVectorStore):
         raise TypeError("index['stores'] must be a MultiVectorStore")
     timings: Dict[str, float] = {}
+    stage_started = time.perf_counter()
+    route = route_query(question)
+    route_time_ms = (time.perf_counter() - stage_started) * 1000
     language = resolve_response_language(question, response_language)
+    if route["route"] == "direct_response":
+        return _direct_response_result(
+            str(route["direct_kind"]),
+            language,
+            route_time_ms,
+        )
     result_limit = min(max(int(top_k if top_k is not None else DEFAULT_TOP_K), 3), 5)
     cache_identity = f"memory:{id(stores)}"
     exact_namespace = _cache_namespace(
@@ -199,9 +219,7 @@ def answer_query_from_index(
     if cached is not None:
         return cached
     registry = load_cached_embedding_registry(tuple(sorted(dict(index["embedding_models"]).items())))
-    stage_started = time.perf_counter()
-    route = classify_query(question)
-    timings["intent_classification_ms"] = (time.perf_counter() - stage_started) * 1000
+    timings["intent_classification_ms"] = route_time_ms
     query_type = str(route["query_type"])
     embedding_key = str(route["embedding_key"])
     query_vector = registry[embedding_key].encode_query(trim_query_tokens(question))
@@ -218,6 +236,7 @@ def answer_query_from_index(
         cached.update(
             {
                 "query_type": query_type,
+                "route": str(route["route"]),
                 "embedding_key": embedding_key,
                 "embedding_model": route.get("embedding_model", EMBEDDING_MODELS[embedding_key]),
                 "route_confidence": float(route.get("confidence", 0.0)),
@@ -243,6 +262,7 @@ def answer_query_from_index(
         "answer": answer,
         "chunks": retrieved,
         "query_type": query_type,
+        "route": str(route["route"]),
         "embedding_key": embedding_key,
         "embedding_model": route.get("embedding_model", EMBEDDING_MODELS[embedding_key]),
         "route_confidence": float(route.get("confidence", 0.0)),
@@ -336,12 +356,23 @@ def answer_query_details(
     stream_consumer: Callable[[Iterable[str]], str] | None = None,
     fast_mode: bool = False,
 ) -> Dict[str, object]:
+    stage_started = time.perf_counter()
+    route = route_query(question)
+    route_time_ms = (time.perf_counter() - stage_started) * 1000
+    language = resolve_response_language(question, response_language)
+    if route["route"] == "direct_response":
+        return _direct_response_result(
+            str(route["direct_kind"]),
+            language,
+            route_time_ms,
+            stream_consumer,
+        )
+
     store_dir = resolve_index_path(vector_store_dir or None) if vector_store_dir is None else Path(vector_store_dir)
     metadata_path = store_dir / "metadata.pkl"
     if not metadata_path.exists():
         build_and_save_index(dataset_dir=store_dir.parent / "dataset", vector_store_dir=store_dir)
     stat = metadata_path.stat()
-    language = resolve_response_language(question, response_language)
     result_limit = min(max(int(top_k if top_k is not None else DEFAULT_TOP_K), 3), 5)
     index_identity = f"{metadata_path.resolve()}:{stat.st_mtime_ns}:{stat.st_size}"
     exact_namespace = _cache_namespace(
@@ -361,10 +392,7 @@ def answer_query_details(
     )
     if metadata.get("embedding_keys"):
         registry = load_cached_embedding_registry(tuple(sorted(dict(metadata["embedding_models"]).items())))
-        timings: Dict[str, float] = {}
-        stage_started = time.perf_counter()
-        route = classify_query(question)
-        timings["intent_classification_ms"] = (time.perf_counter() - stage_started) * 1000
+        timings: Dict[str, float] = {"intent_classification_ms": route_time_ms}
         query_type = str(route["query_type"])
         embedding_key = str(route["embedding_key"])
         query_vector = registry[embedding_key].encode_query(trim_query_tokens(question))
@@ -383,6 +411,7 @@ def answer_query_details(
             cached.update(
                 {
                     "query_type": query_type,
+                    "route": str(route["route"]),
                     "embedding_key": embedding_key,
                     "embedding_model": route.get("embedding_model", EMBEDDING_MODELS[embedding_key]),
                     "route_confidence": float(route.get("confidence", 0.0)),
@@ -414,6 +443,7 @@ def answer_query_details(
             "answer": answer,
             "chunks": retrieved,
             "query_type": query_type,
+            "route": str(route["route"]),
             "embedding_key": embedding_key,
             "embedding_model": route.get("embedding_model", EMBEDDING_MODELS[embedding_key]),
             "route_confidence": float(route.get("confidence", 0.0)),
@@ -460,12 +490,73 @@ def answer_query_details(
         "answer": answer,
         "chunks": chunks,
         "query_type": "legacy",
+        "route": str(route["route"]),
         "embedding_key": "simple-bow",
         "response_language": language,
     }
     if _cacheable_query(question):
         response_cache.set(question, query_vector, result, namespace)
     return result
+
+
+def _direct_response_result(
+    direct_kind: str,
+    response_language: str,
+    route_time_ms: float,
+    stream_consumer: Callable[[Iterable[str]], str] | None = None,
+) -> Dict[str, object]:
+    responses = {
+        "English": {
+            "greeting": "Hello! Ask me a question about the indexed research documents.",
+            "thanks": "You're welcome! Ask me about any indexed research document.",
+            "help": "I can answer questions using the indexed research documents.",
+        },
+        "Tamil": {
+            "greeting": "வணக்கம்! குறியிடப்பட்ட ஆய்வு ஆவணங்களைப் பற்றி கேள்வி கேளுங்கள்.",
+            "thanks": "வரவேற்கிறேன்! குறியிடப்பட்ட ஆய்வு ஆவணங்களைப் பற்றி கேளுங்கள்.",
+            "help": "குறியிடப்பட்ட ஆய்வு ஆவணங்களைப் பற்றிய கேள்விகளுக்கு என்னால் பதிலளிக்க முடியும்.",
+        },
+        "Hindi": {
+            "greeting": "नमस्ते! अनुक्रमित शोध दस्तावेज़ों के बारे में प्रश्न पूछें।",
+            "thanks": "आपका स्वागत है! किसी भी अनुक्रमित शोध दस्तावेज़ के बारे में पूछें।",
+            "help": "मैं अनुक्रमित शोध दस्तावेज़ों के बारे में प्रश्नों के उत्तर दे सकता हूँ।",
+        },
+        "Spanish": {
+            "greeting": "¡Hola! Pregunta sobre los documentos de investigación indexados.",
+            "thanks": "¡De nada! Pregunta sobre cualquier documento de investigación indexado.",
+            "help": "Puedo responder preguntas usando los documentos de investigación indexados.",
+        },
+        "French": {
+            "greeting": "Bonjour ! Posez une question sur les documents de recherche indexés.",
+            "thanks": "Avec plaisir ! Posez une question sur les documents de recherche indexés.",
+            "help": "Je peux répondre aux questions sur les documents de recherche indexés.",
+        },
+    }
+    language_responses = responses.get(response_language, responses["English"])
+    answer = language_responses.get(direct_kind, language_responses["greeting"])
+    if stream_consumer is not None:
+        stream_consumer(iter((answer,)))
+    return {
+        "answer": answer,
+        "chunks": [],
+        "query_type": "direct_response",
+        "route": "direct_response",
+        "embedding_key": "none",
+        "embedding_model": "none",
+        "route_confidence": 1.0,
+        "classifier_model": "compiled-regex",
+        "response_language": response_language,
+        "figures": [],
+        "performance_timings_ms": {
+            "intent_classification_ms": route_time_ms,
+            "faiss_index_lookup_ms": 0.0,
+            "answer_generation_ms": 0.0,
+        },
+    }
+
+
+# Keep the former module-level entry point available without invoking a model.
+classify_query = route_query
 
 
 def _synthesize_answer(

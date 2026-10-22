@@ -45,6 +45,12 @@ class SemanticResponseCache:
         self.similarity_threshold = similarity_threshold
         self._entries: OrderedDict[tuple[str, str], _CacheEntry] = OrderedDict()
         self._lock = RLock()
+        self._generation = 0
+
+    @property
+    def generation(self) -> int:
+        with self._lock:
+            return self._generation
 
     def get(
         self,
@@ -112,10 +118,12 @@ class SemanticResponseCache:
             self._entries.move_to_end(key)
             while len(self._entries) > self.max_entries:
                 self._entries.popitem(last=False)
+            self._generation += 1
 
     def clear(self) -> None:
         with self._lock:
             self._entries.clear()
+            self._generation += 1
 
 
 response_cache = SemanticResponseCache()

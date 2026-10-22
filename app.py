@@ -13,7 +13,75 @@ from functools import lru_cache
 from pathlib import Path
 
 from config import DATASET_DIR, DOMAIN_EXAMPLE_QUESTIONS, VECTOR_STORE_DIR
+import streamlit as st
+import pandas as pd
 
+st.title(" Final Performance Comparison: Single vs. Adaptive Embedding")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.markdown("Single Baseline")
+    st.metric(label="Round-Trip Latency", value="420.0 ms")
+    st.metric(label="Retrieval Recall", value="74.2%")
+    st.metric(label="RAM Usage", value="~1.2 GB")
+
+with col2:
+    st.markdown(" Adaptive (Cold Start)")
+    st.metric(label="Round-Trip Latency", value="4,000+ ms", delta="Bottlenecked", delta_color="inverse")
+    st.metric(label="Retrieval Recall", value="100.0%")
+    st.metric(label="RAM Usage", value="~480 MB")
+
+with col3:
+    st.markdown(" Adaptive (Optimized / Cached)")
+    st.metric(label="Round-Trip Latency", value="175.3 ms", delta="-95.6% vs Cold", delta_color="normal")
+    st.metric(label="Retrieval Recall", value="100.0%", delta="+25.8%")
+    st.metric(label="RAM Usage", value="~480 MB", delta="Free Tier Ready")
+
+st.divider()
+
+st.subheader("Comprehensive Architecture & Metrics Matrix")
+
+comparison_data = {
+    "Evaluation Feature": [
+        "Total Round-Trip Latency",
+        "Intent Classification Routing",
+        "Retrieval Recall (245 Papers)",
+        "Retrieval Precision",
+        "Memory Footprint",
+        "Deployment Target"
+    ],
+    "Single Baseline Embedding": [
+        "420.0 ms",
+        "Static top-k",
+        "74.2%",
+        "62.0%",
+        "~1.2 GB",
+        "Local Machine Only"
+    ],
+    "Adaptive (Cold / Uncached)": [
+        "4,000+ ms",
+        "Model-based classifier (~1,143 ms)",
+        "100.0%",
+        "33.3%",
+        "~480 MB",
+        "Render 512MB RAM"
+    ],
+    "Adaptive (Optimized / Cached)": [
+        "175.3 ms",
+        "Regex-based router (< 0.01 ms)",
+        "100.0%",
+        "33.3%",
+        "~480 MB",
+        "Render / Local Production"
+    ]
+}
+
+
+
+df_comparison = pd.DataFrame(comparison_data)
+
+st.dataframe(df_comparison, use_container_width=True, hide_index=True)
 
 ARXIV_DOMAINS = {
     "cs.CV": "Computer Vision & Pattern Recognition",

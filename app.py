@@ -251,12 +251,15 @@ _FALLBACK_NOTICES = {
 def _render_answer(st, result: dict, question: str, image_root: Path, render_answer: bool = True) -> None:
     from src.evaluation_suite import retrieval_metrics
 
+    chunks = result.get("retrieved_passages", result.get("chunks", []))
+    if not isinstance(chunks, list):
+        chunks = []
     confidence = float(result.get("route_confidence", 0.0))
     model_name = str(result.get("embedding_model", result.get("embedding_key", "unknown")))
     st.caption(
         f"ML route: {result['query_type']} ({confidence:.1%}) | "
         f"Embedding backend: {result['embedding_key']} ({model_name}) | "
-        f"Retrieved passages: {len(result.get('chunks', []))}"
+        f"Retrieved passages: {len(chunks)}"
     )
     answer = str(result["answer"])
     response_language = str(result.get("response_language", "English"))
@@ -273,6 +276,10 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
         st.info(_FALLBACK_NOTICES[response_language])
     if render_answer:
         st.markdown(answer)
+    citations = str(result.get("citations", result.get("provenance", ""))).strip()
+    if citations:
+        st.markdown("### Sources")
+        st.markdown(citations)
     figures = result.get("figures", [])
     matched_figure = result.get("matched_figure")
     figure_candidates = []
@@ -282,11 +289,47 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
         figure_candidates.extend(
             (figure, False) for figure in figures if isinstance(figure, dict)
         )
+    if isinstance(chunks, list):
+        for chunk in chunks:
+            if not isinstance(chunk, dict):
+                continue
+            visual_type = str(chunk.get("visual_type", "")).casefold()
+            if visual_type not in {"figure", "image", "diagram", "chart", "plot"}:
+                continue
+            chunk_figures = chunk.get("figures", [])
+            if isinstance(chunk_figures, list):
+                figure_candidates.extend(
+                    (figure, True) for figure in chunk_figures if isinstance(figure, dict)
+                )
+            if any(
+                chunk.get(key)
+                for key in ("resolved_path", "file_path", "path", "image_path", "image_url")
+            ):
+                figure_candidates.append(
+                    (
+                        {
+                            **chunk,
+                            "caption": chunk.get(
+                                "caption",
+                                chunk.get("alt_text", chunk.get("alt-text", "")),
+                            ),
+                        },
+                        True,
+                    )
+                )
     renderable_figures = []
     seen_figure_paths: set[str] = set()
     for figure, is_matched in figure_candidates:
         figure_path = Path(
-            str(figure.get("resolved_path", figure.get("file_path", figure.get("path", ""))))
+            str(
+                figure.get(
+                    "resolved_path",
+                    figure.get(
+                        "file_path",
+                        figure.get("path", figure.get("image_path", "")),
+                    ),
+                )
+            )
         )
         if not figure_path.is_absolute():
             figure_path = image_root / figure_path
@@ -299,13 +342,15 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
             continue
         seen_figure_paths.add(identity)
         renderable_figures.append((figure, image_source, is_matched))
-    chunks = result.get("chunks", [])
-    if isinstance(chunks, list):
-        online_metrics = result.get("evaluation_metrics")
-        if not isinstance(online_metrics, dict):
+    online_metrics = result.get("eval_metrics", result.get("evaluation_metrics"))
+    if not isinstance(online_metrics, dict) or not online_metrics:
+        if chunks:
             retrieved_ids = [chunk.get("id", chunk.get("document_id", index)) for index, chunk in enumerate(chunks)]
             relevant_ids = retrieved_ids[:1]
             online_metrics = retrieval_metrics(retrieved_ids, relevant_ids, k=3)
+        else:
+            online_metrics = None
+    if isinstance(online_metrics, dict) and online_metrics:
         st.markdown("### Retrieval evaluation")
         st.markdown(
             f"Accuracy: **{float(online_metrics.get('accuracy', 0.0)):.3f}**  "
@@ -316,15 +361,24 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
     if renderable_figures:
         st.markdown(f"### 🖼️ {_RELATED_IMAGES_HEADINGS[response_language]}")
         for figure, image_source, is_matched in renderable_figures:
+            figure_caption = str(
+                figure.get("caption", figure.get("alt_text", figure.get("alt-text", "")))
+            )
             if is_matched:
-                number = figure.get("number") or figure.get("figure_id", "Figure")
-                caption = f"Figure {number}: {figure.get('caption', '')}"
+                number = figure.get("number") or figure.get("figure_number") or figure.get("figure_id")
+                if number:
+                    label = str(number)
+                    if not label.casefold().startswith(("figure", "fig.")):
+                        label = f"Figure {label}"
+                    caption = f"{label}: {figure_caption}"
+                else:
+                    caption = figure_caption
             else:
                 paper_id = str(figure.get("paper_id", ""))
                 page_number = figure.get("page_number", "page unavailable")
                 caption = (
                     f"{figure.get('figure_id', 'Figure')} | Page {page_number} | "
-                    f"{paper_id}: {figure.get('caption', '')}"
+                    f"{paper_id}: {figure_caption}"
                 )
             st.image(image_source, caption=caption)
             paper_id = str(figure.get("paper_id", ""))
@@ -338,18 +392,41 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
 
 
 def _render_performance_metrics(st, result: dict, total_elapsed: float | None = None) -> None:
-    timings = result.get("performance_timings_ms", {})
+    timings = result.get("profile_times", result.get("performance_timings_ms", {}))
     if total_elapsed is not None:
-        st.caption(f"Total query round trip: {total_elapsed * 1000:.1f} ms")
-    timing_columns = st.columns(4)
+        label = "Cached response lookup" if result.get("semantic_cache_hit") else "Total query round trip"
+        st.caption(f"{label}: {total_elapsed * 1000:.1f} ms")
+    if result.get("semantic_cache_hit") and timings.get("pipeline_round_trip_ms") is not None:
+        st.caption(
+            f"Original RAG pipeline: "
+            f"{float(timings['pipeline_round_trip_ms']):.1f} ms"
+        )
     timing_labels = (
         ("Intent Classification Time (ms)", "intent_classification_ms"),
         ("FAISS Index Lookup Time (ms)", "faiss_index_lookup_ms"),
         ("Cross-Encoder Re-ranking Time (ms)", "cross_encoder_reranking_ms"),
         ("LLM / Multi-Lingual Answer Generation Time (ms)", "answer_generation_ms"),
     )
-    for column, (label, key) in zip(timing_columns, timing_labels):
-        column.metric(label, f"{float(timings.get(key, 0.0)):.3f}")
+    available_timings = [
+        f"{label}: {float(timings[key]):.3f}"
+        for label, key in timing_labels
+        if timings.get(key) is not None
+    ]
+    if available_timings:
+        st.caption("Timing breakdown (ms): " + " | ".join(available_timings))
+
+
+def _restore_query_state(session_state, key: str, result: dict, elapsed: float | None) -> None:
+    passages = result.get("retrieved_passages", result.get("chunks", []))
+    metrics = result.get("eval_metrics", result.get("evaluation_metrics", {}))
+    profile_times = result.get("profile_times", result.get("performance_timings_ms", {}))
+    session_state[f"{key}_result"] = result
+    session_state[f"{key}_answer"] = result.get("answer", "")
+    session_state[f"{key}_citations"] = result.get("citations", result.get("provenance", ""))
+    session_state[f"{key}_passages"] = passages
+    session_state[f"{key}_eval_metrics"] = metrics
+    session_state[f"{key}_profile_times"] = profile_times
+    session_state[f"{key}_elapsed"] = elapsed
 
 
 def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
@@ -385,8 +462,109 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
         save_index_from_documents(chunks, base_path)
         return {"name": original_name, "chunk_count": len(chunks)}
 
-    st.session_state.setdefault("active_mode", "central")
-    st.session_state.setdefault("current_upload_vector_base", None)
+    @st.fragment
+    def render_query_result(
+        query_key: str,
+        question: str,
+        fast_mode: bool,
+        vector_base: str,
+        image_root: Path,
+        button_label: str,
+        button_key: str,
+        stream_message: str,
+        auto_query: bool = False,
+    ) -> None:
+        ask = st.button(
+            button_label,
+            type="primary",
+            width="stretch",
+            key=button_key,
+        ) or auto_query
+        if ask:
+            is_repository_query = query_key == "repository"
+            st.session_state.active_mode = "central" if is_repository_query else "upload"
+            if is_repository_query:
+                st.session_state.upload_result = None
+                st.session_state.repository_result = None
+            st.session_state[f"{query_key}_elapsed"] = None
+            if not question.strip():
+                st.warning("Enter a research question first.")
+            elif not is_repository_query and (
+                not vector_base or st.session_state.get("active_mode") != "upload"
+            ):
+                st.error(
+                    "The uploaded document index is not ready. "
+                    "Upload the document again before querying."
+                )
+            else:
+                try:
+                    from src.rag_pipeline import answer_query_details, get_cached_query_response
+
+                    query = question.strip()
+                    upload_metadata = st.session_state.get("current_upload_metadata") or {}
+                    document_identifier = (
+                        upload_metadata.get("document_id")
+                        if not is_repository_query
+                        else None
+                    )
+                    cache_started = time.perf_counter()
+                    result = get_cached_query_response(
+                        query,
+                        vector_base,
+                        response_language=response_language,
+                        fast_mode=fast_mode,
+                        document_identifier=document_identifier,
+                    )
+                    cache_lookup_elapsed = time.perf_counter() - cache_started
+                    if result is None:
+                        started = time.perf_counter()
+                        streamed_answer = st.empty()
+                        with st.spinner(stream_message):
+                            result = answer_query_details(
+                                query,
+                                vector_base,
+                                response_language=response_language,
+                                stream_consumer=streamed_answer.write_stream,
+                                fast_mode=fast_mode,
+                                document_identifier=document_identifier,
+                            )
+                        st.session_state[f"{query_key}_elapsed"] = time.perf_counter() - started
+                        streamed_answer.markdown(str(result["answer"]))
+                    else:
+                        result["cache_lookup_ms"] = cache_lookup_elapsed * 1000
+                        result["profile_times"] = {
+                            **result.get("profile_times", {}),
+                            "cache_lookup_ms": cache_lookup_elapsed * 1000,
+                        }
+                        result["performance_timings_ms"] = dict(result["profile_times"])
+                        st.session_state[f"{query_key}_elapsed"] = cache_lookup_elapsed
+                    _restore_query_state(
+                        st.session_state,
+                        query_key,
+                        result,
+                        st.session_state[f"{query_key}_elapsed"],
+                    )
+                except Exception as exc:
+                    LOGGER.exception("Grounded answer request failed")
+                    st.error(f"Unable to retrieve a grounded answer: {exc}")
+
+        result = st.session_state.get(f"{query_key}_result")
+        if result:
+            _render_answer(
+                st,
+                result,
+                question or "",
+                image_root,
+                render_answer=not ask or bool(result.get("semantic_cache_hit")),
+            )
+            _render_performance_metrics(
+                st,
+                result,
+                st.session_state.get(f"{query_key}_elapsed"),
+            )
+            st.session_state.setdefault("active_mode", "central")
+            st.session_state.setdefault("current_upload_vector_base", None)
+            st.session_state.setdefault("current_upload_metadata", None)
     st.markdown(
         """
         <style>
@@ -441,50 +619,17 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
             "Fast extractive mode (skip LLM generation)",
             key="repository_fast_mode",
         )
-        ask = st.button("Retrieve grounded answer", type="primary", width="stretch", key="repository_ask") or selected_example is not None
-        if ask:
-            st.session_state.active_mode = "central"
-            st.session_state.upload_result = None
-            st.session_state.repository_result = None
-            st.session_state.repository_elapsed = None
-            if not question.strip():
-                st.warning("Enter a research question first.")
-            else:
-                started = time.perf_counter()
-                try:
-                    streamed_answer = st.empty()
-                    with st.spinner("Processing..."):
-                        from src.rag_pipeline import answer_query_details, build_and_save_index
-
-                        metadata_path = Path(vector_store_dir) / "metadata.pkl"
-                        if not metadata_path.exists():
-                            build_and_save_index(dataset_dir, vector_store_dir)
-                        result = answer_query_details(
-                            question.strip(),
-                            vector_store_dir,
-                            response_language=response_language,
-                            stream_consumer=streamed_answer.write_stream,
-                            fast_mode=fast_mode,
-                        )
-                    st.session_state.repository_result = result
-                    st.session_state.repository_elapsed = time.perf_counter() - started
-                    streamed_answer.markdown(str(result["answer"]))
-                except Exception as exc:
-                    LOGGER.exception("Grounded answer request failed")
-                    st.error(f"Unable to retrieve a grounded answer: {exc}")
-        if st.session_state.get("repository_result"):
-            _render_answer(
-                st,
-                st.session_state.repository_result,
-                question or "",
-                Path(vector_store_dir) / "figures",
-                render_answer=not ask,
-            )
-            _render_performance_metrics(
-                st,
-                st.session_state.repository_result,
-                st.session_state.repository_elapsed,
-            )
+        render_query_result(
+            "repository",
+            question,
+            fast_mode,
+            vector_store_dir,
+            Path(vector_store_dir) / "figures",
+            "Retrieve grounded answer",
+            "repository_ask",
+            "Retrieving passages and streaming the answer...",
+            auto_query=selected_example is not None,
+        )
 
     with upload_tab:
         st.markdown("#### Custom research paper")
@@ -497,6 +642,9 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
             content_digest = hashlib.sha256(pdf_content).hexdigest()
             saved_path = runtime_upload_dir / f"{content_digest}.pdf"
             runtime_vector_base = Path("vector_store/runtime_uploads") / content_digest
+            previous_upload_metadata = st.session_state.get("current_upload_metadata") or {}
+            if previous_upload_metadata.get("document_id") != content_digest:
+                st.session_state.upload_result = None
             try:
                 with st.spinner("Executing full structural indexing from disk..."):
                     upload_info = index_uploaded_pdf(
@@ -509,13 +657,23 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
                 st.session_state.upload_path = saved_path
                 st.session_state.upload_index = upload_info
                 st.session_state.current_upload_vector_base = str(runtime_vector_base)
+                st.session_state.current_upload_metadata = {
+                    "document_id": content_digest,
+                    "name": uploaded_file.name,
+                    "size_bytes": len(pdf_content),
+                    "sha256": content_digest,
+                }
             except ValueError as exc:
                 st.session_state.current_upload_vector_base = None
+                st.session_state.current_upload_metadata = None
                 st.session_state.upload_index = None
+                st.session_state.upload_result = None
                 st.error(str(exc))
             except (OSError, RuntimeError) as exc:
                 st.session_state.current_upload_vector_base = None
+                st.session_state.current_upload_metadata = None
                 st.session_state.upload_index = None
+                st.session_state.upload_result = None
                 st.error(f"Unable to process the uploaded PDF: {exc}")
             if st.session_state.get("upload_index"):
                 st.success(f"Indexed {upload_info['name']} from disk with page-level provenance.")
@@ -525,49 +683,22 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
                     "Fast extractive mode (skip LLM generation)",
                     key="upload_fast_mode",
                 )
-                ask = st.button("Query uploaded paper", type="primary", width="stretch", key="upload_ask")
-                if ask:
-                    st.session_state.active_mode = "upload"
-                    started = time.perf_counter()
-                    if not question.strip():
-                        st.warning("Enter a research question first.")
-                    else:
-                        from src.rag_pipeline import answer_query_details
-
-                        streamed_answer = st.empty()
-                        with st.spinner("Retrieving from the uploaded paper..."):
-                            upload_base = st.session_state.get("current_upload_vector_base")
-                            if not upload_base or st.session_state.get("active_mode") != "upload":
-                                st.error("The uploaded document index is not ready. Upload the document again before querying.")
-                                result = None
-                            else:
-                                result = answer_query_details(
-                                    question.strip(),
-                                    upload_base,
-                                    response_language=response_language,
-                                    stream_consumer=streamed_answer.write_stream,
-                                    fast_mode=fast_mode,
-                                )
-                        if result is not None:
-                            streamed_answer.markdown(result["answer"])
-                        st.session_state.upload_result = result
-                        st.session_state.upload_elapsed = time.perf_counter() - started
-                if st.session_state.get("upload_result"):
-                    upload_base = st.session_state.get("current_upload_vector_base")
-                    image_root = Path(upload_base) / "figures" if upload_base else Path(vector_store_dir) / "uploads" / "figures"
-                    _render_answer(
-                        st,
-                        st.session_state.upload_result,
-                        question or "",
-                        image_root,
-                        render_answer=not ask,
-                    )
-                    _render_performance_metrics(
-                        st,
-                        st.session_state.upload_result,
-                        st.session_state.get("upload_elapsed"),
-                    )
+                upload_base = st.session_state.get("current_upload_vector_base")
+                image_root = Path(upload_base) / "figures" if upload_base else Path(vector_store_dir) / "uploads" / "figures"
+                render_query_result(
+                    "upload",
+                    question,
+                    fast_mode,
+                    upload_base or "",
+                    image_root,
+                    "Query uploaded paper",
+                    "upload_ask",
+                    "Retrieving from the uploaded paper...",
+                )
         else:
+            st.session_state.current_upload_vector_base = None
+            st.session_state.current_upload_metadata = None
+            st.session_state.upload_result = None
             st.info("Upload a PDF to create a temporary multi-model index for this session.")
 
 

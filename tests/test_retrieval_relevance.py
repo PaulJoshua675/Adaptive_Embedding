@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from types import SimpleNamespace
 
 import pytest
 
@@ -10,7 +11,7 @@ from src.classifier import QueryClassifier
 from src.create_vector_db import VectorStore
 from src.embedding_model import EmbeddingModel
 from src.retrieval import inject_visual_payload
-from src.rag_pipeline import _retrieve_with_fallback
+from src.rag_pipeline import _cacheable_query, _retrieve_with_fallback
 from src.retriever import retrieve_top_chunks
 
 
@@ -349,3 +350,38 @@ def test_retriever_requests_low_relevance_passages_for_fallback() -> None:
     assert retriever.allow_low_relevance_calls == 1
     assert retriever.candidate_counts == [3, 5]
     assert chunks[0]["score"] == 0.08
+
+
+def test_retriever_matches_figure_caption_metadata_without_figure_number() -> None:
+    visual_chunk = {
+        "document_id": "paper-a_figure_1",
+        "visual_type": "figure",
+        "caption": "Results on the TruthfulQA dataset",
+        "text": "Figure 1: Results on the TruthfulQA dataset",
+        "figures": [{"caption": "Results on the TruthfulQA dataset", "file_path": "figure.png"}],
+    }
+
+    class StubRetriever:
+        def __init__(self) -> None:
+            self.last_timings_ms = {}
+            self.stores = SimpleNamespace(
+                stores={"e5": SimpleNamespace(documents=[visual_chunk])}
+            )
+
+        def retrieve(self, *args, **kwargs):
+            return []
+
+    chunks, fallback = _retrieve_with_fallback(
+        StubRetriever(),
+        "TruthfulQA dataset results",
+        "e5",
+        3,
+        None,
+        [1.0],
+    )
+
+    assert fallback is False
+    assert len(chunks) == 1
+    assert chunks[0]["visual_type"] == "figure"
+    assert chunks[0]["score"] >= 0.4
+    assert _cacheable_query("TruthfulQA dataset results") is False

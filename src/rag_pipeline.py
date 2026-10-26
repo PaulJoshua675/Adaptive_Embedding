@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import pickle
 import re
 import time
+from difflib import SequenceMatcher
 from functools import lru_cache
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List
@@ -19,7 +21,7 @@ from .chunk_documents import chunk_documents
 from .embeddings import EmbeddingRegistry
 from .embedding_model import EmbeddingModel
 from .extract_pdf import extract_documents_from_path
-from .generator import AnswerGenerator
+from .generator import AnswerGenerator, format_sources
 from .ingestion import ingest_corpus
 from .cache import response_cache
 from .router import route_query
@@ -47,8 +49,90 @@ except ImportError:  # pragma: no cover - optional runtime dependency
 
 def _cache_data(function):
     if st is None:
-        return lru_cache(maxsize=16)(function)
-    return st.cache_data(show_spinner=False)(function)
+        return lru_cache(maxsize=512)(function)
+    return st.cache_data(show_spinner=False, max_entries=512)(function)
+
+
+@lru_cache(maxsize=512)
+def _cached_final_response(
+    query_key: str,
+    response_identity: str,
+    _question: str,
+    _serialized_passages: bytes,
+    response_language: str,
+    fallback: bool,
+    fast_mode: bool,
+) -> str:
+    del query_key, response_identity
+    retrieved = pickle.loads(_serialized_passages)
+    if not isinstance(retrieved, list):
+        raise TypeError("Cached RAG passages must deserialize to a list")
+    return _synthesize_answer(
+        _question,
+        retrieved,
+        response_language,
+        fast_mode=fast_mode,
+        fallback=fallback,
+    )
+
+
+def _synthesize_response(
+    question: str,
+    retrieved: List[Dict[str, object]],
+    response_language: str,
+    fast_mode: bool,
+    fallback: bool,
+    stream_consumer: Callable[[Iterable[str]], str] | None = None,
+    cache_identity: str | None = None,
+) -> Dict[str, object]:
+    if stream_consumer is not None or not _cacheable_query(question):
+        answer = _synthesize_answer(
+            question,
+            retrieved,
+            response_language,
+            stream_consumer,
+            fast_mode,
+            fallback,
+        )
+        return {
+            "answer": answer,
+            "chunks": retrieved,
+            "provenance": format_sources(retrieved),
+        }
+
+    response_identity = cache_identity
+    if response_identity is None:
+        passages_hash = hashlib.sha256()
+        for passage in retrieved:
+            passage_text = str(passage.get("text", ""))
+            passage_id = passage.get(
+                "chunk_id",
+                passage.get("id", passage.get("document_id", passage.get("source", ""))),
+            )
+            passage_fingerprint = (
+                str(passage_id),
+                hashlib.sha256(passage_text.encode("utf-8")).hexdigest(),
+                str(passage.get("source", "")),
+                str(passage.get("page_number", "")),
+                str(passage.get("section_type", "")),
+            )
+            passages_hash.update(pickle.dumps(passage_fingerprint, protocol=pickle.HIGHEST_PROTOCOL))
+        response_identity = passages_hash.hexdigest()
+
+    answer = _cached_final_response(
+        question.strip().lower(),
+        response_identity,
+        question,
+        pickle.dumps(retrieved, protocol=pickle.HIGHEST_PROTOCOL),
+        response_language,
+        fallback,
+        fast_mode,
+    )
+    return {
+        "answer": answer,
+        "chunks": retrieved,
+        "provenance": format_sources(retrieved),
+    }
 
 
 def _classify_query_timed(question: str) -> tuple[Dict[str, object], float]:
@@ -71,6 +155,7 @@ def _cache_namespace(
     fast_mode: bool,
     query: str,
     embedding_key: str | None = None,
+    document_identifier: str | None = None,
 ) -> str:
     paper_match = re.search(r"(?<!\d)(\d{4}\.\d{4,5})(?:v\d+)?(?!\d)", query, re.I)
     section = section_from_query(query) or ""
@@ -82,9 +167,41 @@ def _cache_namespace(
         paper_match.group(1) if paper_match else "",
         section,
     ]
+    if document_identifier:
+        parts.append(document_identifier)
     if embedding_key is not None:
         parts.append(embedding_key)
     return "|".join(parts)
+
+
+def _complete_response_payload(result: Dict[str, object]) -> Dict[str, object]:
+    passages = result.get("retrieved_passages", result.get("chunks", []))
+    if not isinstance(passages, list):
+        raise TypeError("RAG response passages must be a list")
+    result["chunks"] = passages
+    result["retrieved_passages"] = passages
+
+    metrics = result.get("eval_metrics", result.get("evaluation_metrics"))
+    if not isinstance(metrics, dict):
+        from .evaluation_suite import retrieval_metrics
+
+        retrieved_ids = [
+            passage.get("id", passage.get("document_id", index))
+            if isinstance(passage, dict)
+            else index
+            for index, passage in enumerate(passages)
+        ]
+        metrics = retrieval_metrics(retrieved_ids, retrieved_ids[:1], k=3)
+    result["eval_metrics"] = dict(metrics)
+    result["evaluation_metrics"] = dict(metrics)
+
+    timings = result.get("profile_times", result.get("performance_timings_ms", {}))
+    if not isinstance(timings, dict):
+        raise TypeError("RAG response profile times must be a mapping")
+    result["profile_times"] = dict(timings)
+    result["performance_timings_ms"] = dict(timings)
+    result.setdefault("citations", result.get("provenance", ""))
+    return result
 
 
 def _cached_exact_response(
@@ -94,15 +211,11 @@ def _cached_exact_response(
 ) -> Dict[str, object] | None:
     if not _cacheable_query(query):
         return None
-    lookup_started = time.perf_counter()
-    cached = _lookup_exact_response(query, namespace_prefix, response_cache.generation)
+    cached = _lookup_exact_response(query.strip().lower(), namespace_prefix, response_cache.generation)
     if cached is None:
         return None
-    cached = dict(cached)
+    cached = _complete_response_payload(dict(cached))
     cached["semantic_cache_hit"] = True
-    cached["performance_timings_ms"] = {
-        "semantic_cache_lookup_ms": (time.perf_counter() - lookup_started) * 1000,
-    }
     if stream_consumer is not None:
         stream_consumer(iter((str(cached.get("answer", "")),)))
     return cached
@@ -119,7 +232,11 @@ def _lookup_exact_response(
 
 
 def _cacheable_query(query: str) -> bool:
-    return not re.search(r"\b(?:figure|fig\.?|diagram|chart|plot|image|picture)\b", query, re.I)
+    return not re.search(
+        r"\b(?:figure|fig\.?|diagram|chart|plot|image|picture|dataset|benchmark|results?|trend|accuracy|scores?)\b",
+        query,
+        re.I,
+    )
 
 
 def _cached_response(
@@ -130,14 +247,11 @@ def _cached_response(
 ) -> Dict[str, object] | None:
     if not _cacheable_query(query):
         return None
-    lookup_started = time.perf_counter()
     cached = response_cache.get(query, query_vector, namespace)
     if cached is None:
         return None
+    cached = _complete_response_payload(cached)
     cached["semantic_cache_hit"] = True
-    cached["performance_timings_ms"] = {
-        "semantic_cache_lookup_ms": (time.perf_counter() - lookup_started) * 1000,
-    }
     if stream_consumer is not None:
         stream_consumer(iter((str(cached.get("answer", "")),)))
     return cached
@@ -215,6 +329,13 @@ def _retrieve_with_fallback(
         section_type=section_type,
         query_vector=query_vector,
     )
+    retrieved = _merge_visual_metadata_matches(
+        retriever,
+        question,
+        embedding_key,
+        retrieved,
+        top_k,
+    )
     best_score = max((float(chunk.get("score", -1.0)) for chunk in retrieved), default=-1.0)
     if retrieved and best_score >= MIN_RETRIEVAL_SIMILARITY:
         return retrieved, False
@@ -227,11 +348,118 @@ def _retrieve_with_fallback(
         query_vector=query_vector,
         include_low_relevance=True,
     )
+    fallback_chunks = _merge_visual_metadata_matches(
+        retriever,
+        question,
+        embedding_key,
+        fallback_chunks,
+        top_k,
+    )
     fallback_score = max(
         (float(chunk.get("score", -1.0)) for chunk in fallback_chunks),
         default=-1.0,
     )
     return fallback_chunks, fallback_score < MIN_RETRIEVAL_SIMILARITY
+
+
+_VISUAL_QUERY_STOPWORDS = {
+    "a", "an", "and", "are", "by", "for", "from", "in", "is", "of", "on",
+    "show", "the", "to", "what", "which", "with", "figure", "fig", "image",
+    "diagram", "chart", "plot", "graph", "results", "result",
+}
+_VISUAL_METADATA_THRESHOLD = 0.4
+
+
+def _visual_metadata_score(query: str, document: Dict[str, object]) -> float:
+    visual_type = str(document.get("visual_type", "")).casefold()
+    if visual_type not in {"figure", "image", "diagram", "chart", "plot"}:
+        return 0.0
+    query_tokens = set(re.findall(r"[a-z0-9]+", query.casefold())) - _VISUAL_QUERY_STOPWORDS
+    if not query_tokens:
+        return 0.0
+    descriptions: List[str] = []
+    for key in ("caption", "alt_text", "alt-text", "altText", "alt", "image_alt_text", "description"):
+        value = document.get(key)
+        if isinstance(value, str) and value.strip():
+            descriptions.append(value)
+    for key in ("figures", "images"):
+        records = document.get(key)
+        if not isinstance(records, list):
+            continue
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            for field in ("caption", "alt_text", "alt-text", "altText", "alt", "image_alt_text", "description"):
+                value = record.get(field)
+                if isinstance(value, str) and value.strip():
+                    descriptions.append(value)
+    if not descriptions:
+        return 0.0
+
+    query_text = " ".join(sorted(query_tokens))
+    best_score = 0.0
+    for description in descriptions:
+        description_tokens = set(re.findall(r"[a-z0-9]+", description.casefold()))
+        overlap_score = len(query_tokens & description_tokens) / len(query_tokens)
+        sequence_score = SequenceMatcher(
+            None,
+            query_text,
+            " ".join(sorted(description_tokens)),
+        ).ratio()
+        best_score = max(best_score, overlap_score, sequence_score)
+    return best_score
+
+
+def _merge_visual_metadata_matches(
+    retriever: AdaptiveRetriever,
+    question: str,
+    embedding_key: str,
+    retrieved: List[Dict[str, object]],
+    top_k: int,
+) -> List[Dict[str, object]]:
+    stores = getattr(retriever, "stores", None)
+    indexed_stores = getattr(stores, "stores", None)
+    store = indexed_stores.get(embedding_key) if isinstance(indexed_stores, dict) else None
+    documents = getattr(store, "documents", None)
+    if not isinstance(documents, list):
+        return retrieved
+
+    def chunk_key(chunk: Dict[str, object], fallback: str) -> str:
+        chunk_id = chunk.get("chunk_id")
+        if chunk_id is not None:
+            return f"chunk:{chunk_id}"
+        document_id = chunk.get("document_id")
+        if document_id is not None:
+            return ":".join(
+                (
+                    str(document_id),
+                    str(chunk.get("visual_type", "")),
+                    str(chunk.get("start", "")),
+                    str(chunk.get("end", "")),
+                )
+            )
+        return fallback
+
+    merged: Dict[str, Dict[str, object]] = {}
+    for index, chunk in enumerate(retrieved):
+        key = chunk_key(chunk, f"retrieved:{index}")
+        merged[key] = dict(chunk)
+    for index, document in enumerate(documents):
+        if not isinstance(document, dict):
+            continue
+        score = _visual_metadata_score(question, document)
+        if score < _VISUAL_METADATA_THRESHOLD:
+            continue
+        key = chunk_key(document, f"indexed:{index}")
+        chunk = dict(merged.get(key, document))
+        chunk["score"] = max(float(chunk.get("score", 0.0)), score)
+        chunk.setdefault("text", str(document.get("text", "")))
+        merged[key] = chunk
+    return sorted(
+        merged.values(),
+        key=lambda chunk: float(chunk.get("score", 0.0)),
+        reverse=True,
+    )[: max(1, int(top_k))]
 
 
 def answer_query_from_index(
@@ -258,6 +486,7 @@ def answer_query_from_index(
     cached = _cached_exact_response(question, exact_namespace + "|", None)
     if cached is not None:
         return cached
+    pipeline_started = time.perf_counter()
     timings: Dict[str, float] = {}
     route, route_time_ms = _classify_query_timed(question)
     if route["route"] == "direct_response":
@@ -323,6 +552,9 @@ def answer_query_from_index(
         "performance_timings_ms": timings,
     }
     result = inject_visual_payload(result, question)
+    timings["pipeline_round_trip_ms"] = (time.perf_counter() - pipeline_started) * 1000
+    result["performance_timings_ms"] = timings
+    _complete_response_payload(result)
     if _cacheable_query(question):
         response_cache.set(question, query_vector, result, namespace)
     return result
@@ -389,6 +621,7 @@ def answer_query(
     top_k: int | None = None,
     response_language: str | None = None,
     fast_mode: bool = False,
+    document_identifier: str | None = None,
 ) -> str:
     return answer_query_details(
         question,
@@ -396,7 +629,38 @@ def answer_query(
         top_k,
         response_language,
         fast_mode=fast_mode,
+        document_identifier=document_identifier,
     )["answer"]
+
+
+def get_cached_query_response(
+    question: str,
+    vector_store_dir: str | Path | None = None,
+    top_k: int | None = None,
+    response_language: str | None = None,
+    stream_consumer: Callable[[Iterable[str]], str] | None = None,
+    fast_mode: bool = False,
+    document_identifier: str | None = None,
+) -> Dict[str, object] | None:
+    """Return an exact cached response without loading query or index models."""
+    language = resolve_response_language(question, response_language)
+    store_dir = resolve_index_path(vector_store_dir or None) if vector_store_dir is None else Path(vector_store_dir)
+    metadata_path = store_dir / "metadata.pkl"
+    if not metadata_path.exists():
+        return None
+
+    stat = metadata_path.stat()
+    index_identity = f"{metadata_path.resolve()}:{stat.st_mtime_ns}:{stat.st_size}"
+    result_limit = min(max(int(top_k if top_k is not None else DEFAULT_TOP_K), 3), 5)
+    exact_namespace = _cache_namespace(
+        index_identity,
+        language,
+        result_limit,
+        fast_mode,
+        question,
+        document_identifier=document_identifier,
+    )
+    return _cached_exact_response(question, exact_namespace + "|", stream_consumer)
 
 
 def answer_query_details(
@@ -406,7 +670,21 @@ def answer_query_details(
     response_language: str | None = None,
     stream_consumer: Callable[[Iterable[str]], str] | None = None,
     fast_mode: bool = False,
+    document_identifier: str | None = None,
 ) -> Dict[str, object]:
+    cached = get_cached_query_response(
+        question,
+        vector_store_dir,
+        top_k,
+        response_language,
+        stream_consumer,
+        fast_mode,
+        document_identifier,
+    )
+    if cached is not None:
+        return cached
+
+    pipeline_started = time.perf_counter()
     language = resolve_response_language(question, response_language)
     store_dir = resolve_index_path(vector_store_dir or None) if vector_store_dir is None else Path(vector_store_dir)
     metadata_path = store_dir / "metadata.pkl"
@@ -414,16 +692,6 @@ def answer_query_details(
     stat = metadata_path.stat() if metadata_path.exists() else None
     if stat is not None:
         index_identity = f"{metadata_path.resolve()}:{stat.st_mtime_ns}:{stat.st_size}"
-        exact_namespace = _cache_namespace(
-            index_identity,
-            language,
-            result_limit,
-            fast_mode,
-            question,
-        )
-        cached = _cached_exact_response(question, exact_namespace + "|", stream_consumer)
-        if cached is not None:
-            return cached
 
     route, route_time_ms = _classify_query_timed(question)
     if route["route"] == "direct_response":
@@ -457,10 +725,9 @@ def answer_query_details(
             fast_mode,
             question,
             embedding_key,
+            document_identifier,
         )
-        cache_started = time.perf_counter()
         cached = _cached_response(question, query_vector, namespace, stream_consumer)
-        cache_lookup_ms = (time.perf_counter() - cache_started) * 1000
         if cached is not None:
             cached.update(
                 {
@@ -474,7 +741,6 @@ def answer_query_details(
                 }
             )
             return cached
-        timings["semantic_cache_lookup_ms"] = cache_lookup_ms
         stage_started = time.perf_counter()
         stores = load_cached_vector_store(store_dir, [embedding_key])
         index_load_ms = (time.perf_counter() - stage_started) * 1000
@@ -491,18 +757,22 @@ def answer_query_details(
         timings.update(retriever.last_timings_ms)
         timings["faiss_index_lookup_ms"] += index_load_ms
         stage_started = time.perf_counter()
-        answer = _synthesize_answer(
+        synthesis = _synthesize_response(
             question,
             retrieved,
             language,
-            stream_consumer,
             fast_mode,
             fallback,
+            stream_consumer,
+            f"{index_identity}|document={document_identifier or ''}|top_k={result_limit}",
         )
+        answer = str(synthesis["answer"])
+        retrieved = synthesis["chunks"]
         timings["answer_generation_ms"] = (time.perf_counter() - stage_started) * 1000
         result = {
             "answer": answer,
             "chunks": retrieved,
+            "provenance": synthesis["provenance"],
             "query_type": query_type,
             "route": str(route["route"]),
             "embedding_key": embedding_key,
@@ -517,6 +787,9 @@ def answer_query_details(
             "performance_timings_ms": timings,
         }
         result = inject_visual_payload(result, question, store_dir / "figures" / "figure_manifest.json")
+        timings["pipeline_round_trip_ms"] = (time.perf_counter() - pipeline_started) * 1000
+        result["performance_timings_ms"] = timings
+        _complete_response_payload(result)
         if _cacheable_query(question):
             response_cache.set(question, query_vector, result, namespace)
         return result
@@ -535,6 +808,7 @@ def answer_query_details(
         fast_mode,
         question,
         "simple-bow",
+        document_identifier,
     )
     cached = _cached_response(question, query_vector, namespace, stream_consumer)
     if cached is not None:
@@ -559,10 +833,21 @@ def answer_query_details(
             include_low_relevance=True,
         )
     chunks = [{"text": chunk.get("text", ""), **chunk, "score": score} for score, chunk in retrieved]
-    answer = _synthesize_answer(question, chunks, language, stream_consumer, fast_mode, fallback)
+    synthesis = _synthesize_response(
+        question,
+        chunks,
+        language,
+        fast_mode,
+        fallback,
+        stream_consumer,
+        f"{index_identity}|document={document_identifier or ''}|top_k={result_limit}",
+    )
+    answer = str(synthesis["answer"])
+    chunks = synthesis["chunks"]
     result = {
         "answer": answer,
         "chunks": chunks,
+        "provenance": synthesis["provenance"],
         "query_type": "legacy",
         "route": str(route["route"]),
         "embedding_key": "simple-bow",
@@ -573,6 +858,10 @@ def answer_query_details(
         "figures": [],
     }
     result = inject_visual_payload(result, question, store_dir / "figures" / "figure_manifest.json")
+    result["performance_timings_ms"] = {
+        "pipeline_round_trip_ms": (time.perf_counter() - pipeline_started) * 1000,
+    }
+    _complete_response_payload(result)
     if _cacheable_query(question):
         response_cache.set(question, query_vector, result, namespace)
     return result

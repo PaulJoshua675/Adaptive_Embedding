@@ -42,7 +42,7 @@ HF_MODELS = (
 )
 HF_MODEL = HF_MODELS[0]
 HF_ROUTING_POLICY = "fastest"
-MAX_GENERATION_TOKENS = 256
+MAX_GENERATION_TOKENS = 350
 MAX_CONTEXT_CHARS = 500  # Safe limit for 1024-token window
 _CONTEXT_TRUNCATION_SUFFIX = "\n[Context truncated to fit model limit...]"
 MAX_TOTAL_PROMPT_CHARS = 2500
@@ -129,6 +129,66 @@ def query_huggingface_inference_api(prompt: str) -> str:
     return ""
 
 
+def _stream_hosted_completion(
+    client: OpenAI,
+    provider: str,
+    models: tuple[str, ...],
+    prompt: str,
+    model_suffix: str = "",
+) -> Iterator[str]:
+    for model in models:
+        emitted_content = False
+        try:
+            stream = client.chat.completions.create(
+                model=f"{model}{model_suffix}",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=MAX_GENERATION_TOKENS,
+                temperature=0.3,
+                stream=True,
+            )
+            for event in stream:
+                if not event.choices:
+                    continue
+                content = event.choices[0].delta.content
+                if isinstance(content, str) and content:
+                    emitted_content = True
+                    yield content
+        except (OpenAIError, TimeoutError, ConnectionError) as exc:
+            if emitted_content:
+                raise
+            _log_candidate_failure(provider, model, exc)
+            continue
+        if emitted_content:
+            return
+        LOGGER.warning("%s model %s returned an empty streamed completion; trying next model", provider, model)
+
+
+def query_groq_inference_api_stream(prompt: str) -> Iterator[str]:
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key or not api_key.strip():
+        LOGGER.warning("GROQ_API_KEY is missing; skipping Groq inference")
+        return
+
+    client = OpenAI(api_key=api_key.strip(), base_url=GROQ_BASE_URL)
+    yield from _stream_hosted_completion(client, "Groq", GROQ_MODELS, prompt)
+
+
+def query_huggingface_inference_api_stream(prompt: str) -> Iterator[str]:
+    api_key = os.getenv("HF_TOKEN")
+    if not api_key or not api_key.strip():
+        LOGGER.warning("HF_TOKEN is missing; skipping Hugging Face inference")
+        return
+
+    client = OpenAI(api_key=api_key.strip(), base_url=HF_BASE_URL)
+    yield from _stream_hosted_completion(
+        client,
+        "Hugging Face",
+        HF_MODELS,
+        prompt,
+        model_suffix=f":{HF_ROUTING_POLICY}",
+    )
+
+
 def _log_candidate_failure(provider: str, model: str, exc: Exception) -> None:
     status_code = getattr(exc, "status_code", None)
     error_code = getattr(exc, "code", None)
@@ -161,6 +221,20 @@ def generate_response(prompt: str) -> str:
         if response:
             return response
     return query_groq_inference_api(prompt)
+
+
+def generate_response_stream(prompt: str) -> Iterator[str]:
+    if os.getenv("HF_TOKEN"):
+        hf_stream = query_huggingface_inference_api_stream(prompt)
+        try:
+            first_token = next(hf_stream)
+        except StopIteration:
+            pass
+        else:
+            yield first_token
+            yield from hf_stream
+            return
+    yield from query_groq_inference_api_stream(prompt)
 
 
 def generate_local_fallback(prompt: str, pipeline) -> str:
@@ -790,13 +864,28 @@ class SimpleLLM:
         hf_token = os.getenv("HF_TOKEN")
         groq_api_key = os.getenv("GROQ_API_KEY")
         if (hf_token and hf_token.strip()) or (groq_api_key and groq_api_key.strip()):
-            yield self.generate_answer(
-                question,
-                context_chunks,
-                instructions=instructions,
-                response_language=response_language,
-                fallback=fallback,
+            context_text = _truncate_context(
+                "\n\n".join(str(chunk.get("text", "")) for chunk in context_chunks)
             )
+            prompt = _build_generation_prompt(
+                question,
+                context_text,
+                instructions,
+                response_language,
+                fallback,
+            )
+            streamed = False
+            for token in generate_response_stream(_truncate_total_prompt(prompt)):
+                streamed = True
+                yield token
+            if not streamed:
+                yield self.generate_answer(
+                    question,
+                    context_chunks,
+                    instructions=instructions,
+                    response_language=response_language,
+                    fallback=fallback,
+                )
             return
 
         generator = self._get_generator()

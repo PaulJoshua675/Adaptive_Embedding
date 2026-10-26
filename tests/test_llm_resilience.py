@@ -48,7 +48,7 @@ def test_huggingface_inference_uses_token_and_primary_model(monkeypatch):
     client.chat.completions.create.assert_called_once_with(
         model=f"{HF_MODEL}:fastest",
         messages=[{"role": "user", "content": "Test prompt"}],
-        max_tokens=256,
+        max_tokens=350,
         temperature=0.3,
     )
 
@@ -165,7 +165,7 @@ def test_groq_inference_uses_openai_client_and_primary_model(monkeypatch):
     client.chat.completions.create.assert_called_once_with(
         model=GROQ_MODELS[0],
         messages=[{"role": "user", "content": "Test prompt"}],
-        max_tokens=256,
+        max_tokens=350,
         temperature=0.3,
     )
 
@@ -242,5 +242,33 @@ def test_local_fallback_bounds_prompt_and_generation():
     assert len(args[0]) <= 2500
     assert "[Prompt truncated for model limits]" in args[0]
     assert kwargs["truncation"] is True
-    assert kwargs["max_new_tokens"] == 256
+    assert kwargs["max_new_tokens"] == 350
     assert kwargs["pad_token_id"] == 50256
+
+
+def test_hosted_generation_streams_tokens_with_bounded_output(monkeypatch):
+    from types import SimpleNamespace
+
+    monkeypatch.setenv("HF_TOKEN", "hf-test-token")
+    tokens = ("First ", "tokens")
+    events = [
+        SimpleNamespace(
+            choices=[SimpleNamespace(delta=SimpleNamespace(content=token))]
+        )
+        for token in tokens
+    ]
+    client = MagicMock()
+    client.chat.completions.create.return_value = iter(events)
+    monkeypatch.setattr("src.llm.OpenAI", MagicMock(return_value=client))
+
+    output = list(
+        SimpleLLM().generate_answer_stream(
+            "What does retrieval use?",
+            [{"text": "Retrieval uses indexed passages to ground answers."}],
+        )
+    )
+
+    assert output == list(tokens)
+    client.chat.completions.create.assert_called_once()
+    assert client.chat.completions.create.call_args.kwargs["stream"] is True
+    assert client.chat.completions.create.call_args.kwargs["max_tokens"] == 350

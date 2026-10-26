@@ -20,8 +20,7 @@ from src.llm import (
     localized_fallback_message,
     generate_response,
 )
-from src.generator import _format_answer
-from src.generator import AnswerGenerator
+from src.generator import ACADEMIC_SYNTHESIS_INSTRUCTIONS, AnswerGenerator, _format_answer
 from src.extract_pdf import clean_extracted_text
 from src.dataset_classifier import _classify_text
 from src.preprocessing import extract_pdf_pages
@@ -153,7 +152,7 @@ def test_local_generation_bounds_total_prompt_and_tokenizer(monkeypatch):
     assert len(captured["prompt"]) == llm_module.MAX_TOTAL_PROMPT_CHARS
     assert captured["prompt"].endswith("[Prompt truncated for model limits]")
     assert captured["kwargs"] == {
-        "max_new_tokens": 256,
+        "max_new_tokens": 350,
         "truncation": True,
         "do_sample": False,
         "pad_token_id": 99,
@@ -511,6 +510,31 @@ def test_pdf_figure_and_caption_metadata_reaches_chunks(tmp_path):
     assert "80 percent" in table_chunk["text"]
 
 
+def test_figure_alt_text_is_indexed_when_caption_is_missing():
+    chunks = chunk_documents(
+        [
+            {
+                "id": "alt-text-paper",
+                "source": "alt-text-paper.pdf",
+                "text": "The paper evaluates multiple benchmarks.",
+                "figures": [
+                    {
+                        "figure_id": "Figure 1",
+                        "alt_text": "TruthfulQA dataset results comparison",
+                        "file_path": "truthfulqa.png",
+                    }
+                ],
+            }
+        ]
+    )
+
+    figure_chunk = next(chunk for chunk in chunks if chunk.get("visual_type") == "figure")
+
+    assert figure_chunk["caption"] == "TruthfulQA dataset results comparison"
+    assert "TruthfulQA" in figure_chunk["text"]
+    assert figure_chunk["figures"][0]["file_path"] == "truthfulqa.png"
+
+
 def test_generation_prompt_requests_figure_and_table_synthesis():
     visual_prompt = llm_module._build_generation_prompt(
         "What does the result show?",
@@ -530,6 +554,8 @@ def test_generation_prompt_requests_figure_and_table_synthesis():
     assert "Explicitly synthesize and narrate its key trends, scores" in visual_prompt
     assert "never infer unseen visual details" in visual_prompt
     assert "Explicitly synthesize and narrate its key trends, scores" not in text_prompt
+    assert "data points, trends, comparisons, and takeaways" in ACADEMIC_SYNTHESIS_INSTRUCTIONS
+    assert "caption, alt-text, or associated analysis" in ACADEMIC_SYNTHESIS_INSTRUCTIONS
 
 
 def test_fast_fallback_synthesizes_low_similarity_context():

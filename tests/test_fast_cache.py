@@ -188,12 +188,70 @@ def test_exact_pipeline_cache_skips_classifier_and_index_loading(tmp_path, monke
     monkeypatch.setattr("src.rag_pipeline.route_query", unexpected_query_path)
     monkeypatch.setattr("src.rag_pipeline.load_cached_vector_store", unexpected_query_path)
     cache_started = time.perf_counter()
+    monkeypatch.setattr("src.rag_pipeline.time", SimpleNamespace(perf_counter=unexpected_query_path))
     second = answer_query_details(query, index_dir, fast_mode=True)
     cache_elapsed_ms = (time.perf_counter() - cache_started) * 1000
 
     assert first["answer"] == second["answer"]
     assert second["semantic_cache_hit"] is True
-    assert cache_elapsed_ms < 10
+    assert second["retrieved_passages"] == second["chunks"]
+    assert second["eval_metrics"] == second["evaluation_metrics"]
+    assert {"accuracy", "precision", "recall", "f1"} <= second["eval_metrics"].keys()
+    assert second["profile_times"] == second["performance_timings_ms"]
+    assert "pipeline_round_trip_ms" in second["profile_times"]
+    assert cache_elapsed_ms < 175
+
+
+def test_custom_document_cache_is_scoped_to_document_identifier(tmp_path, monkeypatch) -> None:
+    from src.rag_pipeline import (
+        answer_query_details,
+        build_and_save_index,
+        get_cached_query_response,
+    )
+
+    dataset = tmp_path / "custom_dataset"
+    dataset.mkdir()
+    (dataset / "paper.txt").write_text(
+        "A unique custom paper explains adaptive retrieval with contextual evidence.",
+        encoding="utf-8",
+    )
+    index_dir = tmp_path / "custom_vector_store"
+    build_and_save_index(dataset, index_dir)
+    response_cache.clear()
+    query = "How does this method use contextual evidence?"
+    first = answer_query_details(
+        query,
+        index_dir,
+        fast_mode=True,
+        document_identifier="paper-sha256-a",
+    )
+
+    def unexpected_query_path(*args, **kwargs):
+        raise AssertionError("custom-document cache hit entered the retrieval path")
+
+    monkeypatch.setattr("src.rag_pipeline.route_query", unexpected_query_path)
+    monkeypatch.setattr("src.rag_pipeline.load_cached_vector_store", unexpected_query_path)
+    matching_document = answer_query_details(
+        query,
+        index_dir,
+        fast_mode=True,
+        document_identifier="paper-sha256-a",
+    )
+    different_document = get_cached_query_response(
+        query,
+        index_dir,
+        fast_mode=True,
+        document_identifier="paper-sha256-b",
+    )
+
+    assert matching_document is not None
+    assert matching_document["semantic_cache_hit"] is True
+    assert matching_document["answer"] == first["answer"]
+    assert matching_document["provenance"] == first["provenance"]
+    assert matching_document["citations"] == first["citations"]
+    assert matching_document["eval_metrics"] == first["eval_metrics"]
+    assert matching_document["profile_times"] == first["profile_times"]
+    assert different_document is None
 
 
 def test_answer_generation_cache_uses_query_and_chunk_content(monkeypatch) -> None:
@@ -225,3 +283,43 @@ def test_answer_generation_cache_uses_query_and_chunk_content(monkeypatch) -> No
     assert expired == "answer 3"
     assert len(calls) == 3
     assert cached_elapsed_ms < 175
+
+
+def test_final_response_cache_keys_on_query_and_retrieved_passages(monkeypatch) -> None:
+    from src import rag_pipeline
+
+    rag_pipeline._cached_final_response.cache_clear()
+    calls = []
+
+    def synthesize(question, chunks, response_language, *args, **kwargs):
+        calls.append((question, tuple(chunk["text"] for chunk in chunks)))
+        return f"cached synthesis {len(calls)}"
+
+    monkeypatch.setattr(rag_pipeline, "_synthesize_answer", synthesize)
+    question = "Unique response-cache query with evidence"
+    passages = [
+        {
+            "chunk_id": "unique-response-cache-passage",
+            "text": "Retrieved evidence for the response cache.",
+            "source": "response-cache-paper",
+            "page_number": 2,
+            "section_type": "Methods",
+        }
+    ]
+
+    first = rag_pipeline._synthesize_response(question, passages, "English", False, False)
+    repeated = rag_pipeline._synthesize_response(question, passages, "English", False, False)
+    changed = rag_pipeline._synthesize_response(
+        question,
+        [{**passages[0], "text": "Changed response-cache evidence."}],
+        "English",
+        False,
+        False,
+    )
+
+    assert first["answer"] == repeated["answer"] == "cached synthesis 1"
+    assert first["chunks"] == repeated["chunks"] == passages
+    assert "response-cache-paper" in str(first["provenance"])
+    assert changed["answer"] == "cached synthesis 2"
+    assert len(calls) == 2
+    assert rag_pipeline._cached_final_response.cache_info().hits == 1

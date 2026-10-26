@@ -83,8 +83,22 @@ def _visual_records(document: Dict[str, object], text: str) -> List[Dict[str, ob
         if not isinstance(values, list):
             continue
         for value in values:
-            if isinstance(value, dict) and str(value.get("caption", "")).strip():
-                records.append({**value, "visual_type": str(value.get("visual_type", visual_type))})
+            if not isinstance(value, dict):
+                continue
+            caption = next(
+                (
+                    str(value[field]).strip()
+                    for field in ("caption", "alt_text", "alt-text", "altText", "alt")
+                    if str(value.get(field, "")).strip()
+                ),
+                "",
+            )
+            if caption:
+                records.append({
+                    **value,
+                    "caption": normalize_text(caption),
+                    "visual_type": str(value.get("visual_type", visual_type)),
+                })
 
     known_labels = set()
     known_captions = set()

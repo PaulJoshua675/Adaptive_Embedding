@@ -32,6 +32,8 @@ ACADEMIC_SYNTHESIS_INSTRUCTIONS = (
     "Explain what the evidence says, how the method or result works, and why it matters, using mathematical foundations, model components, "
     "training setups, empirical rationale, gains, or trade-offs only when explicitly supported. Never use paper titles as bullets. "
     "Do not leave headings empty: if a section has no retrieved evidence, state that limitation clearly without padding or inventing facts. "
+    "When retrieved context includes a figure or image, explicitly describe, analyze, and summarize the data points, trends, comparisons, and takeaways visible in it, grounding every statement in the retrieved caption, alt-text, or associated analysis. "
+    "Do not treat visual context as empty, and do not infer details that are not visible or supported by the retrieved evidence. "
     "Do not add paragraphs or text outside bullets. Keep citations out of bullets; add them only in the final Verified Source Citations block."
 )
 
@@ -121,7 +123,11 @@ def _answer_cache_key(
         text = str(chunk.get("text", ""))
         source = str(chunk.get("source", chunk.get("document_id", "")))
         section = str(chunk.get("section_type", ""))
-        for value in (text, source, section):
+        passage_id = str(
+            chunk.get("chunk_id", chunk.get("id", chunk.get("document_id", "")))
+        )
+        page = str(chunk.get("page_number", ""))
+        for value in (passage_id, text, source, page, section):
             chunk_hashes.update(value.encode("utf-8"))
             chunk_hashes.update(b"\0")
     backend = "hosted" if os.getenv("HF_TOKEN") or os.getenv("GROQ_API_KEY") else "local"

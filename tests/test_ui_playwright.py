@@ -13,6 +13,7 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 import pytest
+import fitz
 
 pytestmark = pytest.mark.integration
 
@@ -88,6 +89,15 @@ def _relevant_server_logs(server_log: str) -> str:
         r"\1\2<redacted>",
         sanitized,
     )
+
+
+def _sample_pdf_bytes() -> bytes:
+    document = fitz.open()
+    page = document.new_page()
+    page.insert_text((72, 72), "A sample research document for grounded retrieval.", fontsize=12)
+    pdf_bytes = document.tobytes()
+    document.close()
+    return pdf_bytes
 
 
 def _diagnostic_category(
@@ -245,7 +255,6 @@ def test_streamlit_query_emits_rag_diagnostics(tmp_path: Path) -> None:
     response_elements: list[dict[str, str]] = []
     retrieved_count: int | None = None
     page_errors: list[str] = []
-    browser = None
     try:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
@@ -264,8 +273,21 @@ def test_streamlit_query_emits_rag_diagnostics(tmp_path: Path) -> None:
             )
 
             page.goto(url, wait_until="domcontentloaded", timeout=60_000)
+            page.get_by_text("Upload Custom Research Paper", exact=True).click()
+            page.locator('input[type="file"]').set_input_files(
+                {
+                    "name": "rag-diagnostics.pdf",
+                    "mimeType": "application/pdf",
+                    "buffer": _sample_pdf_bytes(),
+                }
+            )
+            page.get_by_text(
+                "Indexed rag-diagnostics.pdf from disk with page-level provenance.",
+                exact=True,
+            ).wait_for(timeout=int(os.getenv("RAG_PLAYWRIGHT_TIMEOUT_MS", "180000")))
+            page.get_by_text("Browse Central Repository", exact=True).click()
             question = "Summarize the document"
-            page.locator('textarea[aria-label="Research question"]').fill(question)
+            page.locator('textarea[aria-label="Research question"]').first.fill(question)
             page.get_by_role("button", name="Retrieve grounded answer", exact=True).click()
 
             timeout_ms = int(os.getenv("RAG_PLAYWRIGHT_TIMEOUT_MS", "180000"))
@@ -275,8 +297,9 @@ def test_streamlit_query_emits_rag_diagnostics(tmp_path: Path) -> None:
                         const body = document.body.innerText;
                         const hasAnswer = /Overview & Core Context|Information not found in the corpus/i.test(body);
                         const hasException = Boolean(document.querySelector('[data-testid="stException"]'));
-                        const hasAlert = Boolean(document.querySelector('[data-testid="stAlert"]'));
-                        return hasAnswer || hasException || hasAlert;
+                        const hasErrorAlert = [...document.querySelectorAll('[data-testid="stAlert"]')]
+                            .some(alert => /\b(error|failed|unable|exception|traceback)\b/i.test(alert.innerText));
+                        return hasAnswer || hasException || hasErrorAlert;
                     }""",
                     timeout=timeout_ms,
                 )
@@ -347,8 +370,6 @@ def test_streamlit_query_emits_rag_diagnostics(tmp_path: Path) -> None:
             )
             assert answer_text, "The answer container remained empty after submitting the query."
     finally:
-        if browser is not None:
-            browser.close()
         if process is not None and process.poll() is None:
             process.terminate()
             try:

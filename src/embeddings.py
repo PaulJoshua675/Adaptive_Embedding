@@ -4,6 +4,7 @@ import hashlib
 import os
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Dict, Iterable, List, Sequence
 
 try:
@@ -12,6 +13,23 @@ except ImportError:  # pragma: no cover - optional runtime dependency
     SentenceTransformer = None
 
 from config import EMBEDDING_MODELS
+
+try:
+    import streamlit as st
+except ImportError:  # pragma: no cover - optional runtime dependency
+    st = None
+
+
+def _resource_cache(function):
+    if st is None:
+        return lru_cache(maxsize=8)(function)
+    return st.cache_resource(show_spinner=False)(function)
+
+
+def _data_cache(function):
+    if st is None:
+        return lru_cache(maxsize=2048)(function)
+    return st.cache_data(show_spinner=False, max_entries=2048)(function)
 
 
 def _tokens(text: str) -> List[str]:
@@ -60,14 +78,30 @@ class EmbeddingEncoder:
         return vectors
 
     def encode_query(self, query: str) -> List[float]:
+        return list(_cached_query_vector(self.key, self.model_name, query))
+
+    def _encode_query_uncached(self, query: str) -> List[float]:
         prefix = "query: " if self.key == "e5" and self.using_transformer else ""
         return self.encode(prefix + query)[0]
+
+
+@_resource_cache
+def _load_cached_encoder(key: str, model_name: str) -> EmbeddingEncoder:
+    return EmbeddingEncoder(key, model_name)
+
+
+@_data_cache
+def _cached_query_vector(key: str, model_name: str, query: str) -> List[float]:
+    return _load_cached_encoder(key, model_name)._encode_query_uncached(query)
 
 
 class EmbeddingRegistry:
     def __init__(self, models: Dict[str, str] | None = None):
         configured = models or EMBEDDING_MODELS
-        self.encoders = {key: EmbeddingEncoder(key, name) for key, name in configured.items()}
+        self.encoders = {
+            key: _load_cached_encoder(key, name)
+            for key, name in configured.items()
+        }
 
     def __getitem__(self, key: str) -> EmbeddingEncoder:
         try:

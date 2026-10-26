@@ -15,10 +15,10 @@ This project implements an adaptive retrieval-augmented generation system for re
 - creates dedicated FAISS indexes for BGE, E5, and MiniLM embeddings,
 - classifies each query and routes it to the most suitable index,
 - classifies query intent with a zero-shot model and a trained TF-IDF/logistic-regression fallback,
-- optionally re-ranks up to 15 candidates with `cross-encoder/ms-marco-MiniLM-L-6-v2`,
+- optionally re-ranks retrieved candidates with `cross-encoder/ms-marco-MiniLM-L-6-v2` when `RAG_ENABLE_CROSS_ENCODER_RERANKER=1`,
 - creates hierarchical document summaries for PDFs with 50 or more pages,
 - supports English, Tamil, Hindi, Spanish, and French answer generation,
-- answers questions with Groq's OpenAI-compatible API when `GROQ_API_KEY` is set, with local/extractive fallbacks and source attribution.
+- answers questions through the Hugging Face router when `HF_TOKEN` is set, using the fastest active serverless provider for the configured model, then falls back to Groq when `GROQ_API_KEY` is set; local/extractive fallbacks and source attribution remain available.
 
 The corpus downloader targets arXiv papers across machine learning (`cs.LG`), computer vision (`cs.CV`), computational linguistics (`cs.CL`), AI (`cs.AI`), and information retrieval (`cs.IR`). Downloads are concurrent, validated, retryable, and safe to resume. It stores each paper's actual arXiv categories and title in `dataset/arxiv_metadata.json`; older datasets without that manifest are shown as unclassified until downloaded or refreshed with the downloader.
 
@@ -45,7 +45,7 @@ The corpus downloader targets arXiv papers across machine learning (`cs.LG`), co
 5. Start the UI:
    `streamlit run app.py -- --streamlit`
 
-Set `GROQ_API_KEY` in the process environment to enable hosted answer generation with Groq's `llama-3.1-8b-instant` model. Without a key, the application uses its configured local or extractive fallback.
+Set `HF_TOKEN` to enable hosted answer generation through the Hugging Face router with `meta-llama/Meta-Llama-3.1-8B-Instruct`; the router selects the fastest active serverless provider. If that request fails, the application tries Groq's `llama-3.1-8b-instant` model when `GROQ_API_KEY` is set. Without either hosted key, the application uses its configured local or extractive fallback.
 
 ## API deployment
 
@@ -66,7 +66,7 @@ On Linux, use `python -m venv .venv`, install `requirements.txt`, then run `bash
 
 ### Hugging Face Spaces deployment
 
-The Streamlit Space uses Python 3.10 and pinned CPU dependencies from `requirements-hf.txt`. Hugging Face installs the uploaded dependency file as `requirements.txt` and serves Streamlit on port 8501. The app renders before loading the corpus; persisted metadata and the selected FAISS index load on the first query. Intent routing and cross-encoder initialization are deferred until query submission. Set `GROQ_API_KEY` in the Space secrets to enable hosted answer generation; without it, the local or extractive answer fallbacks remain available.
+The Streamlit Space uses Python 3.10 and pinned CPU dependencies from `requirements-hf.txt`. Hugging Face installs the uploaded dependency file as `requirements.txt` and serves Streamlit on port 8501. The app renders before loading the corpus; persisted metadata and the selected FAISS index load on the first query. Intent routing and cross-encoder initialization are deferred until query submission. Set `HF_TOKEN` in the Space secrets to enable Hugging Face Inference Providers; if the Hugging Face request fails, `GROQ_API_KEY` enables the next hosted fallback. Without either key, the local or extractive answer fallbacks remain available.
 
 Create a Streamlit Space at https://huggingface.co/new-space, or create it with the CLI. Authenticate locally, then run the deploy script from the repository root:
 
@@ -114,4 +114,6 @@ You can try the bundled prompts from [prompts/example_questions.txt](prompts/exa
 
 ## Notes
 
-The adaptive indexes use the configured transformer models when `EMBEDDING_USE_TRANSFORMERS=1`. By default, stable feature-hashed vectors are used so indexing works offline and starts quickly; this is a deterministic fallback, not a placeholder. Set `EMBEDDING_LOCAL_ONLY=1` to restrict transformer loading to models already cached locally. Set `RERANKER_LOCAL_ONLY=0` to enable loading the cross-encoder re-ranker when it is available.
+The adaptive indexes use the configured transformer models when `EMBEDDING_USE_TRANSFORMERS=1`. By default, stable feature-hashed vectors are used so indexing works offline and starts quickly; this is a deterministic fallback, not a placeholder. Set `EMBEDDING_LOCAL_ONLY=1` to restrict transformer loading to models already cached locally. Cross-encoder reranking is disabled by default to avoid model-load latency; set `RAG_ENABLE_CROSS_ENCODER_RERANKER=1` to run it for eligible retrievals and `RERANKER_LOCAL_ONLY=0` to permit downloading its weights. The reranking timing is zero when reranking is disabled or there are no eligible candidates; when enabled it includes model initialization and scoring.
+
+LLM responses are cached for one hour by exact query, retrieved chunk content, language, and generation settings. Hosted and local generation are limited to 256 new tokens; repeated answers reuse the cached synthesis.

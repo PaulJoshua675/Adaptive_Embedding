@@ -51,6 +51,13 @@ def _cache_data(function):
     return st.cache_data(show_spinner=False)(function)
 
 
+def _classify_query_timed(question: str) -> tuple[Dict[str, object], float]:
+    started = time.perf_counter()
+    with profile_stage("Intent Classification"):
+        route = route_query(question)
+    return route, (time.perf_counter() - started) * 1000
+
+
 def _read_index_metadata(metadata_path: str, modified_ns: int, size: int) -> Dict[str, object]:
     del modified_ns, size
     with Path(metadata_path).open("rb") as handle:
@@ -252,9 +259,7 @@ def answer_query_from_index(
     if cached is not None:
         return cached
     timings: Dict[str, float] = {}
-    stage_started = time.perf_counter()
-    route = route_query(question)
-    route_time_ms = (time.perf_counter() - stage_started) * 1000
+    route, route_time_ms = _classify_query_timed(question)
     if route["route"] == "direct_response":
         return _direct_response_result(
             str(route["direct_kind"]),
@@ -420,9 +425,7 @@ def answer_query_details(
         if cached is not None:
             return cached
 
-    stage_started = time.perf_counter()
-    route = route_query(question)
-    route_time_ms = (time.perf_counter() - stage_started) * 1000
+    route, route_time_ms = _classify_query_timed(question)
     if route["route"] == "direct_response":
         return _direct_response_result(
             str(route["direct_kind"]),

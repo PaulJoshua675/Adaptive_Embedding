@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import math
 import time
+from types import SimpleNamespace
 
 from src.cache import SemanticResponseCache, response_cache
 from src.create_vector_db import VectorStore
+from src.embeddings import EmbeddingEncoder, EmbeddingRegistry
 from src.embedding_model import EmbeddingModel
 from src.generator import AnswerGenerator
 from src.retriever import retrieve_top_chunks
+from src.retrieval import AdaptiveRetriever
+from src.vector_db import MultiVectorStore
 
 
 def test_semantic_response_cache_requires_similarity_above_threshold() -> None:
@@ -35,6 +39,112 @@ def test_fast_answer_generation_does_not_load_an_llm(monkeypatch) -> None:
 
     assert "retrieves passages" in answer.lower()
     assert len([line for line in answer.splitlines() if line.startswith("### ")]) == 5
+
+
+def test_query_embedding_is_cached(monkeypatch) -> None:
+    calls = []
+    original = EmbeddingEncoder._encode_query_uncached
+
+    def tracked_encode(encoder, query):
+        calls.append(query)
+        return original(encoder, query)
+
+    monkeypatch.setattr(EmbeddingEncoder, "_encode_query_uncached", tracked_encode)
+    encoder = EmbeddingEncoder("cache-test", "cache-test-model")
+    query = "unique cached embedding query"
+
+    first = encoder.encode_query(query)
+    second = encoder.encode_query(query)
+
+    assert first == second
+    assert calls == [query]
+
+
+def test_enabled_cross_encoder_runs_even_for_confident_faiss_results(monkeypatch) -> None:
+    monkeypatch.setenv("RAG_ENABLE_CROSS_ENCODER_RERANKER", "1")
+    passages = [
+        {"text": f"retrieval evidence passage {index}", "chunk_id": index}
+        for index in range(3)
+    ]
+    store = SimpleNamespace(
+        documents=passages,
+        embeddings=[],
+        search=lambda query, limit: [(0.9, passage) for passage in passages[:limit]],
+    )
+    retriever = AdaptiveRetriever(
+        MultiVectorStore({"bge": store}),
+        EmbeddingRegistry({"bge": "cache-test-model"}),
+    )
+    calls = []
+
+    class RecordingReranker:
+        def rerank(self, query, candidates, top_k, candidate_k):
+            calls.append((query, len(candidates)))
+            time.sleep(0.001)
+            return candidates[:top_k]
+
+    retriever.reranker = RecordingReranker()
+
+    retrieved = retriever.retrieve(
+        "retrieval evidence",
+        embedding_key="bge",
+        top_k=3,
+        candidate_k=3,
+        query_vector=[1.0],
+    )
+
+    assert len(retrieved) == 3
+    assert calls == [("retrieval evidence", 3)]
+    assert retriever.last_timings_ms["cross_encoder_reranking_ms"] >= 1.0
+
+
+def test_cross_encoder_timing_covers_rerank_execution(monkeypatch) -> None:
+    monkeypatch.setenv("RAG_ENABLE_CROSS_ENCODER_RERANKER", "1")
+    passages = [
+        {"text": f"retrieval evidence passage {index}", "chunk_id": index}
+        for index in range(3)
+    ]
+    store = SimpleNamespace(
+        documents=passages,
+        embeddings=[],
+        search=lambda query, limit: [(0.5, passage) for passage in passages[:limit]],
+    )
+    retriever = AdaptiveRetriever(
+        MultiVectorStore({"bge": store}),
+        EmbeddingRegistry({"bge": "cache-test-model"}),
+    )
+
+    class SlowReranker:
+        def rerank(self, query, candidates, top_k, candidate_k):
+            time.sleep(0.005)
+            return candidates[:top_k]
+
+    retriever.reranker = SlowReranker()
+    retrieved = retriever.retrieve(
+        "retrieval evidence",
+        embedding_key="bge",
+        top_k=3,
+        candidate_k=3,
+        query_vector=[1.0],
+    )
+
+    assert len(retrieved) == 3
+    assert retriever.last_timings_ms["cross_encoder_reranking_ms"] >= 5.0
+
+
+def test_intent_classification_timer_wraps_classifier(monkeypatch) -> None:
+    from src import rag_pipeline
+
+    def slow_classifier(query):
+        time.sleep(0.005)
+        return {"route": "rag_retrieval"}
+
+    monkeypatch.setattr(rag_pipeline, "route_query", slow_classifier)
+
+    route, elapsed_ms = rag_pipeline._classify_query_timed("timing test")
+
+    assert route["route"] == "rag_retrieval"
+    assert elapsed_ms >= 5.0
 
 
 def test_legacy_retrieval_caps_faiss_candidates_at_five(monkeypatch) -> None:
@@ -84,3 +194,34 @@ def test_exact_pipeline_cache_skips_classifier_and_index_loading(tmp_path, monke
     assert first["answer"] == second["answer"]
     assert second["semantic_cache_hit"] is True
     assert cache_elapsed_ms < 10
+
+
+def test_answer_generation_cache_uses_query_and_chunk_content(monkeypatch) -> None:
+    from src import generator as generator_module
+
+    generator_module._answer_cache.clear()
+    monkeypatch.setattr(generator_module, "_ANSWER_CACHE_TTL_SECONDS", 0.01)
+    calls = []
+
+    def generate_answer(self, query, chunks, response_language, fallback):
+        calls.append((query, tuple(chunk["text"] for chunk in chunks)))
+        return f"answer {len(calls)}"
+
+    monkeypatch.setattr(AnswerGenerator, "_generate_uncached", generate_answer)
+    generator = AnswerGenerator()
+    query = "What does this unique cached test ask?"
+    chunks = [{"text": "Unique cached evidence.", "source": "paper-a"}]
+
+    first = generator.generate(query, chunks)
+    cached_started = time.perf_counter()
+    repeated = generator.generate(query, chunks)
+    cached_elapsed_ms = (time.perf_counter() - cached_started) * 1000
+    changed_evidence = generator.generate(query, [{"text": "Changed evidence.", "source": "paper-a"}])
+    time.sleep(0.02)
+    expired = generator.generate(query, chunks)
+
+    assert first == repeated == "answer 1"
+    assert changed_evidence == "answer 2"
+    assert expired == "answer 3"
+    assert len(calls) == 3
+    assert cached_elapsed_ms < 175

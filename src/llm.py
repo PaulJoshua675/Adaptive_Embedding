@@ -29,7 +29,20 @@ except ImportError:  # pragma: no cover - optional runtime dependency
 MIN_SIMILARITY_SCORE = 0.20
 LOGGER = logging.getLogger(__name__)
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
-GROQ_MODEL = "llama-3.1-8b-instant"
+GROQ_MODELS = (
+    "openai/gpt-oss-20b",
+    "openai/gpt-oss-120b",
+    "qwen/qwen3.8-27b",
+)
+GROQ_MODEL = GROQ_MODELS[0]
+HF_BASE_URL = "https://router.huggingface.co/v1"
+HF_MODELS = (
+    "google/gemma-2-2b-it",
+    "HuggingFaceH4/zephyr-7b-beta",
+)
+HF_MODEL = HF_MODELS[0]
+HF_ROUTING_POLICY = "fastest"
+MAX_GENERATION_TOKENS = 256
 MAX_CONTEXT_CHARS = 500  # Safe limit for 1024-token window
 _CONTEXT_TRUNCATION_SUFFIX = "\n[Context truncated to fit model limit...]"
 MAX_TOTAL_PROMPT_CHARS = 2500
@@ -56,29 +69,97 @@ def query_groq_inference_api(prompt: str) -> str:
         LOGGER.warning("GROQ_API_KEY is missing; skipping Groq inference")
         return ""
 
-    try:
-        client = OpenAI(api_key=api_key.strip(), base_url=GROQ_BASE_URL)
-        completion = client.chat.completions.create(
-            model=GROQ_MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=512,
-            temperature=0.3,
-        )
+    client = OpenAI(api_key=api_key.strip(), base_url=GROQ_BASE_URL)
+    for model in GROQ_MODELS:
+        try:
+            completion = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=MAX_GENERATION_TOKENS,
+                temperature=0.3,
+            )
+        except (OpenAIError, TimeoutError, ConnectionError) as exc:
+            _log_candidate_failure("Groq", model, exc)
+            continue
         if not completion.choices:
-            LOGGER.warning("Groq inference returned no chat completion choices")
-            return ""
+            LOGGER.warning("Groq model %s returned no chat completion choices; trying next model", model)
+            continue
         content = completion.choices[0].message.content
         if not isinstance(content, str) or not content.strip():
-            LOGGER.warning("Groq inference returned an empty chat completion")
-            return ""
+            LOGGER.warning("Groq model %s returned an empty chat completion; trying next model", model)
+            continue
         return content.strip()
-    except OpenAIError as exc:
-        LOGGER.warning("Groq inference failed: %s", exc)
 
     return ""
 
 
+def query_huggingface_inference_api(prompt: str) -> str:
+    api_key = os.getenv("HF_TOKEN")
+    if not api_key or not api_key.strip():
+        LOGGER.warning("HF_TOKEN is missing; skipping Hugging Face inference")
+        return ""
+
+    client = OpenAI(api_key=api_key.strip(), base_url=HF_BASE_URL)
+    for model in HF_MODELS:
+        try:
+            completion = client.chat.completions.create(
+                model=f"{model}:{HF_ROUTING_POLICY}",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=MAX_GENERATION_TOKENS,
+                temperature=0.3,
+            )
+        except (OpenAIError, TimeoutError, ConnectionError) as exc:
+            _log_candidate_failure("Hugging Face", model, exc)
+            continue
+        if not completion.choices:
+            LOGGER.warning(
+                "Hugging Face model %s returned no chat completion choices; trying next model",
+                model,
+            )
+            continue
+        content = completion.choices[0].message.content
+        if not isinstance(content, str) or not content.strip():
+            LOGGER.warning(
+                "Hugging Face model %s returned an empty chat completion; trying next model",
+                model,
+            )
+            continue
+        return content.strip()
+
+    return ""
+
+
+def _log_candidate_failure(provider: str, model: str, exc: Exception) -> None:
+    status_code = getattr(exc, "status_code", None)
+    error_code = getattr(exc, "code", None)
+    error_type = getattr(exc, "type", None)
+    rejected_request = (
+        status_code in (400, 404)
+        or error_code in ("model_not_found", "invalid_request_error")
+        or error_type == "invalid_request_error"
+    )
+    if rejected_request:
+        LOGGER.warning(
+            "%s model %s rejected (HTTP %s, %s); trying next model",
+            provider,
+            model,
+            status_code or "unknown",
+            error_code or error_type or "invalid request",
+        )
+    else:
+        LOGGER.warning(
+            "%s inference failed for model %s: %s; trying next model",
+            provider,
+            model,
+            exc,
+        )
+
+
 def generate_response(prompt: str) -> str:
+    if os.getenv("HF_TOKEN"):
+        response = query_huggingface_inference_api(prompt)
+        if response:
+            return response
     return query_groq_inference_api(prompt)
 
 
@@ -88,7 +169,7 @@ def generate_local_fallback(prompt: str, pipeline) -> str:
     tokenizer = getattr(pipeline, "tokenizer", None)
     output = pipeline(
         final_prompt,
-        max_length=1024,
+        max_new_tokens=MAX_GENERATION_TOKENS,
         truncation=True,
         do_sample=False,
         pad_token_id=getattr(tokenizer, "eos_token_id", None),
@@ -496,11 +577,19 @@ def _build_generation_prompt(
         "target_language": response_language,
         **{f"heading_{index}": heading for index, heading in enumerate(headings, start=1)},
     }
+    visual_instructions = ""
+    if re.search(r"\b(?:figure|fig\.?|table|tab\.?)\b", context_text, re.I):
+        visual_instructions = (
+            "The retrieved context includes figure or table evidence. Explicitly synthesize and narrate its key trends, scores, "
+            "comparisons, and takeaways; connect the evidence to the named dataset or task, and retain reported values. "
+            "Explain a trend only when supported by the caption or retrieved analysis, and never infer unseen visual details.\n"
+        )
     return (
         (instructions or "You are an academic research analyst.") + "\n"
         "Answer using ONLY the provided retrieved context. Do not rely on external general knowledge or unreferenced research concepts. "
         f"Use only facts supported by the context. {answer_scope}\n"
-        f"CRITICAL: Write the entire five-section response strictly in {response_language}. "
+        + visual_instructions
+        + f"CRITICAL: Write the entire five-section response strictly in {response_language}. "
         "Keep technical paper titles and source citations in English.\n"
         f"CRITICAL: You must translate ALL 5 structural subheadings into the requested target language ({response_language}). "
         "Do not leave any heading, section marker, or overview label in English.\n"
@@ -541,6 +630,9 @@ class SimpleLLM:
         self.model_name = model_name
         self._model_enabled = True
         self._generator = None
+
+    def generate(self, prompt: str) -> str:
+        return generate_response(prompt)
 
     def _get_generator(self):
         if self._generator is None and self._model_enabled:
@@ -641,8 +733,9 @@ class SimpleLLM:
             response_language,
             fallback,
         )
+        hf_token = os.getenv("HF_TOKEN")
         groq_api_key = os.getenv("GROQ_API_KEY")
-        if groq_api_key and groq_api_key.strip():
+        if (hf_token and hf_token.strip()) or (groq_api_key and groq_api_key.strip()):
             try:
                 response_text = generate_response(prompt).strip()
                 if response_text:
@@ -652,7 +745,7 @@ class SimpleLLM:
                         context_chunks=context_chunks,
                     )
             except Exception as exc:
-                LOGGER.warning("Groq generation failed: %s", exc)
+                LOGGER.warning("Hosted generation failed: %s", exc)
             return _enforce_response_structure(
                 self._extract_answer(question, context_text, fallback=fallback),
                 response_language,
@@ -694,8 +787,9 @@ class SimpleLLM:
             yield localized_fallback_message(response_language)
             return
 
+        hf_token = os.getenv("HF_TOKEN")
         groq_api_key = os.getenv("GROQ_API_KEY")
-        if groq_api_key and groq_api_key.strip():
+        if (hf_token and hf_token.strip()) or (groq_api_key and groq_api_key.strip()):
             yield self.generate_answer(
                 question,
                 context_chunks,
@@ -748,7 +842,12 @@ class SimpleLLM:
 
         def generate() -> None:
             try:
-                model.generate(**encoded, streamer=streamer, max_length=1024, do_sample=False)
+                model.generate(
+                    **encoded,
+                    streamer=streamer,
+                    max_new_tokens=MAX_GENERATION_TOKENS,
+                    do_sample=False,
+                )
             except BaseException as exc:
                 generation_errors.append(exc)
                 streamer.end()

@@ -3,9 +3,18 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
+import hashlib
+import time
+from collections import OrderedDict
+from threading import RLock
 from typing import Callable, Dict, Iterable, List
 
-from .llm import SimpleLLM, _enforce_response_structure, localized_fallback_message
+from .llm import (
+    MAX_GENERATION_TOKENS,
+    SimpleLLM,
+    _enforce_response_structure,
+    localized_fallback_message,
+)
 
 ACADEMIC_SYNTHESIS_INSTRUCTIONS = (
     "You are an academic research analyst. Answer using ONLY the provided retrieved passages. Do not rely on external general knowledge, "
@@ -94,6 +103,62 @@ def _generation_instructions(context_label: str, fallback: bool, response_langua
     return instructions
 
 
+_ANSWER_CACHE_TTL_SECONDS = 3600
+_ANSWER_CACHE_MAX_ENTRIES = 512
+_answer_cache: OrderedDict[tuple[str, ...], tuple[float, str]] = OrderedDict()
+_answer_cache_lock = RLock()
+
+
+def _answer_cache_key(
+    query: str,
+    chunks: List[Dict[str, object]],
+    response_language: str,
+    fallback: bool,
+    model_name: str | None,
+) -> tuple[str, ...]:
+    chunk_hashes = hashlib.sha256()
+    for chunk in chunks:
+        text = str(chunk.get("text", ""))
+        source = str(chunk.get("source", chunk.get("document_id", "")))
+        section = str(chunk.get("section_type", ""))
+        for value in (text, source, section):
+            chunk_hashes.update(value.encode("utf-8"))
+            chunk_hashes.update(b"\0")
+    backend = "hosted" if os.getenv("HF_TOKEN") or os.getenv("GROQ_API_KEY") else "local"
+    return (
+        query,
+        chunk_hashes.hexdigest(),
+        response_language,
+        str(fallback),
+        model_name or os.getenv("LOCAL_LLM_MODEL", ""),
+        backend,
+        str(MAX_GENERATION_TOKENS),
+    )
+
+
+def _get_cached_answer(key: tuple[str, ...]) -> str | None:
+    now = time.monotonic()
+    with _answer_cache_lock:
+        cached = _answer_cache.get(key)
+        if cached is None:
+            return None
+        expires_at, answer = cached
+        if expires_at <= now:
+            del _answer_cache[key]
+            return None
+        _answer_cache.move_to_end(key)
+        return answer
+
+
+def _cache_answer(key: tuple[str, ...], answer: str) -> None:
+    expires_at = time.monotonic() + _ANSWER_CACHE_TTL_SECONDS
+    with _answer_cache_lock:
+        _answer_cache[key] = (expires_at, answer)
+        _answer_cache.move_to_end(key)
+        while len(_answer_cache) > _ANSWER_CACHE_MAX_ENTRIES:
+            _answer_cache.popitem(last=False)
+
+
 class AnswerGenerator:
     def __init__(self, model_name: str | None = None):
         self.llm = SimpleLLM(model_name=model_name or os.getenv("LOCAL_LLM_MODEL"))
@@ -104,6 +169,27 @@ class AnswerGenerator:
         chunks: List[Dict[str, object]],
         response_language: str = "English",
         fallback: bool = False,
+    ) -> str:
+        cache_key = _answer_cache_key(
+            query,
+            chunks,
+            response_language,
+            fallback,
+            self.llm.model_name,
+        )
+        cached = _get_cached_answer(cache_key)
+        if cached is not None:
+            return cached
+        answer = self._generate_uncached(query, chunks, response_language, fallback)
+        _cache_answer(cache_key, answer)
+        return answer
+
+    def _generate_uncached(
+        self,
+        query: str,
+        chunks: List[Dict[str, object]],
+        response_language: str,
+        fallback: bool,
     ) -> str:
         if not chunks:
             return _formatted_missing_answer(response_language)
@@ -175,6 +261,17 @@ class AnswerGenerator:
     ) -> str:
         if not chunks:
             return _formatted_missing_answer(response_language)
+        cache_key = _answer_cache_key(
+            query,
+            chunks,
+            response_language,
+            fallback,
+            self.llm.model_name,
+        )
+        cached = _get_cached_answer(cache_key)
+        if cached is not None:
+            stream_consumer(iter((cached,)))
+            return cached
         chunks = SimpleLLM._relevant_chunks(query, chunks, include_low_relevance=fallback)
         if not chunks:
             return _formatted_missing_answer(response_language)
@@ -206,4 +303,5 @@ class AnswerGenerator:
                 response_language,
                 format_sources(chunks),
             )
+        _cache_answer(cache_key, answer_text)
         return answer_text

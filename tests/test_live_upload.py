@@ -10,8 +10,6 @@ from urllib.request import urlopen
 import fitz
 import pytest
 
-pytestmark = pytest.mark.integration
-
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, sync_playwright
 
@@ -42,8 +40,36 @@ def _create_sample_pdf(path: Path) -> None:
 
 
 @pytest.fixture(scope="module")
-def live_server(streamlit_app_url):
-    return streamlit_app_url
+def live_server():
+    try:
+        with urlopen(BASE_URL, timeout=2):
+            yield BASE_URL
+            return
+    except Exception:
+        pass
+    environment = os.environ.copy()
+    environment.update({"PYTHONUTF8": "1", "TRANSFORMERS_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false"})
+    process = subprocess.Popen(
+        [sys.executable, "-m", "streamlit", "run", "app.py", "--server.headless", "true", "--server.port", "8501", "--", "--streamlit"],
+        cwd=ROOT,
+        env=environment,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    deadline = time.time() + 45
+    while time.time() < deadline:
+        try:
+            with urlopen(BASE_URL, timeout=2):
+                break
+        except Exception:
+            time.sleep(0.5)
+    else:
+        process.terminate()
+        raise RuntimeError("Streamlit did not start")
+    yield BASE_URL
+    process.terminate()
+    process.wait(timeout=10)
 
 
 def test_live_upload_isolated_index_and_provenance(live_server: str, tmp_path: Path) -> None:
@@ -55,7 +81,7 @@ def test_live_upload_isolated_index_and_provenance(live_server: str, tmp_path: P
         page.goto(live_server, wait_until="domcontentloaded")
         page.get_by_text("Upload Custom Research Paper", exact=True).click()
         page.locator('input[type="file"]').set_input_files(str(pdf_path))
-        page.get_by_text("Indexed aurora_research.pdf from disk with page-level provenance.", exact=True).wait_for(timeout=60_000)
+        page.get_by_text("Indexed aurora_research.pdf in memory with page-level provenance.", exact=True).wait_for(timeout=60_000)
         page.locator('textarea[aria-label="Research question"]').last.fill("What recall was reported for coastal flood-risk classification?")
         page.get_by_role("button", name="Query uploaded paper", exact=True).click()
         page.get_by_text("Technical Breakdown", exact=True).wait_for(timeout=60_000)

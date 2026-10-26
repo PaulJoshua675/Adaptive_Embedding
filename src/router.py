@@ -4,7 +4,19 @@ import re
 from functools import lru_cache
 from typing import Dict
 
+try:
+    import streamlit as st
+except ImportError:  # pragma: no cover - optional runtime dependency
+    st = None
+
 from config import EMBEDDING_MODELS
+
+
+def _data_cache(function):
+    if st is None:
+        return lru_cache(maxsize=500)(function)
+    return st.cache_data(show_spinner=False, max_entries=500)(function)
+
 
 _DIRECT_RESPONSE = re.compile(
     r"^\s*(?:(?P<greeting>hi|hello|hey|good morning|good afternoon|good evening|"
@@ -39,7 +51,7 @@ _EMBEDDING_BY_TYPE = {
 }
 
 
-@lru_cache(maxsize=500)
+@_data_cache
 def route_query(query: str) -> Dict[str, object]:
     """Classify a query with compiled patterns and no model initialization."""
     normalized = query.strip()

@@ -99,6 +99,7 @@ def test_missing_corpus_response_is_localized():
 
 def test_answer_generation_prompt_targets_each_supported_language(monkeypatch):
     requested_prompts = []
+    monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.setattr(llm_module, "MAX_TOTAL_PROMPT_CHARS", 5000)
     llm = SimpleLLM(model_name="test")
@@ -132,6 +133,7 @@ def test_answer_generation_prompt_targets_each_supported_language(monkeypatch):
 
 def test_local_generation_bounds_total_prompt_and_tokenizer(monkeypatch):
     captured = {}
+    monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
 
     class FakePipeline:
@@ -151,7 +153,7 @@ def test_local_generation_bounds_total_prompt_and_tokenizer(monkeypatch):
     assert len(captured["prompt"]) == llm_module.MAX_TOTAL_PROMPT_CHARS
     assert captured["prompt"].endswith("[Prompt truncated for model limits]")
     assert captured["kwargs"] == {
-        "max_length": 1024,
+        "max_new_tokens": 256,
         "truncation": True,
         "do_sample": False,
         "pad_token_id": 99,
@@ -202,6 +204,7 @@ def test_answer_generation_discards_low_similarity_context():
 
 def test_fallback_prompt_requests_related_context_in_full_target_language(monkeypatch):
     requested_prompts = []
+    monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     llm = SimpleLLM(model_name="test")
     llm._generator = lambda prompt, **kwargs: (
@@ -287,7 +290,9 @@ def test_paper_id_queries_keep_relevant_passages_from_only_the_named_paper():
 
 def test_answer_generation_uses_ten_cleaned_context_chunks(monkeypatch):
     assert DEFAULT_TOP_K == 10
+    monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.setattr(llm_module, "MAX_TOTAL_PROMPT_CHARS", 20000)
     requested_prompts = []
     llm = SimpleLLM(model_name="test")
     llm._generator = lambda prompt, **kwargs: requested_prompts.append(prompt) or [{"generated_text": "Detailed answer."}]
@@ -305,7 +310,9 @@ def test_answer_generation_uses_ten_cleaned_context_chunks(monkeypatch):
 
 def test_answer_generation_truncates_context_before_model_prompt(monkeypatch):
     requested_prompts = []
+    monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.setattr(llm_module, "MAX_TOTAL_PROMPT_CHARS", 20000)
     llm = SimpleLLM(model_name="test")
     llm._generator = lambda prompt, **kwargs: requested_prompts.append(prompt) or [
         {"generated_text": "Detailed answer."}
@@ -315,8 +322,8 @@ def test_answer_generation_truncates_context_before_model_prompt(monkeypatch):
 
     assert "[Context truncated to fit model limit...]" in requested_prompts[0]
     assert "context " * 400 not in requested_prompts[0]
-    assert llm_module.MAX_CONTEXT_CHARS == 1200
-    assert len(llm_module._truncate_context("x" * 1500)) == 1200
+    assert llm_module.MAX_CONTEXT_CHARS == 500
+    assert len(llm_module._truncate_context("x" * 1500)) == 500
 
 
 def test_answer_formatter_omits_placeholder_points_and_empty_sections():
@@ -478,8 +485,10 @@ def test_pdf_figure_and_caption_metadata_reaches_chunks(tmp_path):
     pdf_path = tmp_path / "figure_paper.pdf"
     document = fitz.open()
     page = document.new_page()
-    page.insert_text((48, 72), "Figure 1: Architecture for adaptive retrieval")
-    page.insert_text((48, 100), "Figure 1 illustrates how the retrieval model routes queries.")
+    page.insert_text((48, 72), "Figure 1: Results on the TruthfulQA dataset")
+    page.insert_text((48, 100), "On TruthfulQA, the model score rises from 52 to 61 percent.")
+    page.insert_text((48, 120), "Table 2: GSM8K benchmark scores")
+    page.insert_text((48, 140), "On GSM8K, accuracy reaches 80 percent for the proposed model.")
     image = fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 48, 32), False)
     image.clear_with(0x2D6A73)
     page.insert_image(fitz.Rect(60, 130, 300, 290), pixmap=image)
@@ -489,9 +498,38 @@ def test_pdf_figure_and_caption_metadata_reaches_chunks(tmp_path):
     pages = extract_pdf_pages(pdf_path, tmp_path / "figures")
     chunks = chunk_documents(pages, chunk_size=100, overlap=10)
 
-    assert pages[0]["figures"][0]["caption"] == "Architecture for adaptive retrieval"
+    assert pages[0]["figures"][0]["caption"] == "Results on the TruthfulQA dataset"
     assert Path(pages[0]["figures"][0]["file_path"]).is_file()
     assert chunks[0]["figures"][0]["file_path"] == pages[0]["figures"][0]["file_path"]
+    figure_chunk = next(chunk for chunk in chunks if chunk.get("visual_type") == "figure")
+    table_chunk = next(chunk for chunk in chunks if chunk.get("visual_type") == "table")
+    assert figure_chunk["caption"] == "Results on the TruthfulQA dataset"
+    assert "52 to 61 percent" in figure_chunk["text"]
+    assert "TruthfulQA" in figure_chunk["keywords"]
+    assert "dataset:truthfulqa" in figure_chunk["semantic_tags"]
+    assert "GSM8K" in table_chunk["keywords"]
+    assert "80 percent" in table_chunk["text"]
+
+
+def test_generation_prompt_requests_figure_and_table_synthesis():
+    visual_prompt = llm_module._build_generation_prompt(
+        "What does the result show?",
+        "Figure 4: Results on the TruthfulQA dataset. Scores rise from 52 to 61 percent.",
+        None,
+        "English",
+        False,
+    )
+    text_prompt = llm_module._build_generation_prompt(
+        "What does the result show?",
+        "The reported scores rise from 52 to 61 percent.",
+        None,
+        "English",
+        False,
+    )
+
+    assert "Explicitly synthesize and narrate its key trends, scores" in visual_prompt
+    assert "never infer unseen visual details" in visual_prompt
+    assert "Explicitly synthesize and narrate its key trends, scores" not in text_prompt
 
 
 def test_fast_fallback_synthesizes_low_similarity_context():

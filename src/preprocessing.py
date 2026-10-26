@@ -32,6 +32,9 @@ _VISUAL_QUERY = re.compile(r"\b(?:image|figure|fig\.?|chart|plot|graph|diagram|a
 _FIGURE_CAPTION = re.compile(
     r"(?im)^[ \t]*(Figure[ \t]+\d+|Fig\.?[ \t]*\d+)[ \t]*[:.]?[ \t]*([^\r\n]*)"
 )
+_TABLE_CAPTION = re.compile(
+    r"(?im)^[ \t]*(Table[ \t]+\d+[A-Za-z]?|Tab\.?[ \t]*\d+[A-Za-z]?)[ \t]*[:.]?[ \t]*([^\r\n]*)"
+)
 _SECTION_NAMES = (
     "ABSTRACT|INTRODUCTION|BACKGROUND|METHODOLOGY|RELATED WORK|EVALUATION|"
     "EXPERIMENTAL RESULTS|CONCLUSION|FUTURE WORK|REFERENCES"
@@ -207,6 +210,8 @@ def _catalog_figures(document, pdf_path: Path, figures_dir: Path) -> Dict[str, D
                 )
                 _save_page_capture(page, _caption_rect(page, figure_match), figure_path)
             page_figures.setdefault(figure_id, {
+                "figure_id": figure_id,
+                "visual_type": "figure",
                 "caption": caption,
                 "file_path": str(figure_path.resolve()),
                 "paper_id": pdf_path.stem,
@@ -351,9 +356,21 @@ def _extract_document_pages(
     current_section = "DOCUMENT"
     for page in document:
         scan_path = output_dir / f"{pdf_path.stem}_page_{page.number + 1}_scan.png"
-        raw_text = clean_extracted_text(_extract_page_text(page, scan_path))
+        extracted_text = _extract_page_text(page, scan_path)
+        raw_text = clean_extracted_text(extracted_text)
         image_count = len(page.get_images(full=True))
         page_figures = figures_by_page.get(int(page.number + 1), [])
+        page_tables = [
+            {
+                "table_id": _normalise(match.group(1)),
+                "visual_type": "table",
+                "caption": _normalise(match.group(2)),
+                "page_number": int(page.number + 1),
+                "source": str(pdf_path),
+            }
+            for match in _TABLE_CAPTION.finditer(extracted_text)
+            if _normalise(match.group(2))
+        ]
         page_sections, current_section = _split_text_by_sections(raw_text, current_section)
         for section_index, section in enumerate(page_sections):
             if section["text"] or image_count:
@@ -366,6 +383,7 @@ def _extract_document_pages(
                     "title": _title_reference(raw_text, pdf_path.stem),
                     "image_count": image_count,
                     "figures": page_figures,
+                    "tables": page_tables,
                     "source_type": source_type,
                 })
     return [page for page in pages if str(page.get("text", "")).strip()]

@@ -349,7 +349,7 @@ def _render_performance_metrics(st, result: dict, total_elapsed: float | None = 
         ("LLM / Multi-Lingual Answer Generation Time (ms)", "answer_generation_ms"),
     )
     for column, (label, key) in zip(timing_columns, timing_labels):
-        column.metric(label, f"{float(timings.get(key, 0.0)):.1f}")
+        column.metric(label, f"{float(timings.get(key, 0.0)):.3f}")
 
 
 def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
@@ -445,27 +445,33 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
         if ask:
             st.session_state.active_mode = "central"
             st.session_state.upload_result = None
+            st.session_state.repository_result = None
+            st.session_state.repository_elapsed = None
             if not question.strip():
                 st.warning("Enter a research question first.")
             else:
-                streamed_answer = st.empty()
-                with st.spinner("Preparing verified context..."):
-                    started = time.perf_counter()
-                    from src.rag_pipeline import answer_query_details, build_and_save_index
+                started = time.perf_counter()
+                try:
+                    streamed_answer = st.empty()
+                    with st.spinner("Processing..."):
+                        from src.rag_pipeline import answer_query_details, build_and_save_index
 
-                    metadata_path = Path(vector_store_dir) / "metadata.pkl"
-                    if not metadata_path.exists():
-                        build_and_save_index(dataset_dir, vector_store_dir)
-                    result = answer_query_details(
-                        question.strip(),
-                        vector_store_dir,
-                        response_language=response_language,
-                        stream_consumer=streamed_answer.write_stream,
-                        fast_mode=fast_mode,
-                    )
-                streamed_answer.markdown(result["answer"])
-                st.session_state.repository_result = result
-                st.session_state.repository_elapsed = time.perf_counter() - started
+                        metadata_path = Path(vector_store_dir) / "metadata.pkl"
+                        if not metadata_path.exists():
+                            build_and_save_index(dataset_dir, vector_store_dir)
+                        result = answer_query_details(
+                            question.strip(),
+                            vector_store_dir,
+                            response_language=response_language,
+                            stream_consumer=streamed_answer.write_stream,
+                            fast_mode=fast_mode,
+                        )
+                    st.session_state.repository_result = result
+                    st.session_state.repository_elapsed = time.perf_counter() - started
+                    streamed_answer.markdown(str(result["answer"]))
+                except Exception as exc:
+                    LOGGER.exception("Grounded answer request failed")
+                    st.error(f"Unable to retrieve a grounded answer: {exc}")
         if st.session_state.get("repository_result"):
             _render_answer(
                 st,

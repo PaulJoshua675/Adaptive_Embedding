@@ -682,16 +682,20 @@ class AdaptiveRetriever:
         }
         if use_cross_encoder and ranked:
             rerank_started = time.perf_counter()
-            if self.reranker is None:
-                self.reranker = PassageReranker(self.reranker_model)
-            with profile_stage("Cross-Encoder Reranking"):
-                reranked = self.reranker.rerank(
-                    query,
-                    ranked,
-                    top_k=result_limit,
-                    candidate_k=candidate_limit,
-                )
-            self.last_timings_ms["cross_encoder_reranking_ms"] = (time.perf_counter() - rerank_started) * 1000
+            try:
+                with profile_stage("Cross-Encoder Reranking"):
+                    if self.reranker is None:
+                        self.reranker = PassageReranker(self.reranker_model)
+                    reranked = self.reranker.rerank(
+                        query,
+                        ranked,
+                        top_k=result_limit,
+                        candidate_k=candidate_limit,
+                    )
+            finally:
+                self.last_timings_ms["cross_encoder_reranking_ms"] = (
+                    time.perf_counter() - rerank_started
+                ) * 1000
         else:
             reranked = ranked[:result_limit]
         return [

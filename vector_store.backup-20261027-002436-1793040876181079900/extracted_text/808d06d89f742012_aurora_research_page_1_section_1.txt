@@ -1,0 +1,1 @@
+The ingestion procedure extracts page text, splits it into overlapping chunks, and routes each question to the matching embedding index. The evaluation reports 94% recall for coastal flood-risk classification and stores provenance on page 1.

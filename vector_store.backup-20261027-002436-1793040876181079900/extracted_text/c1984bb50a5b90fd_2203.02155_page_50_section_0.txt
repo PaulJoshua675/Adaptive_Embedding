@@ -1,0 +1,1 @@
+TLDR Summarization Prompt format [Reddit post] TL;DR: [completion] Dataset features • 2,500 Reddit posts to summarize. • In the few-shot setting, there are 15 additional French / English pairs. • Summaries are judged via their ROUGE-L scores with respect to a set of reference summaries. Figure 27: TL;DR: prompting, examples, and dataset features. 50

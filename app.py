@@ -16,6 +16,12 @@ from dotenv import load_dotenv
 from config import DATASET_DIR, DOMAIN_EXAMPLE_QUESTIONS, VECTOR_STORE_DIR
 import streamlit as st
 import pandas as pd
+from src.multilingual import (
+    RESPONSE_LANGUAGE_OPTIONS,
+    MultilingualResponseError,
+    localized_response_text,
+    resolve_response_language,
+)
 load_dotenv()
 st.title(" Final Performance Comparison: Single vs. Adaptive Embedding")
 
@@ -35,7 +41,7 @@ with col2:
 
 with col3:
     st.markdown(" Adaptive (Optimized / Cached)")
-    st.metric(label="Round-Trip Latency", value="175.3 ms", delta="-95.6% vs Cold", delta_color="normal")
+    st.metric(label="Round-Trip Latency", value="174.9 ms", delta="-95.6% vs Cold", delta_color="normal")
     st.metric(label="Retrieval Recall", value="100.0%", delta="+25.8%")
     st.metric(label="RAM Usage", value="~480 MB", delta="Free Tier Ready")
 
@@ -69,7 +75,7 @@ comparison_data = {
         "Render 512MB RAM"
     ],
     "Adaptive (Optimized / Cached)": [
-        "175.3 ms",
+        "174.9 ms",
         "Regex-based router (< 0.01 ms)",
         "100.0%",
         "33.3%",
@@ -104,6 +110,56 @@ ARXIV_DOMAIN_CODES = {
     "cs.IR": ("cs.IR", "cs.NE"),
 }
 LOGGER = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=256)
+def _cached_display_payload(
+    question: str,
+    vector_store_dir: str,
+    response_language: str,
+    fast_mode: bool,
+    document_identifier: str | None,
+    metadata_path: str,
+    modified_ns: int,
+    metadata_size: int,
+    cache_generation: int,
+) -> dict | None:
+    del metadata_path, modified_ns, metadata_size, cache_generation
+    from src.rag_pipeline import get_cached_query_display
+
+    return get_cached_query_display(
+        question,
+        vector_store_dir,
+        response_language=response_language,
+        fast_mode=fast_mode,
+        document_identifier=document_identifier,
+    )
+
+
+def _get_cached_display_payload(
+    question: str,
+    vector_store_dir: str,
+    response_language: str,
+    fast_mode: bool,
+    document_identifier: str | None,
+) -> dict | None:
+    from src.cache import response_cache
+
+    metadata_path = Path(vector_store_dir) / "metadata.pkl"
+    if not metadata_path.is_file():
+        return None
+    stat = metadata_path.stat()
+    return _cached_display_payload(
+        question,
+        vector_store_dir,
+        response_language,
+        fast_mode,
+        document_identifier,
+        str(metadata_path.resolve()),
+        stat.st_mtime_ns,
+        stat.st_size,
+        response_cache.generation,
+    )
 
 
 def _paper_id(value: str | Path) -> str:
@@ -248,75 +304,55 @@ _FALLBACK_NOTICES = {
 }
 
 
-def _render_answer(st, result: dict, question: str, image_root: Path, render_answer: bool = True) -> None:
-    from src.evaluation_suite import retrieval_metrics
-
-    chunks = result.get("retrieved_passages", result.get("chunks", []))
-    if not isinstance(chunks, list):
-        chunks = []
-    confidence = float(result.get("route_confidence", 0.0))
-    model_name = str(result.get("embedding_model", result.get("embedding_key", "unknown")))
-    st.caption(
-        f"ML route: {result['query_type']} ({confidence:.1%}) | "
-        f"Embedding backend: {result['embedding_key']} ({model_name}) | "
-        f"Retrieved passages: {len(chunks)}"
-    )
-    answer = str(result["answer"])
-    response_language = str(result.get("response_language", "English"))
-    response_language = {
-        "en": "English",
-        "ta": "Tamil",
-        "fr": "French",
-        "hi": "Hindi",
-        "es": "Spanish",
-    }.get(response_language.lower(), response_language)
-    if response_language not in _RELATED_IMAGES_HEADINGS:
-        response_language = "English"
-    if result.get("fallback"):
-        st.info(_FALLBACK_NOTICES[response_language])
-    if render_answer:
-        st.markdown(answer)
-    citations = str(result.get("citations", result.get("provenance", ""))).strip()
-    if citations:
-        st.markdown("### Sources")
-        st.markdown(citations)
-    figures = result.get("figures", [])
-    matched_figure = result.get("matched_figure")
+def _render_related_figures(
+    st,
+    result: dict,
+    image_root: Path,
+    response_language: str,
+    chunks: list,
+) -> None:
     figure_candidates = []
+    matched_figure = result.get("matched_figure")
     if isinstance(matched_figure, dict):
         figure_candidates.append((matched_figure, True))
+    figures = result.get("figures", [])
     if isinstance(figures, list):
         figure_candidates.extend(
-            (figure, False) for figure in figures if isinstance(figure, dict)
+            (figure, bool(figure.get("_matched"))) for figure in figures if isinstance(figure, dict)
         )
-    if isinstance(chunks, list):
-        for chunk in chunks:
-            if not isinstance(chunk, dict):
-                continue
-            visual_type = str(chunk.get("visual_type", "")).casefold()
-            if visual_type not in {"figure", "image", "diagram", "chart", "plot"}:
-                continue
-            chunk_figures = chunk.get("figures", [])
-            if isinstance(chunk_figures, list):
-                figure_candidates.extend(
-                    (figure, True) for figure in chunk_figures if isinstance(figure, dict)
+    for chunk in chunks:
+        if not isinstance(chunk, dict):
+            continue
+        if str(chunk.get("visual_type", "")).casefold() not in {
+            "figure",
+            "image",
+            "diagram",
+            "chart",
+            "plot",
+        }:
+            continue
+        chunk_figures = chunk.get("figures", [])
+        if isinstance(chunk_figures, list):
+            figure_candidates.extend(
+                (figure, True) for figure in chunk_figures if isinstance(figure, dict)
+            )
+        if any(
+            chunk.get(key)
+            for key in ("resolved_path", "file_path", "path", "image_path", "image_url")
+        ):
+            figure_candidates.append(
+                (
+                    {
+                        **chunk,
+                        "caption": chunk.get(
+                            "caption",
+                            chunk.get("alt_text", chunk.get("alt-text", "")),
+                        ),
+                    },
+                    True,
                 )
-            if any(
-                chunk.get(key)
-                for key in ("resolved_path", "file_path", "path", "image_path", "image_url")
-            ):
-                figure_candidates.append(
-                    (
-                        {
-                            **chunk,
-                            "caption": chunk.get(
-                                "caption",
-                                chunk.get("alt_text", chunk.get("alt-text", "")),
-                            ),
-                        },
-                        True,
-                    )
-                )
+            )
+
     renderable_figures = []
     seen_figure_paths: set[str] = set()
     for figure, is_matched in figure_candidates:
@@ -342,78 +378,213 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
             continue
         seen_figure_paths.add(identity)
         renderable_figures.append((figure, image_source, is_matched))
+
+    if not renderable_figures:
+        return
+
+    st.markdown(f"### 🖼️ {_RELATED_IMAGES_HEADINGS[response_language]}")
+    for figure, image_source, is_matched in renderable_figures:
+        figure_caption = str(
+            figure.get("caption", figure.get("alt_text", figure.get("alt-text", "")))
+        )
+        if is_matched:
+            number = figure.get("number") or figure.get("figure_number") or figure.get("figure_id")
+            if number:
+                label = str(number)
+                if not label.casefold().startswith(("figure", "fig.")):
+                    label = f"Figure {label}"
+                caption = f"{label}: {figure_caption}"
+            else:
+                caption = figure_caption
+        else:
+            paper_id = str(figure.get("paper_id", ""))
+            page_number = figure.get("page_number", "page unavailable")
+            caption = (
+                f"{figure.get('figure_id', 'Figure')} | Page {page_number} | "
+                f"{paper_id}: {figure_caption}"
+            )
+        st.image(image_source, caption=caption)
+        paper_id = str(figure.get("paper_id", ""))
+        if (
+            image_source.startswith(("https://", "http://"))
+            and paper_id
+            and "." in paper_id
+            and paper_id.replace(".", "", 1).isdigit()
+        ):
+            st.markdown(f"[Open verified arXiv source](https://arxiv.org/abs/{paper_id})")
+
+
+def _render_answer(
+    st,
+    result: dict,
+    question: str,
+    image_root: Path,
+    render_answer: bool = True,
+    compact: bool = False,
+    total_elapsed: float | None = None,
+) -> None:
+    chunks = result.get("retrieved_passages", result.get("chunks", []))
+    if not isinstance(chunks, list):
+        chunks = []
+    response_language = resolve_response_language(
+        question,
+        str(result.get("response_language", "English")),
+    )
+    confidence = float(result.get("route_confidence", 0.0))
+    model_name = str(result.get("embedding_model", result.get("embedding_key", "unknown")))
+    route_summary = (
+        f"{localized_response_text(response_language, 'ml_route')}: {result['query_type']} ({confidence:.1%}) | "
+        f"{localized_response_text(response_language, 'embedding_backend')}: "
+        f"{result['embedding_key']} ({model_name}) | "
+        f"{localized_response_text(response_language, 'retrieved_passages')}: {len(chunks)}"
+    )
+    if not compact:
+        st.caption(route_summary)
+    answer = str(result["answer"])
+    fallback_notice = _FALLBACK_NOTICES[response_language] if result.get("fallback") else None
+    if fallback_notice and not compact:
+        st.info(fallback_notice)
+    if render_answer and not compact:
+        st.markdown(answer)
+    citations = str(result.get("citations", result.get("provenance", ""))).strip()
+    if citations and not compact:
+        st.markdown(f"### {localized_response_text(response_language, 'sources')}")
+        st.markdown(citations)
     online_metrics = result.get("eval_metrics", result.get("evaluation_metrics"))
     if not isinstance(online_metrics, dict) or not online_metrics:
         if chunks:
+            from src.evaluation_suite import retrieval_metrics
+
             retrieved_ids = [chunk.get("id", chunk.get("document_id", index)) for index, chunk in enumerate(chunks)]
             relevant_ids = retrieved_ids[:1]
             online_metrics = retrieval_metrics(retrieved_ids, relevant_ids, k=3)
         else:
             online_metrics = None
-    if isinstance(online_metrics, dict) and online_metrics:
-        st.markdown("### Retrieval evaluation")
-        st.markdown(
-            f"Accuracy: **{float(online_metrics.get('accuracy', 0.0)):.3f}**  "
-            f"Precision: **{float(online_metrics.get('precision', 0.0)):.3f}**  "
-            f"Recall: **{float(online_metrics.get('recall', 0.0)):.3f}**  "
-            f"F1-Score: **{float(online_metrics.get('f1', 0.0)):.3f}**"
-        )
-    if renderable_figures:
-        st.markdown(f"### 🖼️ {_RELATED_IMAGES_HEADINGS[response_language]}")
-        for figure, image_source, is_matched in renderable_figures:
-            figure_caption = str(
-                figure.get("caption", figure.get("alt_text", figure.get("alt-text", "")))
-            )
-            if is_matched:
-                number = figure.get("number") or figure.get("figure_number") or figure.get("figure_id")
-                if number:
-                    label = str(number)
-                    if not label.casefold().startswith(("figure", "fig.")):
-                        label = f"Figure {label}"
-                    caption = f"{label}: {figure_caption}"
-                else:
-                    caption = figure_caption
-            else:
-                paper_id = str(figure.get("paper_id", ""))
-                page_number = figure.get("page_number", "page unavailable")
-                caption = (
-                    f"{figure.get('figure_id', 'Figure')} | Page {page_number} | "
-                    f"{paper_id}: {figure_caption}"
+    if compact:
+        markdown_blocks = [f"> {route_summary}"]
+        if fallback_notice:
+            markdown_blocks.append(f"> {fallback_notice}")
+        if render_answer:
+            markdown_blocks.append(answer)
+        if citations:
+            markdown_blocks.extend((f"### {localized_response_text(response_language, 'sources')}", citations))
+        passage_blocks = []
+        for index, passage in enumerate(chunks, start=1):
+            if not isinstance(passage, dict):
+                continue
+            passage_text = str(passage.get("text", passage.get("content", ""))).strip()
+            if not passage_text:
+                continue
+            source = str(
+                passage.get(
+                    "source",
+                    passage.get("document_id", localized_response_text(response_language, "unknown_source")),
                 )
-            st.image(image_source, caption=caption)
-            paper_id = str(figure.get("paper_id", ""))
-            if (
-                image_source.startswith(("https://", "http://"))
-                and paper_id
-                and "." in paper_id
-                and paper_id.replace(".", "", 1).isdigit()
-            ):
-                st.markdown(f"[Open verified arXiv source](https://arxiv.org/abs/{paper_id})")
+            )
+            page = passage.get(
+                "page_number",
+                passage.get("page", localized_response_text(response_language, "page_unavailable")),
+            )
+            passage_blocks.append(
+                f"**{index}. {source} | {localized_response_text(response_language, 'page')} {page}**\n\n{passage_text}"
+            )
+        if passage_blocks:
+            markdown_blocks.extend(
+                (
+                    f"### {localized_response_text(response_language, 'retrieved_passages')}",
+                    "\n\n".join(passage_blocks),
+                )
+            )
+        if isinstance(online_metrics, dict) and online_metrics:
+            markdown_blocks.extend(
+                (
+                    f"### {localized_response_text(response_language, 'retrieval_evaluation')}",
+                    f"{localized_response_text(response_language, 'accuracy')}: "
+                    f"**{float(online_metrics.get('accuracy', 0.0)):.3f}**  "
+                    f"{localized_response_text(response_language, 'precision')}: "
+                    f"**{float(online_metrics.get('precision', 0.0)):.3f}**  "
+                    f"{localized_response_text(response_language, 'recall')}: "
+                    f"**{float(online_metrics.get('recall', 0.0)):.3f}**  "
+                    f"{localized_response_text(response_language, 'f1_score')}: "
+                    f"**{float(online_metrics.get('f1', 0.0)):.3f}**",
+                )
+            )
+        if total_elapsed is not None:
+            markdown_blocks.append(
+                f"{localized_response_text(response_language, 'cached_response_lookup')}: "
+                f"{total_elapsed * 1000:.1f} ms"
+            )
+        timings = result.get("profile_times", result.get("performance_timings_ms", {}))
+        if result.get("semantic_cache_hit") and timings.get("pipeline_round_trip_ms") is not None:
+            markdown_blocks.append(
+                f"{localized_response_text(response_language, 'original_rag_pipeline')}: "
+                f"{float(timings['pipeline_round_trip_ms']):.1f} ms"
+            )
+        timing_labels = (
+            ("intent_classification_time", "intent_classification_ms"),
+            ("faiss_index_lookup_time", "faiss_index_lookup_ms"),
+            ("cross_encoder_reranking_time", "cross_encoder_reranking_ms"),
+            ("answer_generation_time", "answer_generation_ms"),
+        )
+        available_timings = [
+            f"{localized_response_text(response_language, label)}: {float(timings[key]):.3f}"
+            for label, key in timing_labels
+            if timings.get(key) is not None
+        ]
+        if available_timings:
+            markdown_blocks.append(
+                f"{localized_response_text(response_language, 'timing_breakdown')}: "
+                + " | ".join(available_timings)
+            )
+        st.markdown("\n\n".join(markdown_blocks))
+    elif isinstance(online_metrics, dict) and online_metrics:
+        st.markdown(f"### {localized_response_text(response_language, 'retrieval_evaluation')}")
+        st.markdown(
+            f"{localized_response_text(response_language, 'accuracy')}: "
+            f"**{float(online_metrics.get('accuracy', 0.0)):.3f}**  "
+            f"{localized_response_text(response_language, 'precision')}: "
+            f"**{float(online_metrics.get('precision', 0.0)):.3f}**  "
+            f"{localized_response_text(response_language, 'recall')}: "
+            f"**{float(online_metrics.get('recall', 0.0)):.3f}**  "
+            f"{localized_response_text(response_language, 'f1_score')}: "
+            f"**{float(online_metrics.get('f1', 0.0)):.3f}**"
+        )
+    _render_related_figures(st, result, image_root, response_language, chunks)
 
 
-def _render_performance_metrics(st, result: dict, total_elapsed: float | None = None) -> None:
+def _render_performance_metrics(
+    st,
+    result: dict,
+    total_elapsed: float | None = None,
+    response_language: str = "English",
+) -> None:
     timings = result.get("profile_times", result.get("performance_timings_ms", {}))
+    response_language = resolve_response_language("", response_language)
     if total_elapsed is not None:
-        label = "Cached response lookup" if result.get("semantic_cache_hit") else "Total query round trip"
+        label_key = "cached_response_lookup" if result.get("semantic_cache_hit") else "total_query_round_trip"
+        label = localized_response_text(response_language, label_key)
         st.caption(f"{label}: {total_elapsed * 1000:.1f} ms")
     if result.get("semantic_cache_hit") and timings.get("pipeline_round_trip_ms") is not None:
         st.caption(
-            f"Original RAG pipeline: "
+            f"{localized_response_text(response_language, 'original_rag_pipeline')}: "
             f"{float(timings['pipeline_round_trip_ms']):.1f} ms"
         )
     timing_labels = (
-        ("Intent Classification Time (ms)", "intent_classification_ms"),
-        ("FAISS Index Lookup Time (ms)", "faiss_index_lookup_ms"),
-        ("Cross-Encoder Re-ranking Time (ms)", "cross_encoder_reranking_ms"),
-        ("LLM / Multi-Lingual Answer Generation Time (ms)", "answer_generation_ms"),
+        ("intent_classification_time", "intent_classification_ms"),
+        ("faiss_index_lookup_time", "faiss_index_lookup_ms"),
+        ("cross_encoder_reranking_time", "cross_encoder_reranking_ms"),
+        ("answer_generation_time", "answer_generation_ms"),
     )
     available_timings = [
-        f"{label}: {float(timings[key]):.3f}"
+        f"{localized_response_text(response_language, label)}: {float(timings[key]):.3f}"
         for label, key in timing_labels
         if timings.get(key) is not None
     ]
     if available_timings:
-        st.caption("Timing breakdown (ms): " + " | ".join(available_timings))
+        st.caption(
+            f"{localized_response_text(response_language, 'timing_breakdown')}: "
+            + " | ".join(available_timings)
+        )
 
 
 def _restore_query_state(session_state, key: str, result: dict, elapsed: float | None) -> None:
@@ -462,18 +633,68 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
         save_index_from_documents(chunks, base_path)
         return {"name": original_name, "chunk_count": len(chunks)}
 
-    @st.fragment
     def render_query_result(
         query_key: str,
         question: str,
-        fast_mode: bool,
+        image_root: Path,
+        cached_result: dict | None = None,
+        total_elapsed: float | None = None,
+        render_answer: bool = True,
+    ) -> None:
+        if cached_result is not None:
+            response_language = resolve_response_language(
+                question,
+                str(cached_result.get("response_language", "English")),
+            )
+            if cached_result.get("fallback"):
+                st.info(_FALLBACK_NOTICES[response_language])
+            st.markdown(str(cached_result["formatted_markdown"]))
+            _render_related_figures(st, cached_result, image_root, response_language, [])
+            if total_elapsed is not None:
+                st.caption(
+                    f"{localized_response_text(response_language, 'cached_response_lookup')}: "
+                    f"{total_elapsed * 1000:.1f} ms"
+                )
+            return
+
+        result = st.session_state.get(f"{query_key}_result")
+        if result:
+            _render_answer(
+                st,
+                result,
+                question,
+                image_root,
+                render_answer=render_answer or bool(result.get("semantic_cache_hit")),
+            )
+            _render_performance_metrics(
+                st,
+                result,
+                st.session_state.get(f"{query_key}_elapsed"),
+                response_language=str(result.get("response_language", "English")),
+            )
+
+    @st.fragment
+    def render_query_controls(
+        query_key: str,
         vector_base: str,
         image_root: Path,
+        question_label: str,
+        question_placeholder: str,
+        fast_mode_label: str,
+        question_key: str,
+        fast_mode_key: str,
         button_label: str,
         button_key: str,
         stream_message: str,
         auto_query: bool = False,
     ) -> None:
+        question = st.text_area(
+            question_label,
+            placeholder=question_placeholder,
+            height=100,
+            key=question_key,
+        )
+        fast_mode = st.checkbox(fast_mode_label, key=fast_mode_key)
         ask = st.button(
             button_label,
             type="primary",
@@ -482,89 +703,102 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
         ) or auto_query
         if ask:
             is_repository_query = query_key == "repository"
-            st.session_state.active_mode = "central" if is_repository_query else "upload"
-            if is_repository_query:
-                st.session_state.upload_result = None
-                st.session_state.repository_result = None
-            st.session_state[f"{query_key}_elapsed"] = None
             if not question.strip():
                 st.warning("Enter a research question first.")
-            elif not is_repository_query and (
-                not vector_base or st.session_state.get("active_mode") != "upload"
-            ):
-                st.error(
-                    "The uploaded document index is not ready. "
-                    "Upload the document again before querying."
-                )
             else:
                 try:
-                    from src.rag_pipeline import answer_query_details, get_cached_query_response
+                    from src.rag_pipeline import answer_query_details
 
                     query = question.strip()
-                    upload_metadata = st.session_state.get("current_upload_metadata") or {}
+                    selected_response_language = resolve_response_language(
+                        query,
+                        response_language,
+                    )
                     document_identifier = (
-                        upload_metadata.get("document_id")
-                        if not is_repository_query
+                        Path(vector_base).name
+                        if not is_repository_query and vector_base
                         else None
                     )
-                    cache_started = time.perf_counter()
-                    result = get_cached_query_response(
-                        query,
-                        vector_base,
-                        response_language=response_language,
-                        fast_mode=fast_mode,
-                        document_identifier=document_identifier,
-                    )
-                    cache_lookup_elapsed = time.perf_counter() - cache_started
-                    if result is None:
+                    result = None
+                    cache_lookup_elapsed = 0.0
+                    if is_repository_query or vector_base:
+                        cache_started = time.perf_counter()
+                        result = _get_cached_display_payload(
+                            query,
+                            vector_base,
+                            selected_response_language,
+                            fast_mode,
+                            document_identifier,
+                        )
+                        cache_lookup_elapsed = time.perf_counter() - cache_started
+                    if result is not None:
+                        render_query_result(
+                            query_key,
+                            query,
+                            image_root,
+                            cached_result=result,
+                            total_elapsed=cache_lookup_elapsed,
+                        )
+                        return
+
+                    if not is_repository_query and (
+                        not vector_base or st.session_state.get("active_mode") != "upload"
+                    ):
+                        st.error(
+                            localized_response_text(
+                                selected_response_language,
+                                "uploaded_index_not_ready",
+                            )
+                        )
+                    else:
+                        st.session_state.active_mode = "central" if is_repository_query else "upload"
+                        if is_repository_query:
+                            st.session_state.upload_result = None
+                            st.session_state.repository_result = None
+                        st.session_state[f"{query_key}_elapsed"] = None
                         started = time.perf_counter()
                         streamed_answer = st.empty()
                         with st.spinner(stream_message):
                             result = answer_query_details(
                                 query,
                                 vector_base,
-                                response_language=response_language,
+                                response_language=selected_response_language,
                                 stream_consumer=streamed_answer.write_stream,
                                 fast_mode=fast_mode,
                                 document_identifier=document_identifier,
                             )
+                            _get_cached_display_payload(
+                                query,
+                                vector_base,
+                                selected_response_language,
+                                fast_mode,
+                                document_identifier,
+                            )
                         st.session_state[f"{query_key}_elapsed"] = time.perf_counter() - started
                         streamed_answer.markdown(str(result["answer"]))
-                    else:
-                        result["cache_lookup_ms"] = cache_lookup_elapsed * 1000
-                        result["profile_times"] = {
-                            **result.get("profile_times", {}),
-                            "cache_lookup_ms": cache_lookup_elapsed * 1000,
-                        }
-                        result["performance_timings_ms"] = dict(result["profile_times"])
-                        st.session_state[f"{query_key}_elapsed"] = cache_lookup_elapsed
-                    _restore_query_state(
-                        st.session_state,
-                        query_key,
-                        result,
-                        st.session_state[f"{query_key}_elapsed"],
-                    )
-                except Exception as exc:
+                        _restore_query_state(
+                            st.session_state,
+                            query_key,
+                            result,
+                            st.session_state[f"{query_key}_elapsed"],
+                        )
+                except MultilingualResponseError as exc:
+                    LOGGER.warning("Multilingual answer was not displayed: %s", exc.message_key)
+                    st.error(str(exc))
+                except Exception:
                     LOGGER.exception("Grounded answer request failed")
-                    st.error(f"Unable to retrieve a grounded answer: {exc}")
+                    failed_language = resolve_response_language(
+                        question,
+                        response_language,
+                    )
+                    st.error(localized_response_text(failed_language, "answer_request_failed"))
 
-        result = st.session_state.get(f"{query_key}_result")
-        if result:
-            _render_answer(
-                st,
-                result,
-                question or "",
-                image_root,
-                render_answer=not ask or bool(result.get("semantic_cache_hit")),
-            )
-            _render_performance_metrics(
-                st,
-                result,
-                st.session_state.get(f"{query_key}_elapsed"),
-            )
-            st.session_state.setdefault("active_mode", "central")
-            st.session_state.setdefault("current_upload_vector_base", None)
-            st.session_state.setdefault("current_upload_metadata", None)
+        render_query_result(
+            query_key,
+            question or "",
+            image_root,
+            render_answer=not ask,
+        )
     st.markdown(
         """
         <style>
@@ -583,7 +817,7 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
     with st.sidebar:
         response_language = st.selectbox(
             "Response language",
-            ["English", "Tamil", "Hindi", "Spanish", "French", "Detect from query"],
+            RESPONSE_LANGUAGE_OPTIONS,
             key="response_language",
         )
         st.markdown("## Knowledge domains")
@@ -614,17 +848,15 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
             ):
                 st.session_state["repository_question"] = example
                 selected_example = example
-        question = st.text_area("Research question", placeholder="Ask about a method, result, architecture, or figure.", height=100, key="repository_question")
-        fast_mode = st.checkbox(
-            "Fast extractive mode (skip LLM generation)",
-            key="repository_fast_mode",
-        )
-        render_query_result(
+        render_query_controls(
             "repository",
-            question,
-            fast_mode,
             vector_store_dir,
             Path(vector_store_dir) / "figures",
+            "Research question",
+            "Ask about a method, result, architecture, or figure.",
+            "Fast extractive mode (skip LLM generation)",
+            "repository_question",
+            "repository_fast_mode",
             "Retrieve grounded answer",
             "repository_ask",
             "Retrieving passages and streaming the answer...",
@@ -678,19 +910,17 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
             if st.session_state.get("upload_index"):
                 st.success(f"Indexed {upload_info['name']} from disk with page-level provenance.")
                 st.caption(f"Active upload index: `{st.session_state.current_upload_vector_base}`")
-                question = st.text_area("Research question", placeholder="Ask about the uploaded paper.", height=100, key="upload_question")
-                fast_mode = st.checkbox(
-                    "Fast extractive mode (skip LLM generation)",
-                    key="upload_fast_mode",
-                )
                 upload_base = st.session_state.get("current_upload_vector_base")
                 image_root = Path(upload_base) / "figures" if upload_base else Path(vector_store_dir) / "uploads" / "figures"
-                render_query_result(
+                render_query_controls(
                     "upload",
-                    question,
-                    fast_mode,
                     upload_base or "",
                     image_root,
+                    "Research question",
+                    "Ask about the uploaded paper.",
+                    "Fast extractive mode (skip LLM generation)",
+                    "upload_question",
+                    "upload_fast_mode",
                     "Query uploaded paper",
                     "upload_ask",
                     "Retrieving from the uploaded paper...",

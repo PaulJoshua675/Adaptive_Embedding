@@ -1,6 +1,11 @@
 from types import SimpleNamespace
 
-from app import _render_answer, _render_performance_metrics, _restore_query_state
+from app import (
+    _cached_display_payload,
+    _render_answer,
+    _render_performance_metrics,
+    _restore_query_state,
+)
 
 
 def test_render_answer_uses_streamlit_components_for_answer_and_metrics():
@@ -31,6 +36,50 @@ def test_render_answer_uses_streamlit_components_for_answer_and_metrics():
     assert result["answer"] in markdown_values
     assert any("Retrieval evaluation" in value for value in markdown_values)
     assert any(kind == "caption" and "conceptual_general" in value for kind, value in rendered)
+
+
+def test_app_display_cache_hit_returns_same_payload_without_pipeline_lookup(monkeypatch):
+    from src import rag_pipeline
+
+    _cached_display_payload.cache_clear()
+    payload = {
+        "formatted_markdown": "Cached answer.",
+        "profile_times": {"pipeline_round_trip_ms": 42.0},
+    }
+    calls = []
+
+    def get_display(*args, **kwargs):
+        calls.append((args, kwargs))
+        return payload
+
+    monkeypatch.setattr(rag_pipeline, "get_cached_query_display", get_display)
+    cache_key = (
+        "Tamil query",
+        "vector-store",
+        "Tamil",
+        True,
+        None,
+        "vector-store/metadata.pkl",
+        123,
+        456,
+        1,
+    )
+    first = _cached_display_payload(*cache_key)
+    monkeypatch.setattr(
+        rag_pipeline,
+        "get_cached_query_display",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("cache miss")),
+    )
+    started = __import__("time").perf_counter()
+    second = _cached_display_payload(*cache_key)
+    elapsed_ms = (__import__("time").perf_counter() - started) * 1000
+
+    assert first is payload
+    assert second is first
+    assert second["formatted_markdown"] == "Cached answer."
+    assert second["profile_times"]["pipeline_round_trip_ms"] == 42.0
+    assert len(calls) == 1
+    assert elapsed_ms < 175
 
 
 def test_cached_payload_renders_citations_and_cached_evaluation_metrics(tmp_path):
@@ -70,6 +119,55 @@ def test_cached_payload_renders_citations_and_cached_evaluation_metrics(tmp_path
     assert "### Sources" in markdown_values
     assert result["citations"] in markdown_values
     assert any("Accuracy: **1.000**" in value for value in markdown_values)
+
+
+def test_compact_cached_answer_renders_all_result_details_in_one_markdown_block(tmp_path):
+    rendered = []
+    fake_streamlit = SimpleNamespace(
+        caption=lambda value: rendered.append(("caption", value)),
+        markdown=lambda value: rendered.append(("markdown", value)),
+        image=lambda *args, **kwargs: rendered.append(("image", args, kwargs)),
+        info=lambda value: rendered.append(("info", value)),
+    )
+    result = {
+        "answer": "Grounded cached answer.",
+        "query_type": "conceptual_general",
+        "route_confidence": 0.8,
+        "embedding_key": "e5",
+        "retrieved_passages": [
+            {
+                "text": "Cached supporting passage.",
+                "source": "paper.pdf",
+                "page_number": 2,
+            }
+        ],
+        "citations": "[paper.pdf | Page 2](file:///paper.pdf)",
+        "eval_metrics": {
+            "accuracy": 1.0,
+            "precision": 0.9,
+            "recall": 0.8,
+            "f1": 0.85,
+        },
+        "profile_times": {"pipeline_round_trip_ms": 42.0},
+        "semantic_cache_hit": True,
+    }
+
+    _render_answer(
+        fake_streamlit,
+        result,
+        "Question",
+        tmp_path,
+        compact=True,
+        total_elapsed=0.004,
+    )
+
+    markdown_values = [event[1] for event in rendered if event[0] == "markdown"]
+    assert len(markdown_values) == 1
+    assert result["answer"] in markdown_values[0]
+    assert "Cached supporting passage." in markdown_values[0]
+    assert result["citations"] in markdown_values[0]
+    assert "Accuracy: **1.000**" in markdown_values[0]
+    assert "Cached response lookup: 4.0 ms" in markdown_values[0]
 
 
 def test_render_answer_shows_fallback_badge_and_retrieved_figure(tmp_path):
@@ -112,6 +210,35 @@ def test_render_answer_shows_fallback_badge_and_retrieved_figure(tmp_path):
         for event in rendered
         if len(event) == 3
     )
+
+
+def test_render_answer_localizes_response_metadata(tmp_path):
+    rendered = []
+    fake_streamlit = SimpleNamespace(
+        caption=lambda value: rendered.append(("caption", value)),
+        markdown=lambda value: rendered.append(("markdown", value)),
+        image=lambda *args, **kwargs: rendered.append(("image", args, kwargs)),
+        info=lambda value: rendered.append(("info", value)),
+    )
+    result = {
+        "answer": "Respuesta fundamentada.",
+        "query_type": "conceptual_general",
+        "route_confidence": 0.8,
+        "embedding_key": "e5",
+        "chunks": [
+            {"text": "Contexto recuperado.", "source": "paper.pdf", "page_number": 2}
+        ],
+        "eval_metrics": {"accuracy": 1, "precision": 1, "recall": 1, "f1": 1},
+        "response_language": "Spanish",
+    }
+
+    _render_answer(fake_streamlit, result, "Pregunta", tmp_path, compact=True)
+
+    markdown = next(value for kind, value in rendered if kind == "markdown")
+    assert "Ruta de ML:" in markdown
+    assert "Página 2" in markdown
+    assert "### Evaluación de recuperación" in markdown
+    assert "Accuracy:" not in markdown
 
 
 def test_render_answer_displays_image_asset_from_retrieved_figure_chunk(tmp_path):

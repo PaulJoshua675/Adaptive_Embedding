@@ -96,12 +96,54 @@ def test_missing_corpus_response_is_localized():
     assert answer == localized_fallback_message("French")
 
 
+def test_response_citation_heading_is_localized():
+    answer = _enforce_response_structure(
+        "### 1. Vue d’ensemble et contexte central\n- Résultat étayé.",
+        "French",
+        source_citations="- [2401.12345 | Page 1](https://arxiv.org/abs/2401.12345)",
+    )
+
+    assert "**Citations des sources vérifiées**" in answer
+    assert "Verified Source Citations" not in answer
+
+
+@pytest.mark.parametrize("language", ["Tamil", "Hindi", "Spanish", "French"])
+def test_extractive_empty_context_fallback_uses_the_target_language(language):
+    llm = SimpleLLM(model_name="test")
+
+    assert llm._extract_answer("Explain the method", "", response_language=language) == (
+        localized_fallback_message(language)
+    )
+    assert llm._extract_answer(
+        "Explain an absent method",
+        "Related research evaluates multilingual retrieval.",
+        fallback=True,
+        response_language=language,
+    ) == "Related research evaluates multilingual retrieval."
+    assert _enforce_response_structure(localized_fallback_message(language), language) == (
+        localized_fallback_message(language)
+    )
+
+
 def test_answer_generation_prompt_targets_each_supported_language(monkeypatch):
     requested_prompts = []
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.setattr(llm_module, "MAX_TOTAL_PROMPT_CHARS", 5000)
     llm = SimpleLLM(model_name="test")
+
+    translated = {
+        "Tamil": "முறை ஆதாரங்களை ஒருங்கிணைக்கிறது.",
+        "Hindi": "विधि साक्ष्यों को जोड़ती है।",
+        "Spanish": "El método utiliza la evidencia.",
+        "French": "La méthode utilise les preuves.",
+    }
+
+    def translate(text, source_language, target_language, model_name):
+        del text, source_language, model_name
+        return translated[target_language]
+
+    monkeypatch.setattr(llm_module, "_translate_text_cached", translate)
 
     def capture_prompt(prompt, **kwargs):
         requested_prompts.append(prompt)
@@ -110,7 +152,9 @@ def test_answer_generation_prompt_targets_each_supported_language(monkeypatch):
     llm._generator = capture_prompt
     for language in ("English", "Tamil", "Hindi", "Spanish", "French"):
         answer = llm.generate_answer("Explain the method", [{"text": "Verified research context."}], response_language=language)
-        assert "Generated response." in answer
+        assert (
+            translated.get(language, "Generated response.") in answer
+        )
         assert len([line for line in answer.splitlines() if line.startswith("### ")]) == 5
         assert all(
             len([line for line in section.splitlines() if line.startswith("- ")]) <= 3
@@ -119,15 +163,45 @@ def test_answer_generation_prompt_targets_each_supported_language(monkeypatch):
 
     assert len(requested_prompts) == 5
     for language, prompt in zip(("English", "Tamil", "Hindi", "Spanish", "French"), requested_prompts):
-        assert f"Write all answer prose in {language}." in prompt
-        assert f"CRITICAL: Write the entire five-section response strictly in {language}." in prompt
-        assert "Keep technical paper titles and source citations in English." in prompt
-        assert "Translate both the structural subheadings AND all detailed body content" in prompt
-        assert "at least 100 words of substantive synthesis" in prompt
-        assert "CRITICAL: You must translate ALL 5 structural subheadings" in prompt
-        assert "For sections 1, 2, 3, 4, and 5 individually" in prompt
+        assert "Response language:" in prompt
+        assert "[Evidence 1]" in prompt
         assert all(f"### {index}. {heading}" in prompt for index, heading in enumerate(_RESPONSE_HEADINGS[language], start=1))
-        assert "{overview_header}" not in prompt
+        assert "Answer the user's research question using only the retrieved evidence." in prompt
+    assert "Response language: français (French)" in requested_prompts[-1]
+
+
+@pytest.mark.parametrize("streaming", [False, True])
+def test_generator_forbids_conversation_and_injects_target_language(monkeypatch, streaming):
+    generator = AnswerGenerator()
+    captured = {}
+    generated = (
+        "### 1. மேலோட்டம் மற்றும் அடிப்படைச் சூழல்\n"
+        "- மீட்டெடுக்கப்பட்ட தகவல் முறையை விவரிக்கிறது."
+    )
+
+    def capture_generation(query, chunks, **kwargs):
+        captured.update(kwargs)
+        if streaming:
+            return iter((generated,))
+        return generated
+
+    monkeypatch.setattr(generator.llm, "generate_answer", capture_generation)
+    monkeypatch.setattr(generator.llm, "generate_answer_stream", capture_generation)
+    chunks = [{"text": "The method uses retrieved information.", "section_type": "Methods"}]
+    if streaming:
+        answer = generator.generate_stream(
+            "Explain the method",
+            chunks,
+            stream_consumer=lambda parts: "".join(parts),
+            response_language="Tamil",
+        )
+    else:
+        answer = generator._generate_uncached("Explain the method", chunks, "Tamil", False)
+
+    assert "Synthesize only the retrieved research evidence." in captured["instructions"]
+    assert "Requested target language: Tamil." in captured["instructions"]
+    assert captured["response_language"] == "Tamil"
+    assert "முறையியல் மற்றும் கட்டமைப்பு" in answer
 
 
 def test_local_generation_bounds_total_prompt_and_tokenizer(monkeypatch):
@@ -152,7 +226,7 @@ def test_local_generation_bounds_total_prompt_and_tokenizer(monkeypatch):
     assert len(captured["prompt"]) == llm_module.MAX_TOTAL_PROMPT_CHARS
     assert captured["prompt"].endswith("[Prompt truncated for model limits]")
     assert captured["kwargs"] == {
-        "max_new_tokens": 350,
+        "max_new_tokens": 800,
         "truncation": True,
         "do_sample": False,
         "pad_token_id": 99,
@@ -206,6 +280,11 @@ def test_fallback_prompt_requests_related_context_in_full_target_language(monkey
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     llm = SimpleLLM(model_name="test")
+    monkeypatch.setattr(
+        llm_module,
+        "_translate_text_cached",
+        lambda *args: "முறை தொடர்புடைய ஆய்வுகளைப் பயன்படுத்துகிறது.",
+    )
     llm._generator = lambda prompt, **kwargs: (
         requested_prompts.append(prompt) or [{"generated_text": "Generated response."}]
     )
@@ -218,18 +297,22 @@ def test_fallback_prompt_requests_related_context_in_full_target_language(monkey
     )
 
     prompt = requested_prompts[0]
-    assert "The exact answer to this query is not explicitly detailed in the corpus." in prompt
-    assert "related research themes, and adjacent findings" in prompt
-    assert "Translate both the structural subheadings AND all detailed body content" in prompt
-    assert "Write all answer prose in Tamil." in prompt
+    assert "Direct evidence is absent" in prompt
+    assert "clearly label it as related context" in prompt
+    assert "Response language: தமிழ் (Tamil)" in prompt
 
 
 def test_groq_generation_receives_language_and_fallback_prompt(monkeypatch):
     requested_prompts = []
+    system_prompts = []
     monkeypatch.setenv("GROQ_API_KEY", "test-token")
     monkeypatch.setattr(
         "src.llm.generate_response",
-        lambda prompt: requested_prompts.append(prompt) or "Generated response.",
+        lambda prompt, system_prompt=None: (
+            requested_prompts.append(prompt),
+            system_prompts.append(system_prompt),
+            "### 1. Vue d’ensemble\n- Le modèle utilise les données récupérées.",
+        )[-1],
     )
     llm = SimpleLLM(model_name="test")
     llm._generator = lambda *args, **kwargs: (_ for _ in ()).throw(
@@ -244,8 +327,9 @@ def test_groq_generation_receives_language_and_fallback_prompt(monkeypatch):
     )
 
     assert len(requested_prompts) == 1
-    assert "Write all answer prose in French." in requested_prompts[0]
-    assert "related research themes, and adjacent findings" in requested_prompts[0]
+    assert "Response language: français (French)" in requested_prompts[0]
+    assert "Write all headings and substantive prose in français (French)" in system_prompts[0]
+    assert "Direct evidence is absent" in system_prompts[0]
 
 
 def test_groq_errors_are_logged_without_huggingface_model_retries(monkeypatch, caplog):
@@ -317,12 +401,12 @@ def test_answer_generation_truncates_context_before_model_prompt(monkeypatch):
         {"generated_text": "Detailed answer."}
     ]
 
-    llm.generate_answer("Explain the evidence", [{"text": "context " * 600}])
+    llm.generate_answer("Explain the evidence", [{"text": "context " * 1200}])
 
     assert "[Context truncated to fit model limit...]" in requested_prompts[0]
-    assert "context " * 400 not in requested_prompts[0]
-    assert llm_module.MAX_CONTEXT_CHARS == 500
-    assert len(llm_module._truncate_context("x" * 1500)) == 500
+    assert "context " * 900 not in requested_prompts[0]
+    assert llm_module.MAX_CONTEXT_CHARS == 6000
+    assert len(llm_module._truncate_context("x" * (llm_module.MAX_CONTEXT_CHARS + 100))) == llm_module.MAX_CONTEXT_CHARS
 
 
 def test_answer_formatter_omits_placeholder_points_and_empty_sections():
@@ -371,7 +455,7 @@ def test_answer_formatter_limits_each_section_and_cleans_axis_noise():
     assert "0.1 0.2 0.3 0.4" not in formatted
 
 
-def test_answer_formatter_fills_empty_sections_and_keeps_citations_in_footer():
+def test_answer_formatter_marks_unsupported_sections_and_keeps_valid_citations():
     formatted = _enforce_response_structure(
         "### 1. Overview & Core Context\n- The method combines two encoders.\n"
         "### 2. Methodology & Architecture\n- **Verified Source Citations:** [untrusted](https://example.invalid)\n",
@@ -393,7 +477,29 @@ def test_answer_formatter_fills_empty_sections_and_keeps_citations_in_footer():
     )
     assert "untrusted" not in sections
     assert "[2401.00001 | Page 2" in citations
-    assert "retrieved passages from 2401.00001" in sections
+    assert "The method combines two encoders." in sections
+    assert "do not contain explicit evidence" in sections
+    assert sections.count("The method combines two encoders.") == 1
+
+
+def test_tamil_missing_subheading_reports_an_evidence_boundary_without_repeating_claims():
+    point = "மீட்டெடுக்கப்பட்ட தகவல் முறையின் முக்கிய கூறுகளை விளக்குகிறது."
+    answer = (
+        "### 1. மேலோட்டம் மற்றும் அடிப்படைச் சூழல்\n"
+        f"- {point}\n"
+        "### 5. நடைமுறை விளைவுகள்\n"
+        f"- {localized_fallback_message('Tamil', section_index=4)}"
+    )
+
+    formatted = _enforce_response_structure(answer, "Tamil")
+
+    assert all(
+        f"### {index}. {heading}" in formatted
+        for index, heading in enumerate(_RESPONSE_HEADINGS["Tamil"], start=1)
+    )
+    assert point in formatted
+    assert "வெளிப்படையான ஆதாரம் இல்லை" in formatted
+    assert formatted.count(point) == 1
 
 
 def test_curated_research_questions_include_two_clickable_examples_per_domain():
@@ -535,27 +641,12 @@ def test_figure_alt_text_is_indexed_when_caption_is_missing():
     assert figure_chunk["figures"][0]["file_path"] == "truthfulqa.png"
 
 
-def test_generation_prompt_requests_figure_and_table_synthesis():
-    visual_prompt = llm_module._build_generation_prompt(
-        "What does the result show?",
-        "Figure 4: Results on the TruthfulQA dataset. Scores rise from 52 to 61 percent.",
-        None,
-        "English",
-        False,
-    )
-    text_prompt = llm_module._build_generation_prompt(
-        "What does the result show?",
-        "The reported scores rise from 52 to 61 percent.",
-        None,
-        "English",
-        False,
-    )
+def test_generation_system_prompt_requires_grounded_figure_and_table_synthesis():
+    system_prompt = llm_module._build_system_prompt("English", None, False)
 
-    assert "Explicitly synthesize and narrate its key trends, scores" in visual_prompt
-    assert "never infer unseen visual details" in visual_prompt
-    assert "Explicitly synthesize and narrate its key trends, scores" not in text_prompt
-    assert "data points, trends, comparisons, and takeaways" in ACADEMIC_SYNTHESIS_INSTRUCTIONS
-    assert "caption, alt-text, or associated analysis" in ACADEMIC_SYNTHESIS_INSTRUCTIONS
+    assert "When figures or tables are retrieved" in system_prompt
+    assert "never infer unseen visual details" in system_prompt
+    assert "figure and table captions" in ACADEMIC_SYNTHESIS_INSTRUCTIONS
 
 
 def test_fast_fallback_synthesizes_low_similarity_context():

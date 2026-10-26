@@ -48,7 +48,7 @@ def test_huggingface_inference_uses_token_and_primary_model(monkeypatch):
     client.chat.completions.create.assert_called_once_with(
         model=f"{HF_MODEL}:fastest",
         messages=[{"role": "user", "content": "Test prompt"}],
-        max_tokens=350,
+        max_tokens=800,
         temperature=0.3,
     )
 
@@ -165,7 +165,7 @@ def test_groq_inference_uses_openai_client_and_primary_model(monkeypatch):
     client.chat.completions.create.assert_called_once_with(
         model=GROQ_MODELS[0],
         messages=[{"role": "user", "content": "Test prompt"}],
-        max_tokens=350,
+        max_tokens=800,
         temperature=0.3,
     )
 
@@ -235,14 +235,14 @@ def test_local_fallback_bounds_prompt_and_generation():
     local_pipeline.tokenizer.eos_token_id = 50256
     local_pipeline.return_value = [{"generated_text": "Safe response"}]
 
-    result = generate_local_fallback("A" * 5000, local_pipeline)
+    result = generate_local_fallback("A" * 15000, local_pipeline)
 
     assert result == "Safe response"
     args, kwargs = local_pipeline.call_args
-    assert len(args[0]) <= 2500
+    assert len(args[0]) <= 10000
     assert "[Prompt truncated for model limits]" in args[0]
     assert kwargs["truncation"] is True
-    assert kwargs["max_new_tokens"] == 350
+    assert kwargs["max_new_tokens"] == 800
     assert kwargs["pad_token_id"] == 50256
 
 
@@ -250,7 +250,10 @@ def test_hosted_generation_streams_tokens_with_bounded_output(monkeypatch):
     from types import SimpleNamespace
 
     monkeypatch.setenv("HF_TOKEN", "hf-test-token")
-    tokens = ("First ", "tokens")
+    tokens = (
+        "### 1. Overview\n",
+        "- Retrieval uses indexed passages to ground answers.",
+    )
     events = [
         SimpleNamespace(
             choices=[SimpleNamespace(delta=SimpleNamespace(content=token))]
@@ -268,7 +271,9 @@ def test_hosted_generation_streams_tokens_with_bounded_output(monkeypatch):
         )
     )
 
-    assert output == list(tokens)
+    assert len(output) == 1
+    assert "Retrieval uses indexed passages" in output[0]
+    assert len([line for line in output[0].splitlines() if line.startswith("### ")]) == 5
     client.chat.completions.create.assert_called_once()
     assert client.chat.completions.create.call_args.kwargs["stream"] is True
-    assert client.chat.completions.create.call_args.kwargs["max_tokens"] == 350
+    assert client.chat.completions.create.call_args.kwargs["max_tokens"] == 800

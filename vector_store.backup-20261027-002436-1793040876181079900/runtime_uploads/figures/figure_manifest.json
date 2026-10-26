@@ -1,0 +1,402 @@
+{
+  "Figure 1": {
+    "caption": "Human evaluations of various models on our API prompt distribution, evaluated by how",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_2.png",
+    "paper_id": "custom_upload",
+    "page_number": 2,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 2": {
+    "caption": "A diagram illustrating the three steps of our method: (1) supervised \ufb01ne-tuning (SFT), (2)",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_3.png",
+    "paper_id": "custom_upload",
+    "page_number": 3,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 3": {
+    "caption": "Preference results of our models, measured by winrate against the 175B SFT model. Left:",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_11.png",
+    "paper_id": "custom_upload",
+    "page_number": 11,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 4": {
+    "caption": "Metadata results on the API distribution. Note that, due to dataset sizes, these results are",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_12.png",
+    "paper_id": "custom_upload",
+    "page_number": 12,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 5": {
+    "caption": "Comparing our models with FLAN and T0 in terms of Likert scores on a 1-7 scale, on the",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_12.png",
+    "paper_id": "custom_upload",
+    "page_number": 12,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 6": {
+    "caption": "Results on the TruthfulQA dataset. Gray bars indicate ratings of truthfulness; colored bars",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_13.png",
+    "paper_id": "custom_upload",
+    "page_number": 13,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 7": {
+    "caption": "Comparing human evaluations and automatic evaluations (Perspective API scores) on",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_14.png",
+    "paper_id": "custom_upload",
+    "page_number": 14,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 8": {
+    "caption": "Examples of generalization in the 175B PPO-ptx model (InstructGPT 175B) compared to",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_15.png",
+    "paper_id": "custom_upload",
+    "page_number": 15,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 9": {
+    "caption": "Simple mistakes in the 175B PPO-ptx model (InstructGPT 175B) compared to GPT-3 175B",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_16.png",
+    "paper_id": "custom_upload",
+    "page_number": 16,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 10": {
+    "caption": "Excerpt from the instructions given to labelers for \ufb01nal evaluations of model outputs on",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_37.png",
+    "paper_id": "custom_upload",
+    "page_number": 37,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 11": {
+    "caption": "Complete instructions given to labelers for evaluating model outputs for toxicity on the",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_38.png",
+    "paper_id": "custom_upload",
+    "page_number": 38,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 12": {
+    "caption": "Screenshots of our labeling interface. (a) For each output, labelers give a Likert score for",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_39.png",
+    "paper_id": "custom_upload",
+    "page_number": 39,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 13": {
+    "caption": "Tuning FLAN and T0 based on reward model scores",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_43.png",
+    "paper_id": "custom_upload",
+    "page_number": 43,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 14": {
+    "caption": "Winogender: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_45.png",
+    "paper_id": "custom_upload",
+    "page_number": 45,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 15": {
+    "caption": "CrowS-Pairs: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_45.png",
+    "paper_id": "custom_upload",
+    "page_number": 45,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 16": {
+    "caption": "RealToxicityPrompts: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_45.png",
+    "paper_id": "custom_upload",
+    "page_number": 45,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 17": {
+    "caption": "TruthfulQA: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_46.png",
+    "paper_id": "custom_upload",
+    "page_number": 46,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 18": {
+    "caption": "DROP: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_46.png",
+    "paper_id": "custom_upload",
+    "page_number": 46,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 19": {
+    "caption": "QuAC: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_47.png",
+    "paper_id": "custom_upload",
+    "page_number": 47,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 20": {
+    "caption": "Squadv2: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_47.png",
+    "paper_id": "custom_upload",
+    "page_number": 47,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 21": {
+    "caption": "Hellaswag: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_48.png",
+    "paper_id": "custom_upload",
+    "page_number": 48,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 22": {
+    "caption": "RTE: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_48.png",
+    "paper_id": "custom_upload",
+    "page_number": 48,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 23": {
+    "caption": "SST: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_48.png",
+    "paper_id": "custom_upload",
+    "page_number": 48,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 24": {
+    "caption": "WSC: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_49.png",
+    "paper_id": "custom_upload",
+    "page_number": 49,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 25": {
+    "caption": "WMT Fr \u2192En 15: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_49.png",
+    "paper_id": "custom_upload",
+    "page_number": 49,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 26": {
+    "caption": "CNN/DM: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_49.png",
+    "paper_id": "custom_upload",
+    "page_number": 49,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 27": {
+    "caption": "TL;DR: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_50.png",
+    "paper_id": "custom_upload",
+    "page_number": 50,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 28": {
+    "caption": "Zero-shot performance of our models on various public NLP datasets. The 175B PPO",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_51.png",
+    "paper_id": "custom_upload",
+    "page_number": 51,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 29": {
+    "caption": "Few-shot performance of our models on various public NLP datasets (compare to zero-shot",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_52.png",
+    "paper_id": "custom_upload",
+    "page_number": 52,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 30": {
+    "caption": "Metadata ratings as a function of model type and model size",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_53.png",
+    "paper_id": "custom_upload",
+    "page_number": 53,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 31": {
+    "caption": "Likert scores for each of our models",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_54.png",
+    "paper_id": "custom_upload",
+    "page_number": 54,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 32": {
+    "caption": "Bias results on Winogender and CrowS-Pairs.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_54.png",
+    "paper_id": "custom_upload",
+    "page_number": 54,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 33": {
+    "caption": "Evaluation on public NLP datasets as a function of pretraining loss coef\ufb01cient. There is a",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_55.png",
+    "paper_id": "custom_upload",
+    "page_number": 55,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 34": {
+    "caption": "Evaluation on public NLP datasets as a function of KL reward coef\ufb01cient. Increasing the",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_55.png",
+    "paper_id": "custom_upload",
+    "page_number": 55,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 35": {
+    "caption": "Evaluation on public NLP datasets as a function of training episodes",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_57.png",
+    "paper_id": "custom_upload",
+    "page_number": 57,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 36": {
+    "caption": "Likert scores as a function of KL reward coef\ufb01cient. The blue line indicates the reward",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_57.png",
+    "paper_id": "custom_upload",
+    "page_number": 57,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 37": {
+    "caption": "Human likert scores for PPO with different init models.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_57.png",
+    "paper_id": "custom_upload",
+    "page_number": 57,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 38": {
+    "caption": "Human evaluation metrics as a function of learning rates.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_58.png",
+    "paper_id": "custom_upload",
+    "page_number": 58,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 39": {
+    "caption": "Toxicity scores on RealToxicityPrompts as a function of input prompt toxicity. PPO",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_59.png",
+    "paper_id": "custom_upload",
+    "page_number": 59,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 40": {
+    "caption": "Continuity and relative toxicity ratings for the RealToxicityPrompts experiment.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_60.png",
+    "paper_id": "custom_upload",
+    "page_number": 60,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 41": {
+    "caption": "Win rates of PPO-ptx and SFT against 175B GPT-3 in RealToxicityPrompts.",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_60.png",
+    "paper_id": "custom_upload",
+    "page_number": 60,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 42": {
+    "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_62.png",
+    "paper_id": "custom_upload",
+    "page_number": 62,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 43": {
+    "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_63.png",
+    "paper_id": "custom_upload",
+    "page_number": 63,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 44": {
+    "caption": "Model samples on a prompt cherry-picked to show instruction following on potentially",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_63.png",
+    "paper_id": "custom_upload",
+    "page_number": 63,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 45": {
+    "caption": "Model samples on a prompt cherry-picked to show ability to follow instructions to describe",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_64.png",
+    "paper_id": "custom_upload",
+    "page_number": 64,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 46": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_65.png",
+    "paper_id": "custom_upload",
+    "page_number": 65,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 47": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_65.png",
+    "paper_id": "custom_upload",
+    "page_number": 65,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 48": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_66.png",
+    "paper_id": "custom_upload",
+    "page_number": 66,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 49": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_67.png",
+    "paper_id": "custom_upload",
+    "page_number": 67,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  },
+  "Figure 50": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/figures/custom_upload_fig_68.png",
+    "paper_id": "custom_upload",
+    "page_number": 68,
+    "source": "data\\runtime_uploads\\temp_processing.pdf",
+    "source_type": "upload"
+  }
+}

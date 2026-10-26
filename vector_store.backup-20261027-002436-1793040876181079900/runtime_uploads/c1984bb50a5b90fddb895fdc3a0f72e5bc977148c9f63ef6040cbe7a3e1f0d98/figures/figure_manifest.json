@@ -1,0 +1,920 @@
+{
+  "Figure 1": {
+    "caption": "Human evaluations of various models on our API prompt distribution, evaluated by how",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_2.png",
+    "paper_id": "custom_upload",
+    "page_number": 2,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 2": {
+    "caption": "A diagram illustrating the three steps of our method: (1) supervised \ufb01ne-tuning (SFT), (2)",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_3.png",
+    "paper_id": "custom_upload",
+    "page_number": 3,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 3": {
+    "caption": "Preference results of our models, measured by winrate against the 175B SFT model. Left:",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_11.png",
+    "paper_id": "custom_upload",
+    "page_number": 11,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 4": {
+    "caption": "Metadata results on the API distribution. Note that, due to dataset sizes, these results are",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_12.png",
+    "paper_id": "custom_upload",
+    "page_number": 12,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 5": {
+    "caption": "Comparing our models with FLAN and T0 in terms of Likert scores on a 1-7 scale, on the",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_12.png",
+    "paper_id": "custom_upload",
+    "page_number": 12,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 6": {
+    "caption": "Results on the TruthfulQA dataset. Gray bars indicate ratings of truthfulness; colored bars",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_13.png",
+    "paper_id": "custom_upload",
+    "page_number": 13,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 7": {
+    "caption": "Comparing human evaluations and automatic evaluations (Perspective API scores) on",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_14.png",
+    "paper_id": "custom_upload",
+    "page_number": 14,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 8": {
+    "caption": "Examples of generalization in the 175B PPO-ptx model (InstructGPT 175B) compared to",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_15.png",
+    "paper_id": "custom_upload",
+    "page_number": 15,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 9": {
+    "caption": "Simple mistakes in the 175B PPO-ptx model (InstructGPT 175B) compared to GPT-3 175B",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_16.png",
+    "paper_id": "custom_upload",
+    "page_number": 16,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 10": {
+    "caption": "Excerpt from the instructions given to labelers for \ufb01nal evaluations of model outputs on",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_37.png",
+    "paper_id": "custom_upload",
+    "page_number": 37,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 11": {
+    "caption": "Complete instructions given to labelers for evaluating model outputs for toxicity on the",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_38.png",
+    "paper_id": "custom_upload",
+    "page_number": 38,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 12": {
+    "caption": "Screenshots of our labeling interface. (a) For each output, labelers give a Likert score for",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_39.png",
+    "paper_id": "custom_upload",
+    "page_number": 39,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 13": {
+    "caption": "Tuning FLAN and T0 based on reward model scores",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_43.png",
+    "paper_id": "custom_upload",
+    "page_number": 43,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 14": {
+    "caption": "Winogender: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_45.png",
+    "paper_id": "custom_upload",
+    "page_number": 45,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 15": {
+    "caption": "CrowS-Pairs: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_45.png",
+    "paper_id": "custom_upload",
+    "page_number": 45,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 16": {
+    "caption": "RealToxicityPrompts: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_45.png",
+    "paper_id": "custom_upload",
+    "page_number": 45,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 17": {
+    "caption": "TruthfulQA: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_46.png",
+    "paper_id": "custom_upload",
+    "page_number": 46,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 18": {
+    "caption": "DROP: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_46.png",
+    "paper_id": "custom_upload",
+    "page_number": 46,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 19": {
+    "caption": "QuAC: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_47.png",
+    "paper_id": "custom_upload",
+    "page_number": 47,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 20": {
+    "caption": "Squadv2: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_47.png",
+    "paper_id": "custom_upload",
+    "page_number": 47,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 21": {
+    "caption": "Hellaswag: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_48.png",
+    "paper_id": "custom_upload",
+    "page_number": 48,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 22": {
+    "caption": "RTE: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_48.png",
+    "paper_id": "custom_upload",
+    "page_number": 48,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 23": {
+    "caption": "SST: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_48.png",
+    "paper_id": "custom_upload",
+    "page_number": 48,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 24": {
+    "caption": "WSC: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_49.png",
+    "paper_id": "custom_upload",
+    "page_number": 49,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 25": {
+    "caption": "WMT Fr \u2192En 15: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_49.png",
+    "paper_id": "custom_upload",
+    "page_number": 49,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 26": {
+    "caption": "CNN/DM: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_49.png",
+    "paper_id": "custom_upload",
+    "page_number": 49,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 27": {
+    "caption": "TL;DR: prompting, examples, and dataset features.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_50.png",
+    "paper_id": "custom_upload",
+    "page_number": 50,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 28": {
+    "caption": "Zero-shot performance of our models on various public NLP datasets. The 175B PPO",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_51.png",
+    "paper_id": "custom_upload",
+    "page_number": 51,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 29": {
+    "caption": "Few-shot performance of our models on various public NLP datasets (compare to zero-shot",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_52.png",
+    "paper_id": "custom_upload",
+    "page_number": 52,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 30": {
+    "caption": "Metadata ratings as a function of model type and model size",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_53.png",
+    "paper_id": "custom_upload",
+    "page_number": 53,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 31": {
+    "caption": "Likert scores for each of our models",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_54.png",
+    "paper_id": "custom_upload",
+    "page_number": 54,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 32": {
+    "caption": "Bias results on Winogender and CrowS-Pairs.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_54.png",
+    "paper_id": "custom_upload",
+    "page_number": 54,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 33": {
+    "caption": "Evaluation on public NLP datasets as a function of pretraining loss coef\ufb01cient. There is a",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_55.png",
+    "paper_id": "custom_upload",
+    "page_number": 55,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 34": {
+    "caption": "Evaluation on public NLP datasets as a function of KL reward coef\ufb01cient. Increasing the",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_55.png",
+    "paper_id": "custom_upload",
+    "page_number": 55,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 35": {
+    "caption": "Evaluation on public NLP datasets as a function of training episodes",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_57.png",
+    "paper_id": "custom_upload",
+    "page_number": 57,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 36": {
+    "caption": "Likert scores as a function of KL reward coef\ufb01cient. The blue line indicates the reward",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_57.png",
+    "paper_id": "custom_upload",
+    "page_number": 57,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 37": {
+    "caption": "Human likert scores for PPO with different init models.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_57.png",
+    "paper_id": "custom_upload",
+    "page_number": 57,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 38": {
+    "caption": "Human evaluation metrics as a function of learning rates.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_58.png",
+    "paper_id": "custom_upload",
+    "page_number": 58,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 39": {
+    "caption": "Toxicity scores on RealToxicityPrompts as a function of input prompt toxicity. PPO",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_59.png",
+    "paper_id": "custom_upload",
+    "page_number": 59,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 40": {
+    "caption": "Continuity and relative toxicity ratings for the RealToxicityPrompts experiment.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_60.png",
+    "paper_id": "custom_upload",
+    "page_number": 60,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 41": {
+    "caption": "Win rates of PPO-ptx and SFT against 175B GPT-3 in RealToxicityPrompts.",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_60.png",
+    "paper_id": "custom_upload",
+    "page_number": 60,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 42": {
+    "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_62.png",
+    "paper_id": "custom_upload",
+    "page_number": 62,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 43": {
+    "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_63.png",
+    "paper_id": "custom_upload",
+    "page_number": 63,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 44": {
+    "caption": "Model samples on a prompt cherry-picked to show instruction following on potentially",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_63.png",
+    "paper_id": "custom_upload",
+    "page_number": 63,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 45": {
+    "caption": "Model samples on a prompt cherry-picked to show ability to follow instructions to describe",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_64.png",
+    "paper_id": "custom_upload",
+    "page_number": 64,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 46": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_65.png",
+    "paper_id": "custom_upload",
+    "page_number": 65,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 47": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_65.png",
+    "paper_id": "custom_upload",
+    "page_number": 65,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 48": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_66.png",
+    "paper_id": "custom_upload",
+    "page_number": 66,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 49": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_67.png",
+    "paper_id": "custom_upload",
+    "page_number": 67,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "Figure 50": {
+    "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+    "file_path": "vector_store/runtime_uploads/c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98/figures/custom_upload_fig_68.png",
+    "paper_id": "custom_upload",
+    "page_number": 68,
+    "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf",
+    "source_type": "upload"
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_2": {
+    "Figure 1": {
+      "figure_id": "Figure 1",
+      "visual_type": "figure",
+      "caption": "Human evaluations of various models on our API prompt distribution, evaluated by how",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_2_fig_1.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 2,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_3": {
+    "Figure 2": {
+      "figure_id": "Figure 2",
+      "visual_type": "figure",
+      "caption": "A diagram illustrating the three steps of our method: (1) supervised \ufb01ne-tuning (SFT), (2)",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_3_image_1.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 3,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_11": {
+    "Figure 3": {
+      "figure_id": "Figure 3",
+      "visual_type": "figure",
+      "caption": "Preference results of our models, measured by winrate against the 175B SFT model. Left:",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_11_fig_3.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 11,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_12": {
+    "Figure 4": {
+      "figure_id": "Figure 4",
+      "visual_type": "figure",
+      "caption": "Metadata results on the API distribution. Note that, due to dataset sizes, these results are",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_12_fig_4.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 12,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 5": {
+      "figure_id": "Figure 5",
+      "visual_type": "figure",
+      "caption": "Comparing our models with FLAN and T0 in terms of Likert scores on a 1-7 scale, on the",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_12_fig_5.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 12,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_13": {
+    "Figure 6": {
+      "figure_id": "Figure 6",
+      "visual_type": "figure",
+      "caption": "Results on the TruthfulQA dataset. Gray bars indicate ratings of truthfulness; colored bars",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_13_fig_6.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 13,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_14": {
+    "Figure 7": {
+      "figure_id": "Figure 7",
+      "visual_type": "figure",
+      "caption": "Comparing human evaluations and automatic evaluations (Perspective API scores) on",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_14_fig_7.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 14,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_15": {
+    "Figure 8": {
+      "figure_id": "Figure 8",
+      "visual_type": "figure",
+      "caption": "Examples of generalization in the 175B PPO-ptx model (InstructGPT 175B) compared to",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_15_fig_8.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 15,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_16": {
+    "Figure 9": {
+      "figure_id": "Figure 9",
+      "visual_type": "figure",
+      "caption": "Simple mistakes in the 175B PPO-ptx model (InstructGPT 175B) compared to GPT-3 175B",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_16_fig_9.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 16,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_37": {
+    "Figure 10": {
+      "figure_id": "Figure 10",
+      "visual_type": "figure",
+      "caption": "Excerpt from the instructions given to labelers for \ufb01nal evaluations of model outputs on",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_37_fig_10.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 37,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_38": {
+    "Figure 11": {
+      "figure_id": "Figure 11",
+      "visual_type": "figure",
+      "caption": "Complete instructions given to labelers for evaluating model outputs for toxicity on the",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_38_fig_11.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 38,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_39": {
+    "Figure 12": {
+      "figure_id": "Figure 12",
+      "visual_type": "figure",
+      "caption": "Screenshots of our labeling interface. (a) For each output, labelers give a Likert score for",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_39_image_1.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 39,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_43": {
+    "Figure 13": {
+      "figure_id": "Figure 13",
+      "visual_type": "figure",
+      "caption": "Tuning FLAN and T0 based on reward model scores",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_43_fig_13.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 43,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_45": {
+    "Figure 14": {
+      "figure_id": "Figure 14",
+      "visual_type": "figure",
+      "caption": "Winogender: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_45_fig_14.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 45,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 15": {
+      "figure_id": "Figure 15",
+      "visual_type": "figure",
+      "caption": "CrowS-Pairs: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_45_fig_15.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 45,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 16": {
+      "figure_id": "Figure 16",
+      "visual_type": "figure",
+      "caption": "RealToxicityPrompts: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_45_fig_16.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 45,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_46": {
+    "Figure 17": {
+      "figure_id": "Figure 17",
+      "visual_type": "figure",
+      "caption": "TruthfulQA: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_46_fig_17.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 46,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 18": {
+      "figure_id": "Figure 18",
+      "visual_type": "figure",
+      "caption": "DROP: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_46_fig_18.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 46,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_47": {
+    "Figure 19": {
+      "figure_id": "Figure 19",
+      "visual_type": "figure",
+      "caption": "QuAC: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_47_fig_19.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 47,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 20": {
+      "figure_id": "Figure 20",
+      "visual_type": "figure",
+      "caption": "Squadv2: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_47_fig_20.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 47,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_48": {
+    "Figure 21": {
+      "figure_id": "Figure 21",
+      "visual_type": "figure",
+      "caption": "Hellaswag: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_48_fig_21.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 48,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 22": {
+      "figure_id": "Figure 22",
+      "visual_type": "figure",
+      "caption": "RTE: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_48_fig_22.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 48,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 23": {
+      "figure_id": "Figure 23",
+      "visual_type": "figure",
+      "caption": "SST: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_48_fig_23.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 48,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_49": {
+    "Figure 24": {
+      "figure_id": "Figure 24",
+      "visual_type": "figure",
+      "caption": "WSC: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_49_fig_24.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 49,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 25": {
+      "figure_id": "Figure 25",
+      "visual_type": "figure",
+      "caption": "WMT Fr \u2192En 15: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_49_fig_25.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 49,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 26": {
+      "figure_id": "Figure 26",
+      "visual_type": "figure",
+      "caption": "CNN/DM: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_49_fig_26.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 49,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_50": {
+    "Figure 27": {
+      "figure_id": "Figure 27",
+      "visual_type": "figure",
+      "caption": "TL;DR: prompting, examples, and dataset features.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_50_fig_27.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 50,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_51": {
+    "Figure 28": {
+      "figure_id": "Figure 28",
+      "visual_type": "figure",
+      "caption": "Zero-shot performance of our models on various public NLP datasets. The 175B PPO",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_51_fig_28.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 51,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_52": {
+    "Figure 29": {
+      "figure_id": "Figure 29",
+      "visual_type": "figure",
+      "caption": "Few-shot performance of our models on various public NLP datasets (compare to zero-shot",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_52_fig_29.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 52,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_53": {
+    "Figure 30": {
+      "figure_id": "Figure 30",
+      "visual_type": "figure",
+      "caption": "Metadata ratings as a function of model type and model size",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_53_fig_30.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 53,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_54": {
+    "Figure 31": {
+      "figure_id": "Figure 31",
+      "visual_type": "figure",
+      "caption": "Likert scores for each of our models",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_54_fig_31.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 54,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 32": {
+      "figure_id": "Figure 32",
+      "visual_type": "figure",
+      "caption": "Bias results on Winogender and CrowS-Pairs.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_54_fig_32.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 54,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_55": {
+    "Figure 33": {
+      "figure_id": "Figure 33",
+      "visual_type": "figure",
+      "caption": "Evaluation on public NLP datasets as a function of pretraining loss coef\ufb01cient. There is a",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_55_fig_33.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 55,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 34": {
+      "figure_id": "Figure 34",
+      "visual_type": "figure",
+      "caption": "Evaluation on public NLP datasets as a function of KL reward coef\ufb01cient. Increasing the",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_55_fig_34.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 55,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_57": {
+    "Figure 35": {
+      "figure_id": "Figure 35",
+      "visual_type": "figure",
+      "caption": "Evaluation on public NLP datasets as a function of training episodes",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_57_fig_35.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 57,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 36": {
+      "figure_id": "Figure 36",
+      "visual_type": "figure",
+      "caption": "Likert scores as a function of KL reward coef\ufb01cient. The blue line indicates the reward",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_57_fig_36.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 57,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 37": {
+      "figure_id": "Figure 37",
+      "visual_type": "figure",
+      "caption": "Human likert scores for PPO with different init models.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_57_fig_37.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 57,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_58": {
+    "Figure 38": {
+      "figure_id": "Figure 38",
+      "visual_type": "figure",
+      "caption": "Human evaluation metrics as a function of learning rates.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_58_fig_38.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 58,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_59": {
+    "Figure 39": {
+      "figure_id": "Figure 39",
+      "visual_type": "figure",
+      "caption": "Toxicity scores on RealToxicityPrompts as a function of input prompt toxicity. PPO",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_59_fig_39.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 59,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_60": {
+    "Figure 40": {
+      "figure_id": "Figure 40",
+      "visual_type": "figure",
+      "caption": "Continuity and relative toxicity ratings for the RealToxicityPrompts experiment.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_60_fig_40.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 60,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 41": {
+      "figure_id": "Figure 41",
+      "visual_type": "figure",
+      "caption": "Win rates of PPO-ptx and SFT against 175B GPT-3 in RealToxicityPrompts.",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_60_fig_41.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 60,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_62": {
+    "Figure 42": {
+      "figure_id": "Figure 42",
+      "visual_type": "figure",
+      "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_62_fig_42.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 62,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_63": {
+    "Figure 43": {
+      "figure_id": "Figure 43",
+      "visual_type": "figure",
+      "caption": "Model samples on a prompt cherry-picked to show instruction following behavior in other",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_63_fig_43.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 63,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 44": {
+      "figure_id": "Figure 44",
+      "visual_type": "figure",
+      "caption": "Model samples on a prompt cherry-picked to show instruction following on potentially",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_63_fig_44.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 63,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_64": {
+    "Figure 45": {
+      "figure_id": "Figure 45",
+      "visual_type": "figure",
+      "caption": "Model samples on a prompt cherry-picked to show ability to follow instructions to describe",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_64_fig_45.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 64,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_65": {
+    "Figure 46": {
+      "figure_id": "Figure 46",
+      "visual_type": "figure",
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_65_fig_46.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 65,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    },
+    "Figure 47": {
+      "figure_id": "Figure 47",
+      "visual_type": "figure",
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_65_fig_47.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 65,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_66": {
+    "Figure 48": {
+      "figure_id": "Figure 48",
+      "visual_type": "figure",
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_66_fig_48.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 66,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_67": {
+    "Figure 49": {
+      "figure_id": "Figure 49",
+      "visual_type": "figure",
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_67_fig_49.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 67,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  },
+  "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_68": {
+    "Figure 50": {
+      "figure_id": "Figure 50",
+      "visual_type": "figure",
+      "caption": "Labeler-written prompt from our dataset, along with the human-written demonstration,",
+      "file_path": "D:\\enhanced rag model\\vector_store\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98\\figures\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98_page_68_fig_50.png",
+      "paper_id": "c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98",
+      "page_number": 68,
+      "source": "data\\runtime_uploads\\c1984bb50a5b90fddb895fdc3a0f72e5bc977148c9f63ef6040cbe7a3e1f0d98.pdf"
+    }
+  }
+}

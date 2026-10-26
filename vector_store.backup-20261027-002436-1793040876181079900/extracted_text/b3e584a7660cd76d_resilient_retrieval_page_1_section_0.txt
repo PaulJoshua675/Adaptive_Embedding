@@ -1,0 +1,1 @@
+This study evaluates a resilient retrieval pipeline for academic documents. The proposed index reports 93 percent citation coverage.

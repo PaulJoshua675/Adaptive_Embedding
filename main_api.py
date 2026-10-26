@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from config import DATASET_DIR, VECTOR_STORE_DIR
-from src.multilingual import SUPPORTED_LANGUAGES
+from src.multilingual import MultilingualResponseError, SUPPORTED_LANGUAGES
 from src.rag_pipeline import answer_query_details, build_and_save_index
 
 app = FastAPI(title="Research Intelligence RAG API", version="1.0.0")
@@ -60,7 +60,11 @@ def ask(request: AskRequest) -> dict[str, Any]:
             top_k=request.top_k,
             response_language=request.response_language,
         )
-    except (OSError, RuntimeError, ValueError, KeyError) as exc:
+    except MultilingualResponseError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except (OSError, RuntimeError, KeyError) as exc:
         raise HTTPException(status_code=503, detail=f"RAG query failed: {exc}") from exc
 
 

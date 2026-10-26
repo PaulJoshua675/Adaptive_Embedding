@@ -22,6 +22,7 @@ from .embeddings import EmbeddingRegistry
 from .embedding_model import EmbeddingModel
 from .extract_pdf import extract_documents_from_path
 from .generator import AnswerGenerator, format_sources
+from .llm import generation_cache_version
 from .ingestion import ingest_corpus
 from .cache import response_cache
 from .router import route_query
@@ -35,23 +36,11 @@ from .retrieval import (
     resolve_index_path,
     section_from_query,
 )
-from .multilingual import resolve_response_language
+from .multilingual import localized_response_text, resolve_response_language
 from .utils import ensure_directory, write_text
 from .vector_db import FaissVectorStore, MultiVectorStore
 from .preprocessing import trim_query_tokens
 from .profiler import profile_stage
-
-try:
-    import streamlit as st
-except ImportError:  # pragma: no cover - optional runtime dependency
-    st = None
-
-
-def _cache_data(function):
-    if st is None:
-        return lru_cache(maxsize=512)(function)
-    return st.cache_data(show_spinner=False, max_entries=512)(function)
-
 
 @lru_cache(maxsize=512)
 def _cached_final_response(
@@ -62,8 +51,9 @@ def _cached_final_response(
     response_language: str,
     fallback: bool,
     fast_mode: bool,
+    generation_version: str,
 ) -> str:
-    del query_key, response_identity
+    del query_key, response_identity, generation_version
     retrieved = pickle.loads(_serialized_passages)
     if not isinstance(retrieved, list):
         raise TypeError("Cached RAG passages must deserialize to a list")
@@ -127,6 +117,7 @@ def _synthesize_response(
         response_language,
         fallback,
         fast_mode,
+        generation_cache_version(),
     )
     return {
         "answer": answer,
@@ -166,6 +157,7 @@ def _cache_namespace(
         str(fast_mode),
         paper_match.group(1) if paper_match else "",
         section,
+        generation_cache_version(),
     ]
     if document_identifier:
         parts.append(document_identifier)
@@ -231,6 +223,196 @@ def _lookup_exact_response(
     return response_cache.get_exact(query, namespace_prefix)
 
 
+def _format_cached_query_response(result: Dict[str, object]) -> Dict[str, object]:
+    passages = result.get("retrieved_passages", result.get("chunks", []))
+    if not isinstance(passages, list):
+        raise TypeError("Cached RAG response passages must be a list")
+
+    metrics = result.get("eval_metrics", result.get("evaluation_metrics", {}))
+    if not isinstance(metrics, dict):
+        metrics = {}
+    timings = result.get("profile_times", result.get("performance_timings_ms", {}))
+    if not isinstance(timings, dict):
+        timings = {}
+
+    answer = str(result.get("answer", ""))
+    citations = str(result.get("citations", result.get("provenance", ""))).strip()
+    response_language = str(result.get("response_language", "English"))
+    query_type = str(result.get("query_type", "unknown"))
+    embedding_key = str(result.get("embedding_key", "unknown"))
+    embedding_model = str(result.get("embedding_model", embedding_key))
+    confidence = float(result.get("route_confidence", 0.0))
+    route_summary = (
+        f"{localized_response_text(response_language, 'ml_route')}: {query_type} ({confidence:.1%}) | "
+        f"{localized_response_text(response_language, 'embedding_backend')}: {embedding_key} ({embedding_model}) | "
+        f"{localized_response_text(response_language, 'retrieved_passages')}: {len(passages)}"
+    )
+
+    markdown_blocks = [f"> {route_summary}", answer]
+    if citations:
+        markdown_blocks.extend((f"### {localized_response_text(response_language, 'sources')}", citations))
+    passage_blocks = []
+    for index, passage in enumerate(passages, start=1):
+        if not isinstance(passage, dict):
+            continue
+        passage_text = str(passage.get("text", passage.get("content", ""))).strip()
+        if not passage_text:
+            continue
+        source = str(
+            passage.get(
+                "source",
+                passage.get("document_id", localized_response_text(response_language, "unknown_source")),
+            )
+        )
+        page = passage.get(
+            "page_number",
+            passage.get("page", localized_response_text(response_language, "page_unavailable")),
+        )
+        passage_blocks.append(
+            f"**{index}. {source} | {localized_response_text(response_language, 'page')} {page}**\n\n{passage_text}"
+        )
+    if passage_blocks:
+        markdown_blocks.extend(
+            (
+                f"### {localized_response_text(response_language, 'retrieved_passages')}",
+                "\n\n".join(passage_blocks),
+            )
+        )
+    if metrics:
+        markdown_blocks.extend(
+            (
+                f"### {localized_response_text(response_language, 'retrieval_evaluation')}",
+                f"{localized_response_text(response_language, 'accuracy')}: **{float(metrics.get('accuracy', 0.0)):.3f}**  "
+                f"{localized_response_text(response_language, 'precision')}: **{float(metrics.get('precision', 0.0)):.3f}**  "
+                f"{localized_response_text(response_language, 'recall')}: **{float(metrics.get('recall', 0.0)):.3f}**  "
+                f"{localized_response_text(response_language, 'f1_score')}: **{float(metrics.get('f1', 0.0)):.3f}**",
+            )
+        )
+    timing_labels = (
+        ("intent_classification_time", "intent_classification_ms"),
+        ("faiss_index_lookup_time", "faiss_index_lookup_ms"),
+        ("cross_encoder_reranking_time", "cross_encoder_reranking_ms"),
+        ("answer_generation_time", "answer_generation_ms"),
+    )
+    available_timings = [
+        f"{localized_response_text(response_language, label)}: {float(timings[key]):.3f}"
+        for label, key in timing_labels
+        if timings.get(key) is not None
+    ]
+    if timings.get("pipeline_round_trip_ms") is not None:
+        markdown_blocks.append(
+            f"{localized_response_text(response_language, 'original_rag_pipeline')}: "
+            f"{float(timings['pipeline_round_trip_ms']):.1f} ms"
+        )
+    if available_timings:
+        markdown_blocks.append(
+            f"{localized_response_text(response_language, 'timing_breakdown')}: "
+            + " | ".join(available_timings)
+        )
+
+    figure_fields = (
+        "resolved_path",
+        "file_path",
+        "path",
+        "image_path",
+        "image_url",
+        "caption",
+        "alt_text",
+        "alt-text",
+        "number",
+        "figure_number",
+        "figure_id",
+        "paper_id",
+        "page_number",
+    )
+    figure_candidates = []
+    matched_figure = result.get("matched_figure")
+    if isinstance(matched_figure, dict):
+        figure_candidates.append((matched_figure, True))
+    figures = result.get("figures", [])
+    if isinstance(figures, list):
+        figure_candidates.extend(
+            (figure, False) for figure in figures if isinstance(figure, dict)
+        )
+    for passage in passages:
+        if not isinstance(passage, dict):
+            continue
+        if str(passage.get("visual_type", "")).casefold() not in {
+            "figure",
+            "image",
+            "diagram",
+            "chart",
+            "plot",
+        }:
+            continue
+        passage_figures = passage.get("figures", [])
+        if isinstance(passage_figures, list):
+            figure_candidates.extend(
+                (figure, True) for figure in passage_figures if isinstance(figure, dict)
+            )
+        if any(passage.get(key) for key in figure_fields[:5]):
+            figure_candidates.append(
+                (
+                    {
+                        **passage,
+                        "caption": passage.get(
+                            "caption",
+                            passage.get("alt_text", passage.get("alt-text", "")),
+                        ),
+                    },
+                    True,
+                )
+            )
+    cached_figures = [
+        {
+            **{key: figure[key] for key in figure_fields if key in figure},
+            "_matched": is_matched,
+        }
+        for figure, is_matched in figure_candidates
+    ]
+
+    return {
+        "answer": answer,
+        "citations": citations,
+        "eval_metrics": dict(metrics),
+        "profile_times": dict(timings),
+        "query_type": query_type,
+        "route_confidence": confidence,
+        "embedding_key": embedding_key,
+        "embedding_model": embedding_model,
+        "response_language": response_language,
+        "fallback": bool(result.get("fallback")),
+        "semantic_cache_hit": True,
+        "formatted_markdown": "\n\n".join(markdown_blocks),
+        "figures": cached_figures,
+    }
+
+
+@lru_cache(maxsize=256)
+def _cached_query_display(
+    query: str,
+    doc_hash: str,
+    index_identity: str,
+    response_language: str,
+    top_k: int,
+    fast_mode: bool,
+    cache_generation: int,
+) -> Dict[str, object] | None:
+    del cache_generation
+    namespace = _cache_namespace(
+        index_identity,
+        response_language,
+        top_k,
+        fast_mode,
+        query,
+        document_identifier=doc_hash or None,
+    )
+    result = response_cache.get_exact(query, namespace + "|")
+    if result is None:
+        return None
+    return _format_cached_query_response(result)
+
+
 def _cacheable_query(query: str) -> bool:
     return not re.search(
         r"\b(?:figure|fig\.?|diagram|chart|plot|image|picture|dataset|benchmark|results?|trend|accuracy|scores?)\b",
@@ -257,7 +439,7 @@ def _cached_response(
     return cached
 
 
-@_cache_data
+@lru_cache(maxsize=256)
 def _read_compact_query_metadata(metadata_path: str, modified_ns: int, size: int) -> Dict[str, object]:
     del modified_ns, size
     with Path(metadata_path).open("rb") as handle:
@@ -661,6 +843,38 @@ def get_cached_query_response(
         document_identifier=document_identifier,
     )
     return _cached_exact_response(question, exact_namespace + "|", stream_consumer)
+
+
+def get_cached_query_display(
+    question: str,
+    vector_store_dir: str | Path | None = None,
+    top_k: int | None = None,
+    response_language: str | None = None,
+    fast_mode: bool = False,
+    document_identifier: str | None = None,
+) -> Dict[str, object] | None:
+    """Return preformatted cached output without copying retrieved passage objects."""
+    if not _cacheable_query(question):
+        return None
+    language = resolve_response_language(question, response_language)
+    store_dir = resolve_index_path(vector_store_dir or None) if vector_store_dir is None else Path(vector_store_dir)
+    metadata_path = store_dir / "metadata.pkl"
+    if not metadata_path.is_file():
+        return None
+
+    stat = metadata_path.stat()
+    index_identity = f"{metadata_path.resolve()}:{stat.st_mtime_ns}:{stat.st_size}"
+    result_limit = min(max(int(top_k if top_k is not None else DEFAULT_TOP_K), 3), 5)
+    cached = _cached_query_display(
+        re.sub(r"\s+", " ", question).strip().casefold(),
+        document_identifier or "",
+        index_identity,
+        language,
+        result_limit,
+        fast_mode,
+        response_cache.generation,
+    )
+    return cached
 
 
 def answer_query_details(

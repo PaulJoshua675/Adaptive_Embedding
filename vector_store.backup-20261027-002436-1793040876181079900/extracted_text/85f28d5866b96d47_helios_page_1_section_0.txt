@@ -1,0 +1,1 @@
+The Helios retrieval system combines page-aware chunking with a local embedding index. The experiment reports 91 percent recall for satellite image classification.

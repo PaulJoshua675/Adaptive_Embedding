@@ -202,6 +202,97 @@ def test_exact_pipeline_cache_skips_classifier_and_index_loading(tmp_path, monke
     assert cache_elapsed_ms < 175
 
 
+def test_cached_query_display_uses_bounded_lru_and_omits_passage_objects(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    from src import rag_pipeline
+    from src.rag_pipeline import answer_query_details, build_and_save_index, get_cached_query_display
+
+    dataset = tmp_path / "display_dataset"
+    dataset.mkdir()
+    (dataset / "paper.txt").write_text(
+        "RAG uses retrieved passages to ground research answers in evidence.",
+        encoding="utf-8",
+    )
+    index_dir = tmp_path / "display_vector_store"
+    build_and_save_index(dataset, index_dir)
+    response_cache.clear()
+    rag_pipeline._cached_query_display.cache_clear()
+    query = "How does RAG ground research answers?"
+    answer_query_details(query, index_dir, fast_mode=True)
+
+    first = get_cached_query_display(query, index_dir, fast_mode=True)
+
+    assert first is not None
+    assert "formatted_markdown" in first
+    assert first["answer"] in first["formatted_markdown"]
+    assert first["citations"] in first["formatted_markdown"]
+    assert "Retrieval evaluation" in first["formatted_markdown"]
+    assert "Retrieved passages" in first["formatted_markdown"]
+    assert "RAG uses retrieved passages" in first["formatted_markdown"]
+    assert "chunks" not in first
+    assert "retrieved_passages" not in first
+    assert rag_pipeline._cached_query_display.cache_parameters()["maxsize"] == 256
+    assert rag_pipeline._read_compact_query_metadata.cache_parameters()["maxsize"] == 256
+    assert rag_pipeline._cached_query_display.cache_info().misses == 1
+    assert (
+        get_cached_query_display(
+            query,
+            index_dir,
+            fast_mode=True,
+            document_identifier="different-document",
+        )
+        is None
+    )
+
+    def unexpected_lookup(*args, **kwargs):
+        raise AssertionError("formatted LRU cache miss")
+
+    monkeypatch.setattr(response_cache, "get_exact", unexpected_lookup)
+    started = time.perf_counter()
+    second = get_cached_query_display(query, index_dir, fast_mode=True)
+    elapsed_ms = (time.perf_counter() - started) * 1000
+
+    assert second == first
+    assert second is first
+    assert elapsed_ms < 175
+    assert rag_pipeline._cached_query_display.cache_info().hits == 1
+    assert rag_pipeline._cached_query_display.cache_info().misses == 2
+
+
+def test_cached_query_display_localizes_metadata_for_target_language():
+    from src.rag_pipeline import _format_cached_query_response
+
+    payload = _format_cached_query_response(
+        {
+            "answer": "Respuesta fundamentada.",
+            "citations": "Paper citation.",
+            "response_language": "Spanish",
+            "query_type": "conceptual_general",
+            "embedding_key": "e5",
+            "embedding_model": "multilingual-model",
+            "route_confidence": 0.8,
+            "chunks": [
+                {
+                    "text": "Contexto recuperado.",
+                    "source": "paper.pdf",
+                    "page_number": 2,
+                }
+            ],
+            "eval_metrics": {"accuracy": 1, "precision": 1, "recall": 1, "f1": 1},
+        }
+    )
+
+    markdown = payload["formatted_markdown"]
+    assert "Ruta de ML:" in markdown
+    assert "Backend de embeddings:" in markdown
+    assert "### Fuentes" in markdown
+    assert "### Pasajes recuperados" in markdown
+    assert "### Evaluación de recuperación" in markdown
+    assert "Accuracy:" not in markdown
+
+
 def test_custom_document_cache_is_scoped_to_document_identifier(tmp_path, monkeypatch) -> None:
     from src.rag_pipeline import (
         answer_query_details,

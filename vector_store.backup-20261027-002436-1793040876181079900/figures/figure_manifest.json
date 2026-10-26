@@ -1,0 +1,566 @@
+{
+  "Figure 1": {
+    "caption": "Top: LIBERO-PeRM contains five procedurally generated task suites with pipeline-generated, human-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22372_fig_1.png",
+    "paper_id": "2610.22372",
+    "page_number": 2
+  },
+  "Figure 2": {
+    "caption": "LIBERO-PeRM dataset statistics. (a) Distribution of tasks by task suite. (b) Distribution of tasks by",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22372_fig_2.png",
+    "paper_id": "2610.22372",
+    "page_number": 4
+  },
+  "Figure 3": {
+    "caption": "Data generation pipeline for personalized manipulation. Building on the LIBERO framework, the",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22372_fig_3.png",
+    "paper_id": "2610.22372",
+    "page_number": 5
+  },
+  "Figure 4": {
+    "caption": "provides detailed evidence for these observations. First, the in-domain SR and SA curves",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22372_fig_4.png",
+    "paper_id": "2610.22372",
+    "page_number": 9
+  },
+  "Figure 5": {
+    "caption": "Spatial and Temporal Flexibility of our method, with 4RC as baseline. (a) Video depth",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22371_fig_5.png",
+    "paper_id": "2610.22371",
+    "page_number": 8
+  },
+  "Figure 6": {
+    "caption": "Displacement Map and Point Cloud. Points are mean-normalized to unit scale before",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22371_fig_6.png",
+    "paper_id": "2610.22371",
+    "page_number": 9
+  },
+  "Figure 7": {
+    "caption": "Additional Qualitative Results of motion tracking, point cloud reconstruction and camera",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22371_fig_7.png",
+    "paper_id": "2610.22371",
+    "page_number": 18
+  },
+  "Figure 8": {
+    "caption": "Confidence Filtering for flying point suppression.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22371_fig_8.png",
+    "paper_id": "2610.22371",
+    "page_number": 19
+  },
+  "Figure 9": {
+    "caption": "Human preference study on PixArt-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_9.png",
+    "paper_id": "2610.22370",
+    "page_number": 10
+  },
+  "Figure 10": {
+    "caption": "Additional PixArt-\u03b1 results under different compression ratios. Unlike prior methods,",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_10.png",
+    "paper_id": "2610.22370",
+    "page_number": 17
+  },
+  "Figure 11": {
+    "caption": "Additional FLUX results under different compression ratios. Unlike prior methods,",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_11.png",
+    "paper_id": "2610.22370",
+    "page_number": 17
+  },
+  "Figure 12": {
+    "caption": "SD 1.5 results under different compression ratios. Unlike prior methods, DaTMe more",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_12.png",
+    "paper_id": "2610.22370",
+    "page_number": 19
+  },
+  "Figure 13": {
+    "caption": "SDXL results under different compression ratios. Unlike prior methods, DaTMe more",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_13.png",
+    "paper_id": "2610.22370",
+    "page_number": 19
+  },
+  "Figure 14": {
+    "caption": "Difference in merging maps. Black spots indicate the destinations of merged source",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_14.png",
+    "paper_id": "2610.22370",
+    "page_number": 19
+  },
+  "Figure 15": {
+    "caption": "Visualization of different grid sizes",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_15.png",
+    "paper_id": "2610.22370",
+    "page_number": 20
+  },
+  "Figure 16": {
+    "caption": "Additional PixArt-\u03b1 results.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_16.png",
+    "paper_id": "2610.22370",
+    "page_number": 20
+  },
+  "Figure 17": {
+    "caption": "Additional FLUX results.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_17.png",
+    "paper_id": "2610.22370",
+    "page_number": 20
+  },
+  "Figure 18": {
+    "caption": "Limitations. In highly complex",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_18.png",
+    "paper_id": "2610.22370",
+    "page_number": 18
+  },
+  "Figure 19": {
+    "caption": "Example questionnaire for the human preference study. Each evaluation sample",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_19.png",
+    "paper_id": "2610.22370",
+    "page_number": 21
+  },
+  "Figure 20": {
+    "caption": "Door Close: selected test actions.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22364_fig_20.png",
+    "paper_id": "2610.22364",
+    "page_number": 35
+  },
+  "Figure 21": {
+    "caption": "Stick Balance: selected test actions.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22364_fig_21.png",
+    "paper_id": "2610.22364",
+    "page_number": 36
+  },
+  "Figure 22": {
+    "caption": "Soft Pull: selected test actions.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22364_fig_22.png",
+    "paper_id": "2610.22364",
+    "page_number": 37
+  },
+  "Figure 23": {
+    "caption": "Decision 13 (+0.60, 2.7 m \u21922.1 m). Bids: TURNER 0.2, MOVER 0.8, STOPPER 0;",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22322_fig_23.png",
+    "paper_id": "2610.22322",
+    "page_number": 35
+  },
+  "Figure 24": {
+    "caption": "Decision 17 (+2.50, 2.0 m \u21922.0 m, success). Bids: TURNER 0.2, MOVER 0.2, STOPPER",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22322_fig_24.png",
+    "paper_id": "2610.22322",
+    "page_number": 35
+  },
+  "Figure 25": {
+    "caption": "C-index at the 50th quantile on the small held-out datasets, compared to the C-index",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_25.png",
+    "paper_id": "2610.22242",
+    "page_number": 38
+  },
+  "Figure 26": {
+    "caption": "Critical difference diagram of average ranks on the small held-out datasets (lower",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_26.png",
+    "paper_id": "2610.22242",
+    "page_number": 38
+  },
+  "Figure 27": {
+    "caption": "Pairwise win rate in the C-index at the 50th quantile on the small held-out datasets:",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_27.png",
+    "paper_id": "2610.22242",
+    "page_number": 39
+  },
+  "Figure 28": {
+    "caption": "Pareto front of mean C-index on the 50th quantile (higher is better) and fit + predict",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_28.png",
+    "paper_id": "2610.22242",
+    "page_number": 39
+  },
+  "Figure 29": {
+    "caption": "KM calibration on the small held-out datasets (lower is better). The points show",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_29.png",
+    "paper_id": "2610.22242",
+    "page_number": 40
+  },
+  "Figure 30": {
+    "caption": "Critical difference diagram of average ranks on the small held-out datasets (lower",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_30.png",
+    "paper_id": "2610.22242",
+    "page_number": 40
+  },
+  "Figure 31": {
+    "caption": "Pairwise win rate in the KM-calibration on the small held-out datasets: the fraction",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_31.png",
+    "paper_id": "2610.22242",
+    "page_number": 41
+  },
+  "Figure 32": {
+    "caption": "MAE on the small held-out datasets, compared to the MAE obtained with a Kaplan-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_32.png",
+    "paper_id": "2610.22242",
+    "page_number": 42
+  },
+  "Figure 33": {
+    "caption": "Critical difference diagram of average ranks on the small held-out datasets (lower",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_33.png",
+    "paper_id": "2610.22242",
+    "page_number": 42
+  },
+  "Figure 34": {
+    "caption": "Pairwise win rate in the MAE on the small held-out datasets: the fraction of (dataset,",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_34.png",
+    "paper_id": "2610.22242",
+    "page_number": 43
+  },
+  "Figure 35": {
+    "caption": "Pareto front of mean MAE (lower is better) and fit + predict time. We report average",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_35.png",
+    "paper_id": "2610.22242",
+    "page_number": 43
+  },
+  "Figure 36": {
+    "caption": "IBS on the large held-out datasets, compared to the IBS obtained with a Kaplan-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_36.png",
+    "paper_id": "2610.22242",
+    "page_number": 44
+  },
+  "Figure 37": {
+    "caption": "Critical difference diagram of average ranks on the large held-out datasets (lower",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_37.png",
+    "paper_id": "2610.22242",
+    "page_number": 44
+  },
+  "Figure 38": {
+    "caption": "Pairwise win rate in the IBS on the large held-out datasets: the fraction of (dataset,",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_38.png",
+    "paper_id": "2610.22242",
+    "page_number": 45
+  },
+  "Figure 39": {
+    "caption": "Pareto front of mean normalized IBS (higher is better) and fit + predict time.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_39.png",
+    "paper_id": "2610.22242",
+    "page_number": 45
+  },
+  "Figure 40": {
+    "caption": "C-index at the 50th quantile on the large held-out datasets, compared to the C-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_40.png",
+    "paper_id": "2610.22242",
+    "page_number": 46
+  },
+  "Figure 41": {
+    "caption": "Critical difference diagram of average ranks on the large held-out datasets (lower",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_41.png",
+    "paper_id": "2610.22242",
+    "page_number": 46
+  },
+  "Figure 42": {
+    "caption": "Pairwise win rate in the C-index at the 50th quantile on the large held-out datasets:",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_42.png",
+    "paper_id": "2610.22242",
+    "page_number": 47
+  },
+  "Figure 43": {
+    "caption": "Pareto front of mean C-index on the 50th quantile (higher is better) and fit + predict",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_43.png",
+    "paper_id": "2610.22242",
+    "page_number": 47
+  },
+  "Figure 44": {
+    "caption": "KM calibration on the large held-out datasets (lower is better). The points show",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_44.png",
+    "paper_id": "2610.22242",
+    "page_number": 48
+  },
+  "Figure 45": {
+    "caption": "Critical difference diagram of average ranks on the large held-out datasets (lower",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_45.png",
+    "paper_id": "2610.22242",
+    "page_number": 48
+  },
+  "Figure 46": {
+    "caption": "Pairwise win rate in the KM calibration on the large held-out datasets: the fraction",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_46.png",
+    "paper_id": "2610.22242",
+    "page_number": 49
+  },
+  "Figure 47": {
+    "caption": "MAE on the large held-out datasets, compared to the MAE obtained with a Kaplan-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_47.png",
+    "paper_id": "2610.22242",
+    "page_number": 50
+  },
+  "Figure 48": {
+    "caption": "Critical difference diagram of average ranks on the large held-out datasets (lower",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_48.png",
+    "paper_id": "2610.22242",
+    "page_number": 50
+  },
+  "Figure 49": {
+    "caption": "Pairwise win rate in the MAE on the large held-out datasets: the fraction of (dataset,",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_49.png",
+    "paper_id": "2610.22242",
+    "page_number": 51
+  },
+  "Figure 50": {
+    "caption": "Pareto front of mean MAE (lower is better) and fit + predict time. We report average",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22242_fig_50.png",
+    "paper_id": "2610.22242",
+    "page_number": 51
+  },
+  "Fig. 1": {
+    "caption": "DSP Pipeline Overview. (1) Human teleoperation trains a",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22340_fig_1.png",
+    "paper_id": "2610.22340",
+    "page_number": 1
+  },
+  "Fig. 2": {
+    "caption": "a is measured on uncached FLUX trajectories, in the setting of Sec. A.1, on 40 DrawBench",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22369_fig_2.png",
+    "paper_id": "2610.22369",
+    "page_number": 19
+  },
+  "Fig. 3": {
+    "caption": "shows the schedules this produces on FLUX. DPCache (Cui et al., 2026) fixes its refresh",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22369_fig_3.png",
+    "paper_id": "2610.22369",
+    "page_number": 6
+  },
+  "Fig. 4": {
+    "caption": "drawbench 133",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22369_fig_4.png",
+    "paper_id": "2610.22369",
+    "page_number": 29
+  },
+  "Fig. 5": {
+    "caption": "vbad077",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22369_fig_5.png",
+    "paper_id": "2610.22369",
+    "page_number": 29
+  },
+  "Fig. 6": {
+    "caption": "are NOT applied with confidence-based suppression.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22371_fig_6.png",
+    "paper_id": "2610.22371",
+    "page_number": 17
+  },
+  "Fig. 7": {
+    "caption": "Real vs. Sim. Our DSP achieves matched performance with the",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22340_fig_7.png",
+    "paper_id": "2610.22340",
+    "page_number": 6
+  },
+  "Fig. 8": {
+    "caption": "further illustrates how different importance signals affect region preservation. The CFG-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_8.png",
+    "paper_id": "2610.22370",
+    "page_number": 10
+  },
+  "Fig. 13": {
+    "caption": "Additional",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_13.png",
+    "paper_id": "2610.22320",
+    "page_number": 19
+  },
+  "Fig. 9": {
+    "caption": "Play-guided planning on Push-T. (a) The play policy proposes",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22340_fig_9.png",
+    "paper_id": "2610.22340",
+    "page_number": 7
+  },
+  "Fig. 10": {
+    "caption": "More autonomous play improves world model prediction.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22340_fig_10.png",
+    "paper_id": "2610.22340",
+    "page_number": 8
+  },
+  "Fig. 11": {
+    "caption": "Empirical analysis of \u2329EOS\u232alinearity. (Parallelism) \u2206app from the",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_11.png",
+    "paper_id": "2610.22320",
+    "page_number": 18
+  },
+  "Fig. 12": {
+    "caption": "Cumulative explained vari-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_12.png",
+    "paper_id": "2610.22320",
+    "page_number": 19
+  },
+  "Fig. 14": {
+    "caption": "presents the merging maps over denoising timesteps. Our method better preserves structural",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22370_fig_14.png",
+    "paper_id": "2610.22370",
+    "page_number": 17
+  },
+  "FIG. 1": {
+    "caption": "Overview of the circuit-discovery framework. (a) A hand-written task specification defines the circuit design",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22367_fig_1.png",
+    "paper_id": "2610.22367",
+    "page_number": 2
+  },
+  "FIG. 2": {
+    "caption": "Reversible Reed\u2013Solomon decoding. (a) The synchronized extended-Euclidean construction of Khattar",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22367_fig_2.png",
+    "paper_id": "2610.22367",
+    "page_number": 5
+  },
+  "FIG. 3": {
+    "caption": "Making divsteps reversible with minimal overhead. (a) Excursion depth j in one representative walk. Dots",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22367_fig_3.png",
+    "paper_id": "2610.22367",
+    "page_number": 7
+  },
+  "FIG. 4": {
+    "caption": "Approximation and effective dimension grow in a nested hierarchy. (a) Mean held-out MSE as progressively",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.19487_fig_4.png",
+    "paper_id": "2610.19487",
+    "page_number": 14
+  },
+  "figure 4": {
+    "caption": "This means that, for a sequence of size T images, with T > \u03bd, \u03b11 will be used T \u22121 times, while \u03b1\u03bd will be",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.19732_fig_4.png",
+    "paper_id": "2610.19732",
+    "page_number": 5
+  },
+  "figure 2": {
+    "caption": "and table 2, TIPSfull can preserve accuracy at slightly smaller block sizes before eventual degradation",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22099_fig_2.png",
+    "paper_id": "2610.22099",
+    "page_number": 7
+  },
+  "Fig. 15": {
+    "caption": "t-SNE plot of eosorg and eosinf. Red",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_15.png",
+    "paper_id": "2610.22320",
+    "page_number": 20
+  },
+  "Fig. 16": {
+    "caption": "Statistical analysis across scene structure categories. Each graph",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_16.png",
+    "paper_id": "2610.22320",
+    "page_number": 22
+  },
+  "Fig. 17": {
+    "caption": "Effectiveness of adaptive thresholding. While different scenes require",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_17.png",
+    "paper_id": "2610.22320",
+    "page_number": 24
+  },
+  "Fig. 18": {
+    "caption": "Visualization of \u03bb sensitivity.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_18.png",
+    "paper_id": "2610.22320",
+    "page_number": 24
+  },
+  "Fig. 19": {
+    "caption": "Image",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_19.png",
+    "paper_id": "2610.22320",
+    "page_number": 25
+  },
+  "Fig. 20": {
+    "caption": "Score difference across in-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_20.png",
+    "paper_id": "2610.22320",
+    "page_number": 25
+  },
+  "Fig. 21": {
+    "caption": "Performance trade-off with",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_21.png",
+    "paper_id": "2610.22320",
+    "page_number": 25
+  },
+  "Fig. 22": {
+    "caption": "Results on different model",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_22.png",
+    "paper_id": "2610.22320",
+    "page_number": 26
+  },
+  "Fig. 23": {
+    "caption": "Image results with Control-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_23.png",
+    "paper_id": "2610.22320",
+    "page_number": 26
+  },
+  "Fig. 24": {
+    "caption": "Free-form prompt generation re-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_24.png",
+    "paper_id": "2610.22320",
+    "page_number": 26
+  },
+  "Fig. 25": {
+    "caption": "EOS-Story results with SD3 [5].",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_25.png",
+    "paper_id": "2610.22320",
+    "page_number": 27
+  },
+  "Fig. 26": {
+    "caption": "EOS-Story on FLUX. Although the large pre-trained model (Flux-Kontext)",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_26.png",
+    "paper_id": "2610.22320",
+    "page_number": 28
+  },
+  "Fig. 27": {
+    "caption": ", it captures both the intended prompt and subject identities, resulting",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_27.png",
+    "paper_id": "2610.22320",
+    "page_number": 29
+  },
+  "Fig. 28": {
+    "caption": "User study results. EOS-Story",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_28.png",
+    "paper_id": "2610.22320",
+    "page_number": 30
+  },
+  "Fig. 29": {
+    "caption": "User study example. Partic-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_29.png",
+    "paper_id": "2610.22320",
+    "page_number": 30
+  },
+  "Fig. 30": {
+    "caption": "Failure cases. There are cases where the baseline model (SDXL) struggles",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_30.png",
+    "paper_id": "2610.22320",
+    "page_number": 30
+  },
+  "Fig. 31": {
+    "caption": "Additional qualitative comparison.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_31.png",
+    "paper_id": "2610.22320",
+    "page_number": 31
+  },
+  "Fig. 32": {
+    "caption": "Additional qualitative comparison on framing phrase adaptation.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_32.png",
+    "paper_id": "2610.22320",
+    "page_number": 32
+  },
+  "Fig. 33": {
+    "caption": "Medium length story gener-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_33.png",
+    "paper_id": "2610.22320",
+    "page_number": 33
+  },
+  "Fig. 34": {
+    "caption": "Short length story genera-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_34.png",
+    "paper_id": "2610.22320",
+    "page_number": 33
+  },
+  "Fig. 35": {
+    "caption": "Long story generation. Our model accurately reflects detailed scene de-",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_35.png",
+    "paper_id": "2610.22320",
+    "page_number": 34
+  },
+  "Fig. 36": {
+    "caption": "Additional framing phrase adaptation results.",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22320_fig_36.png",
+    "paper_id": "2610.22320",
+    "page_number": 35
+  },
+  "Fig.6": {
+    "caption": "The same trend persists across these perturbation levels, further showing that shared experts",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22353_fig_6.png",
+    "paper_id": "2610.22353",
+    "page_number": 15
+  },
+  "figure 1": {
+    "caption": "and table 1 presents our main results. TIPS substantially improves the accuracy\u2013compute",
+    "file_path": "D:/enhanced rag model/vector_store/figures/2610.22099_fig_1.png",
+    "paper_id": "2610.22099",
+    "page_number": 6
+  }
+}

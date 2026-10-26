@@ -18,7 +18,7 @@ This project implements an adaptive retrieval-augmented generation system for re
 - optionally re-ranks up to 15 candidates with `cross-encoder/ms-marco-MiniLM-L-6-v2`,
 - creates hierarchical document summaries for PDFs with 50 or more pages,
 - supports English, Tamil, Hindi, Spanish, and French answer generation,
-- answers questions with a lightweight local generator and source attribution.
+- answers questions with Groq's OpenAI-compatible API when `GROQ_API_KEY` is set, with local/extractive fallbacks and source attribution.
 
 The corpus downloader targets arXiv papers across machine learning (`cs.LG`), computer vision (`cs.CV`), computational linguistics (`cs.CL`), AI (`cs.AI`), and information retrieval (`cs.IR`). Downloads are concurrent, validated, retryable, and safe to resume. It stores each paper's actual arXiv categories and title in `dataset/arxiv_metadata.json`; older datasets without that manifest are shown as unclassified until downloaded or refreshed with the downloader.
 
@@ -45,6 +45,8 @@ The corpus downloader targets arXiv papers across machine learning (`cs.LG`), co
 5. Start the UI:
    `streamlit run app.py -- --streamlit`
 
+Set `GROQ_API_KEY` in the process environment to enable hosted answer generation with Groq's `llama-3.1-8b-instant` model. Without a key, the application uses its configured local or extractive fallback.
+
 ## API deployment
 
 Run the API locally with `uvicorn main_api:app --host 0.0.0.0 --port 8000`. The API exposes `GET /health`, `POST /ask`, and `POST /index`. The optional Docker container starts the API on port 8000 and Streamlit on port 7860:
@@ -64,7 +66,7 @@ On Linux, use `python -m venv .venv`, install `requirements.txt`, then run `bash
 
 ### Hugging Face Spaces deployment
 
-The Streamlit Space uses Python 3.10 and pinned CPU dependencies from `requirements-hf.txt`. Hugging Face installs the uploaded dependency file as `requirements.txt` and serves Streamlit on port 8501. The app renders before loading the corpus; persisted metadata and the selected FAISS index load on the first query. Intent routing and cross-encoder initialization are deferred until query submission. This CPU configuration disables optional transformer-backed embedding and generation models unless their weights are already present locally; deterministic retrieval and answer fallbacks remain available.
+The Streamlit Space uses Python 3.10 and pinned CPU dependencies from `requirements-hf.txt`. Hugging Face installs the uploaded dependency file as `requirements.txt` and serves Streamlit on port 8501. The app renders before loading the corpus; persisted metadata and the selected FAISS index load on the first query. Intent routing and cross-encoder initialization are deferred until query submission. Set `GROQ_API_KEY` in the Space secrets to enable hosted answer generation; without it, the local or extractive answer fallbacks remain available.
 
 Create a Streamlit Space at https://huggingface.co/new-space, or create it with the CLI. Authenticate locally, then run the deploy script from the repository root:
 

@@ -1,13 +1,27 @@
+import json
 import pickle
+import pytest
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import fitz
 
 from src.chunk_documents import chunk_documents
 from src.classifier import QueryClassifier
+from src import llm as llm_module
 from src import reranker
 from src.multilingual import resolve_response_language
-from src.llm import SimpleLLM, _enforce_response_structure
+from src.llm import (
+    SimpleLLM,
+    _RESPONSE_HEADINGS,
+    _enforce_response_structure,
+    _grounded_section_fallback,
+    localized_fallback_message,
+    generate_response,
+)
 from src.generator import _format_answer
+from src.generator import AnswerGenerator
 from src.extract_pdf import clean_extracted_text
 from src.dataset_classifier import _classify_text
 from src.preprocessing import extract_pdf_pages
@@ -58,8 +72,35 @@ def test_response_language_uses_selection_or_detects_query_script():
     assert resolve_response_language("यह कैसे काम करता है?") == "Hindi"
 
 
-def test_answer_generation_prompt_targets_each_supported_language():
+def test_missing_evidence_fallback_is_localized_for_supported_languages():
+    assert "passages récupérés" in localized_fallback_message("French")
+    assert "pasajes recuperados" in localized_fallback_message("Spanish")
+    assert localized_fallback_message("English") == "Information not found in the corpus."
+
+
+def test_unsupported_section_fallback_uses_the_requested_language():
+    fallback = _grounded_section_fallback(
+        2,
+        [{"source": "2401.12345.pdf", "section_type": "RESULTS"}],
+        "French",
+    )
+
+    assert "Les passages récupérés" in fallback
+    assert "résultats expérimentaux" in fallback
+    assert "retrieved passages" not in fallback
+    assert "RESULTS" not in fallback
+
+
+def test_missing_corpus_response_is_localized():
+    answer = _enforce_response_structure("Information not found in the corpus.", "French")
+
+    assert answer == localized_fallback_message("French")
+
+
+def test_answer_generation_prompt_targets_each_supported_language(monkeypatch):
     requested_prompts = []
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.setattr(llm_module, "MAX_TOTAL_PROMPT_CHARS", 5000)
     llm = SimpleLLM(model_name="test")
 
     def capture_prompt(prompt, **kwargs):
@@ -81,7 +122,41 @@ def test_answer_generation_prompt_targets_each_supported_language():
         assert f"Write all answer prose in {language}." in prompt
         assert f"CRITICAL: Write the entire five-section response strictly in {language}." in prompt
         assert "Keep technical paper titles and source citations in English." in prompt
+        assert "Translate both the structural subheadings AND all detailed body content" in prompt
         assert "at least 100 words of substantive synthesis" in prompt
+        assert "CRITICAL: You must translate ALL 5 structural subheadings" in prompt
+        assert "For sections 1, 2, 3, 4, and 5 individually" in prompt
+        assert all(f"### {index}. {heading}" in prompt for index, heading in enumerate(_RESPONSE_HEADINGS[language], start=1))
+        assert "{overview_header}" not in prompt
+
+
+def test_local_generation_bounds_total_prompt_and_tokenizer(monkeypatch):
+    captured = {}
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+
+    class FakePipeline:
+        tokenizer = SimpleNamespace(eos_token_id=99)
+
+        def __call__(self, prompt, **kwargs):
+            captured["prompt"] = prompt
+            captured["kwargs"] = kwargs
+            return [{"generated_text": "Generated response."}]
+
+    llm = SimpleLLM(model_name="test")
+    llm._generator = FakePipeline()
+    oversized_prompt = "x" * (llm_module.MAX_TOTAL_PROMPT_CHARS + 100)
+    monkeypatch.setattr(llm_module, "_build_generation_prompt", lambda *args: oversized_prompt)
+    llm.generate_answer("Question", [{"text": "Relevant context."}])
+
+    assert len(captured["prompt"]) == llm_module.MAX_TOTAL_PROMPT_CHARS
+    assert captured["prompt"].endswith("[Prompt truncated for model limits]")
+    assert captured["kwargs"] == {
+        "max_length": 1024,
+        "truncation": True,
+        "do_sample": False,
+        "pad_token_id": 99,
+        "return_full_text": False,
+    }
 
 
 def test_extracted_text_cleaner_removes_plot_noise_but_keeps_prose():
@@ -125,6 +200,76 @@ def test_answer_generation_discards_low_similarity_context():
     assert answer == "Information not found in the corpus."
 
 
+def test_fallback_prompt_requests_related_context_in_full_target_language(monkeypatch):
+    requested_prompts = []
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    llm = SimpleLLM(model_name="test")
+    llm._generator = lambda prompt, **kwargs: (
+        requested_prompts.append(prompt) or [{"generated_text": "Generated response."}]
+    )
+
+    llm.generate_answer(
+        "Explain an absent topic",
+        [{"text": "Related papers study multilingual retrieval.", "score": 0.05}],
+        response_language="Tamil",
+        fallback=True,
+    )
+
+    prompt = requested_prompts[0]
+    assert "The exact answer to this query is not explicitly detailed in the corpus." in prompt
+    assert "related research themes, and adjacent findings" in prompt
+    assert "Translate both the structural subheadings AND all detailed body content" in prompt
+    assert "Write all answer prose in Tamil." in prompt
+
+
+def test_groq_generation_receives_language_and_fallback_prompt(monkeypatch):
+    requested_prompts = []
+    monkeypatch.setenv("GROQ_API_KEY", "test-token")
+    monkeypatch.setattr(
+        "src.llm.generate_response",
+        lambda prompt: requested_prompts.append(prompt) or "Generated response.",
+    )
+    llm = SimpleLLM(model_name="test")
+    llm._generator = lambda *args, **kwargs: (_ for _ in ()).throw(
+        AssertionError("Groq generation should be preferred when configured")
+    )
+
+    llm.generate_answer(
+        "Explain an absent topic",
+        [{"text": "Related papers study multilingual retrieval.", "score": 0.05}],
+        response_language="French",
+        fallback=True,
+    )
+
+    assert len(requested_prompts) == 1
+    assert "Write all answer prose in French." in requested_prompts[0]
+    assert "related research themes, and adjacent findings" in requested_prompts[0]
+
+
+def test_groq_errors_are_logged_without_huggingface_model_retries(monkeypatch, caplog):
+    from openai import OpenAIError
+
+    monkeypatch.setenv("GROQ_API_KEY", "test-token")
+    client = MagicMock()
+    client.chat.completions.create.side_effect = OpenAIError("401 Unauthorized")
+    monkeypatch.setattr("src.llm.OpenAI", MagicMock(return_value=client))
+
+    assert generate_response("test prompt") == ""
+    assert "401 Unauthorized" in caplog.text
+
+
+def test_groq_connection_errors_are_logged_and_return_empty_response(monkeypatch, caplog):
+    from openai import OpenAIError
+
+    monkeypatch.setenv("GROQ_API_KEY", "test-token")
+    client = MagicMock()
+    client.chat.completions.create.side_effect = OpenAIError("No provider")
+    monkeypatch.setattr("src.llm.OpenAI", MagicMock(return_value=client))
+
+    assert generate_response("test prompt") == ""
+    assert "No provider" in caplog.text
+
+
 def test_paper_id_queries_keep_relevant_passages_from_only_the_named_paper():
     chunks = [
         {"source": "2203.02155.pdf", "text": "The paper reports PPO-ptx evaluation results.", "score": 0.15},
@@ -140,12 +285,13 @@ def test_paper_id_queries_keep_relevant_passages_from_only_the_named_paper():
     assert relevant[0]["source"] == "2203.02155.pdf"
 
 
-def test_answer_generation_uses_ten_cleaned_context_chunks():
+def test_answer_generation_uses_ten_cleaned_context_chunks(monkeypatch):
     assert DEFAULT_TOP_K == 10
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
     requested_prompts = []
     llm = SimpleLLM(model_name="test")
     llm._generator = lambda prompt, **kwargs: requested_prompts.append(prompt) or [{"generated_text": "Detailed answer."}]
-    chunks = [
+    chunks: list[dict[str, object]] = [
         {"text": f"Passage {index} reports verified evidence. 1e-4 1e-3 1e-2"}
         for index in range(10)
     ]
@@ -155,6 +301,22 @@ def test_answer_generation_uses_ten_cleaned_context_chunks():
     assert "Passage 0" in requested_prompts[0]
     assert "Passage 9" in requested_prompts[0]
     assert "1e-4" not in requested_prompts[0]
+
+
+def test_answer_generation_truncates_context_before_model_prompt(monkeypatch):
+    requested_prompts = []
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    llm = SimpleLLM(model_name="test")
+    llm._generator = lambda prompt, **kwargs: requested_prompts.append(prompt) or [
+        {"generated_text": "Detailed answer."}
+    ]
+
+    llm.generate_answer("Explain the evidence", [{"text": "context " * 600}])
+
+    assert "[Context truncated to fit model limit...]" in requested_prompts[0]
+    assert "context " * 400 not in requested_prompts[0]
+    assert llm_module.MAX_CONTEXT_CHARS == 1200
+    assert len(llm_module._truncate_context("x" * 1500)) == 1200
 
 
 def test_answer_formatter_omits_placeholder_points_and_empty_sections():
@@ -310,6 +472,58 @@ def test_long_document_gets_summary_chunk_without_losing_page_chunks():
     assert len([chunk for chunk in chunks if chunk.get("is_summary") != 1]) == 55
     assert "Page 1" in summary_chunks[0]["text"]
     assert "Page 55" in summary_chunks[0]["text"]
+
+
+def test_pdf_figure_and_caption_metadata_reaches_chunks(tmp_path):
+    pdf_path = tmp_path / "figure_paper.pdf"
+    document = fitz.open()
+    page = document.new_page()
+    page.insert_text((48, 72), "Figure 1: Architecture for adaptive retrieval")
+    page.insert_text((48, 100), "Figure 1 illustrates how the retrieval model routes queries.")
+    image = fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 48, 32), False)
+    image.clear_with(0x2D6A73)
+    page.insert_image(fitz.Rect(60, 130, 300, 290), pixmap=image)
+    document.save(pdf_path)
+    document.close()
+
+    pages = extract_pdf_pages(pdf_path, tmp_path / "figures")
+    chunks = chunk_documents(pages, chunk_size=100, overlap=10)
+
+    assert pages[0]["figures"][0]["caption"] == "Architecture for adaptive retrieval"
+    assert Path(pages[0]["figures"][0]["file_path"]).is_file()
+    assert chunks[0]["figures"][0]["file_path"] == pages[0]["figures"][0]["file_path"]
+
+
+def test_fast_fallback_synthesizes_low_similarity_context():
+    context = "A related study analyzes retrieval calibration across multilingual research collections."
+
+    answer = AnswerGenerator().generate_fast(
+        "What is the effect of ocean tides on lunar geology?",
+        [{"text": context, "score": 0.05}],
+        fallback=True,
+    )
+
+    assert answer != "**Information not found in the corpus.**"
+    assert "related study" in answer
+
+
+def test_llm_dead_end_is_replaced_with_related_fallback_context(monkeypatch):
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.delenv("HUGGINGFACEHUB_API_TOKEN", raising=False)
+    generator = AnswerGenerator()
+    generator.llm._generator = lambda *args, **kwargs: [
+        {"generated_text": "Information not found in the corpus."}
+    ]
+    context = "Related studies evaluate multilingual retrieval across scientific collections."
+
+    answer = generator.generate(
+        "What is the effect of ocean tides on lunar geology?",
+        [{"text": context, "score": 0.05}],
+        fallback=True,
+    )
+
+    assert answer != "**Information not found in the corpus.**"
+    assert "Related studies evaluate multilingual retrieval" in answer
 
 
 def test_55_page_pdf_extracts_hierarchical_summary_chunks(tmp_path):

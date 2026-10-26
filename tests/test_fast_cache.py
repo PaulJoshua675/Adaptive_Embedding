@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import time
 
 from src.cache import SemanticResponseCache, response_cache
 from src.create_vector_db import VectorStore
@@ -74,9 +75,12 @@ def test_exact_pipeline_cache_skips_classifier_and_index_loading(tmp_path, monke
     def unexpected_query_path(*args, **kwargs):
         raise AssertionError("cache hit entered the query path")
 
-    monkeypatch.setattr("src.rag_pipeline.classify_query", unexpected_query_path)
+    monkeypatch.setattr("src.rag_pipeline.route_query", unexpected_query_path)
     monkeypatch.setattr("src.rag_pipeline.load_cached_vector_store", unexpected_query_path)
+    cache_started = time.perf_counter()
     second = answer_query_details(query, index_dir, fast_mode=True)
+    cache_elapsed_ms = (time.perf_counter() - cache_started) * 1000
 
     assert first["answer"] == second["answer"]
     assert second["semantic_cache_hit"] is True
+    assert cache_elapsed_ms < 10

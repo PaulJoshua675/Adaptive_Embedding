@@ -1,32 +1,18 @@
 from __future__ import annotations
 
-import re
 import logging
+import os
+import re
 from threading import Thread
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional
+from typing import Dict, Iterator, List, Optional
+
+from openai import OpenAI, OpenAIError
 
 from .extract_pdf import clean_extracted_text
 from .multilingual import resolve_response_language
-import os
-from huggingface_hub import InferenceClient
 
-# Initialize InferenceClient using the environment variable
-hf_token = os.getenv("HF_TOKEN")
-client = InferenceClient(model="google/flan-t5-base", token=hf_token)
-
-def generate_response(prompt: str) -> str:
-    try:
-        response = client.text_generation(
-            prompt, 
-            max_new_tokens=1024, 
-            temperature=0.3
-        )
-        return response
-    except Exception as e:
-        print(f"Error calling Hugging Face Inference API: {e}")
-        raise e
 
 try:
     from transformers import pipeline  # type: ignore
@@ -42,6 +28,75 @@ except ImportError:  # pragma: no cover - optional runtime dependency
 
 MIN_SIMILARITY_SCORE = 0.20
 LOGGER = logging.getLogger(__name__)
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+GROQ_MODEL = "llama-3.1-8b-instant"
+MAX_CONTEXT_CHARS = 500  # Safe limit for 1024-token window
+_CONTEXT_TRUNCATION_SUFFIX = "\n[Context truncated to fit model limit...]"
+MAX_TOTAL_PROMPT_CHARS = 2500
+_PROMPT_TRUNCATION_SUFFIX = "\n[Prompt truncated for model limits]"
+
+
+def _truncate_context(context_text: str) -> str:
+    if len(context_text) <= MAX_CONTEXT_CHARS:
+        return context_text
+    content_limit = MAX_CONTEXT_CHARS - len(_CONTEXT_TRUNCATION_SUFFIX)
+    return context_text[:content_limit] + _CONTEXT_TRUNCATION_SUFFIX
+
+
+def _truncate_total_prompt(prompt: str) -> str:
+    if len(prompt) <= MAX_TOTAL_PROMPT_CHARS:
+        return prompt
+    content_limit = MAX_TOTAL_PROMPT_CHARS - len(_PROMPT_TRUNCATION_SUFFIX)
+    return prompt[:content_limit] + _PROMPT_TRUNCATION_SUFFIX
+
+
+def query_groq_inference_api(prompt: str) -> str:
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key or not api_key.strip():
+        LOGGER.warning("GROQ_API_KEY is missing; skipping Groq inference")
+        return ""
+
+    try:
+        client = OpenAI(api_key=api_key.strip(), base_url=GROQ_BASE_URL)
+        completion = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=512,
+            temperature=0.3,
+        )
+        if not completion.choices:
+            LOGGER.warning("Groq inference returned no chat completion choices")
+            return ""
+        content = completion.choices[0].message.content
+        if not isinstance(content, str) or not content.strip():
+            LOGGER.warning("Groq inference returned an empty chat completion")
+            return ""
+        return content.strip()
+    except OpenAIError as exc:
+        LOGGER.warning("Groq inference failed: %s", exc)
+
+    return ""
+
+
+def generate_response(prompt: str) -> str:
+    return query_groq_inference_api(prompt)
+
+
+def generate_local_fallback(prompt: str, pipeline) -> str:
+    """Run local generation with bounded prompt and model-window sizes."""
+    final_prompt = _truncate_total_prompt(prompt)
+    tokenizer = getattr(pipeline, "tokenizer", None)
+    output = pipeline(
+        final_prompt,
+        max_length=1024,
+        truncation=True,
+        do_sample=False,
+        pad_token_id=getattr(tokenizer, "eos_token_id", None),
+        return_full_text=False,
+    )
+    return output[0]["generated_text"]
+
+
 _PROMPT_PATH = Path(__file__).resolve().parents[1] / "prompts" / "prompt.txt"
 _ARXIV_ID = re.compile(r"(?<!\d)(\d{4}\.\d{4,5})(?:v\d+)?(?!\d)", re.I)
 _RESPONSE_HEADINGS = {
@@ -81,6 +136,107 @@ _RESPONSE_HEADINGS = {
         "Implications pratiques",
     ),
 }
+_FALLBACK_COPY = {
+    "English": {
+        "not_found": "Information not found in the corpus.",
+        "section": (
+            "The retrieved passages from {source_label} do not contain explicit evidence for {section_name} "
+            "for this query. The available context is limited to material identified as {section_label}, and it does not "
+            "provide directly supported details that can be summarized under {section_name}. No claim about "
+            "unretrieved parts of the paper or about results, limitations, or recommendations is made here. "
+            "This section is left as an evidence boundary rather than filling the gap with external knowledge or "
+            "assumptions; consult additional retrieved passages before drawing conclusions on this aspect."
+        ),
+        "section_names": (
+            "overview and core context",
+            "methodology and architecture",
+            "experimental results",
+            "limitations and challenges",
+            "practical implications",
+        ),
+        "retrieved": "the retrieved passages",
+        "context": "the available retrieved context",
+    },
+    "French": {
+        "not_found": "Les passages récupérés ne contiennent pas de preuve explicite concernant cette question.",
+        "section": (
+            "Les passages récupérés de {source_label} ne contiennent pas de preuve explicite concernant {section_name} "
+            "pour cette question. Le contexte disponible se limite aux éléments identifiés comme {section_label} et "
+            "ne fournit pas de détails directement étayés pouvant être résumés dans cette section. Aucune affirmation "
+            "n'est faite au sujet des parties non récupérées de l'article, de ses résultats, de ses limites ou de ses "
+            "recommandations. Cette section marque la limite des éléments probants, sans combler les lacunes par des "
+            "connaissances externes ou des suppositions ; consultez d'autres passages avant de tirer des conclusions."
+        ),
+        "section_names": (
+            "la vue d'ensemble et le contexte central",
+            "la méthodologie et l'architecture",
+            "les résultats expérimentaux",
+            "les limites et les difficultés",
+            "les implications pratiques",
+        ),
+        "retrieved": "passages récupérés",
+        "context": "le contexte récupéré disponible",
+    },
+    "Spanish": {
+        "not_found": "Los pasajes recuperados no contienen evidencia explícita sobre esta consulta.",
+        "section": (
+            "Los pasajes recuperados de {source_label} no contienen evidencia explícita sobre {section_name} "
+            "para esta consulta. El contexto disponible se limita al material identificado como {section_label} y "
+            "no ofrece detalles respaldados directamente que puedan resumirse en esta sección. No se hacen "
+            "afirmaciones sobre partes no recuperadas del artículo ni sobre resultados, limitaciones o "
+            "recomendaciones. Esta sección señala el límite de la evidencia, sin completar la información con "
+            "conocimientos externos ni suposiciones; consulte otros pasajes antes de sacar conclusiones."
+        ),
+        "section_names": (
+            "la visión general y el contexto central",
+            "la metodología y la arquitectura",
+            "los resultados experimentales",
+            "las limitaciones y los desafíos",
+            "las implicaciones prácticas",
+        ),
+        "retrieved": "los pasajes recuperados",
+        "context": "el contexto recuperado disponible",
+    },
+    "Tamil": {
+        "not_found": "மீட்டெடுக்கப்பட்ட பகுதிகளில் இந்தக் கேள்விக்கான வெளிப்படையான ஆதாரம் இல்லை.",
+        "section": (
+            "{source_label} இலிருந்து மீட்டெடுக்கப்பட்ட பகுதிகளில் இந்தக் கேள்விக்கான {section_name} பற்றிய "
+            "வெளிப்படையான ஆதாரம் இல்லை. கிடைக்கும் சூழல் {section_label} என அடையாளம் காணப்பட்ட தகவல்களுக்கு "
+            "மட்டுப்படுத்தப்பட்டுள்ளது; இந்தப் பிரிவைச் சுருக்குவதற்கான நேரடியாக ஆதரிக்கப்படும் விவரங்கள் இல்லை. "
+            "மீட்டெடுக்கப்படாத கட்டுரைப் பகுதிகள், முடிவுகள், வரம்புகள் அல்லது பரிந்துரைகள் குறித்து இங்கு எந்தக் "
+            "கூற்றும் முன்வைக்கப்படவில்லை. வெளிப்புற அறிவையோ ஊகங்களையோ சேர்க்காமல் ஆதார வரம்பாகவே இந்தப் பிரிவு "
+            "விடப்பட்டுள்ளது; முடிவெடுப்பதற்கு முன் கூடுதல் பகுதிகளைப் பார்க்கவும்."
+        ),
+        "section_names": (
+            "மேலோட்டமும் அடிப்படைச் சூழலும்",
+            "முறையியலும் கட்டமைப்பும்",
+            "சோதனை முடிவுகள்",
+            "வரம்புகளும் சவால்களும்",
+            "நடைமுறை விளைவுகள்",
+        ),
+        "retrieved": "மீட்டெடுக்கப்பட்ட பகுதிகள்",
+        "context": "கிடைக்கும் மீட்டெடுக்கப்பட்ட சூழல்",
+    },
+    "Hindi": {
+        "not_found": "प्राप्त अंशों में इस प्रश्न के बारे में स्पष्ट साक्ष्य नहीं है।",
+        "section": (
+            "{source_label} से प्राप्त अंशों में इस प्रश्न के लिए {section_name} का स्पष्ट साक्ष्य नहीं है। "
+            "उपलब्ध संदर्भ {section_label} के रूप में पहचानी गई सामग्री तक सीमित है और इस अनुभाग के सारांश के "
+            "लिए प्रत्यक्ष रूप से समर्थित विवरण प्रदान नहीं करता। लेख के अप्राप्त भागों, परिणामों, सीमाओं या "
+            "सिफारिशों के बारे में यहां कोई दावा नहीं किया गया है। बाहरी ज्ञान या अनुमानों से कमी पूरी करने के "
+            "बजाय इस अनुभाग को साक्ष्य की सीमा के रूप में रखा गया है; निष्कर्ष निकालने से पहले अतिरिक्त अंश देखें।"
+        ),
+        "section_names": (
+            "अवलोकन और मूल संदर्भ",
+            "कार्यप्रणाली और संरचना",
+            "प्रायोगिक परिणाम",
+            "सीमाएँ और चुनौतियाँ",
+            "व्यावहारिक निहितार्थ",
+        ),
+        "retrieved": "प्राप्त अंश",
+        "context": "उपलब्ध प्राप्त संदर्भ",
+    },
+}
 _SECTION_TERMS = (
     re.compile(r"\b(?:overview|context|background|contribution|executive|insights?)\b", re.I),
     re.compile(r"\b(?:method|methodology|architecture|design|technical|approach|model)\b", re.I),
@@ -110,6 +266,25 @@ def _section_index(heading: str) -> int | None:
     return None
 
 
+def localized_fallback_message(
+    response_language: str,
+    section_index: int | None = None,
+    source_label: str | None = None,
+    section_label: str | None = None,
+) -> str:
+    """Return a missing-evidence response in the requested supported language."""
+    copy = _FALLBACK_COPY.get(response_language, _FALLBACK_COPY["English"])
+    if section_index is None:
+        return str(copy["not_found"])
+    section_names = copy["section_names"]
+    section_name = section_names[section_index] if 0 <= section_index < len(section_names) else section_names[0]
+    return str(copy["section"]).format(
+        source_label=source_label or copy["retrieved"],
+        section_label=section_label or copy["context"],
+        section_name=section_name,
+    )
+
+
 def _enforce_response_structure(
     answer: str,
     response_language: str = "English",
@@ -118,7 +293,7 @@ def _enforce_response_structure(
 ) -> str:
     """Normalize generated prose into five nonempty, grounded sections."""
     if answer.casefold().strip(" .*!\n") == "information not found in the corpus":
-        return "Information not found in the corpus."
+        return localized_fallback_message(response_language)
     answer_lines = []
     skipping_citations = False
     for line in answer.splitlines():
@@ -205,7 +380,9 @@ def _enforce_response_structure(
     used_evidence: set[str] = set()
     for index, (heading, section_points) in enumerate(zip(headings, buckets), start=1):
         if not section_points:
-            section_points.append(_grounded_section_fallback(index - 1, context_chunks or []))
+            section_points.append(
+                _grounded_section_fallback(index - 1, context_chunks or [], response_language)
+            )
         if response_language == "English":
             evidence = _extractive_section_evidence(index - 1, section_points, context_chunks or [], used_evidence)
             if evidence:
@@ -223,33 +400,22 @@ def _enforce_response_structure(
     return formatted
 
 
-def _grounded_section_fallback(index: int, context_chunks: List[Dict[str, object]]) -> str:
-    section_names = (
-        "overview and core context",
-        "methodology and architecture",
-        "experimental results",
-        "limitations and challenges",
-        "practical implications",
-    )
+def _grounded_section_fallback(
+    index: int,
+    context_chunks: List[Dict[str, object]],
+    response_language: str = "English",
+) -> str:
     sources = []
-    source_sections = []
     for chunk in context_chunks:
         source = Path(str(chunk.get("source", chunk.get("document_id", "")))).name
         paper_id = re.search(r"(?<!\d)(\d{4}\.\d{4,5})(?!\d)", source)
         if paper_id and paper_id.group(1) not in sources:
             sources.append(paper_id.group(1))
-        source_section = str(chunk.get("section_type", "")).strip()
-        if source_section and source_section.upper() != "UNSECTIONED" and source_section not in source_sections:
-            source_sections.append(source_section)
-    source_label = ", ".join(sources) if sources else "the retrieved passages"
-    section_label = ", ".join(source_sections) if source_sections else "the available retrieved context"
-    return (
-        f"The retrieved passages from {source_label} do not contain explicit evidence for {section_names[index]} "
-        f"for this query. The available context is limited to material identified as {section_label}, and it does not "
-        f"provide directly supported details that can be summarized under {section_names[index]}. No claim about "
-        "unretrieved parts of the paper or about results, limitations, or recommendations is made here. "
-        "This section is left as an evidence boundary rather than filling the gap with external knowledge or "
-        "assumptions; consult additional retrieved passages before drawing conclusions on this aspect."
+    source_label = ", ".join(sources) if sources else None
+    return localized_fallback_message(
+        response_language,
+        section_index=index,
+        source_label=source_label,
     )
 
 
@@ -309,6 +475,49 @@ def _load_prompt_template() -> str:
         return "Question: {question}\nContext: {context}\nAnswer:"
 
 
+def _build_generation_prompt(
+    question: str,
+    context_text: str,
+    instructions: str | None,
+    response_language: str,
+    fallback: bool,
+) -> str:
+    answer_scope = (
+        "The exact answer to this query is not explicitly detailed in the corpus. However, based on topically related arXiv papers in the index, provide relevant context, related research themes, and adjacent findings. Do not claim that the context directly answers the query."
+        if fallback
+        else "If no passage directly answers the question, reply exactly: Information not found in the corpus. Never invent missing details."
+    )
+    template = _load_prompt_template()
+    headings = _RESPONSE_HEADINGS.get(response_language, _RESPONSE_HEADINGS["English"])
+    prompt_values = {
+        "question": question,
+        "context": context_text,
+        "response_language": response_language,
+        "target_language": response_language,
+        **{f"heading_{index}": heading for index, heading in enumerate(headings, start=1)},
+    }
+    return (
+        (instructions or "You are an academic research analyst.") + "\n"
+        "Answer using ONLY the provided retrieved context. Do not rely on external general knowledge or unreferenced research concepts. "
+        f"Use only facts supported by the context. {answer_scope}\n"
+        f"CRITICAL: Write the entire five-section response strictly in {response_language}. "
+        "Keep technical paper titles and source citations in English.\n"
+        f"CRITICAL: You must translate ALL 5 structural subheadings into the requested target language ({response_language}). "
+        "Do not leave any heading, section marker, or overview label in English.\n"
+        "Translate both the structural subheadings AND all detailed body content, explanations, and key takeaways into the target language requested by the user.\n"
+        "CRITICAL: Translate every single structural subheading, section title, and body paragraph into the requested target language. "
+        "Do not leave any structural headers, template text, or explanatory content in English. Translate all detailed body content, "
+        "explanations, and key takeaways; never revert to English midway through the response.\n"
+        "Write all answer prose in " + response_language + ". Return exactly five Markdown subheadings, numbered 1 through 5, using the five headings specified in the template. "
+        "Under each heading use no more than three detailed Markdown bullets and provide at least 100 words of substantive synthesis. "
+        "Explain what, how, and why from the context. Never repeat paper titles as bullets or leave a heading empty; for unsupported sections, state the evidence boundary without inventing or padding. "
+        "Do not write paragraphs or text outside bullets. "
+        "Remove raw plot-axis numbers, OCR artifacts, and filler while preserving supported findings. "
+        "Never use generic labels such as Point 1 or Key Concept 1.\n\n"
+        + template.format_map(prompt_values)
+    )
+
+
 def _resource_cache(function):
     if st is None:
         return lru_cache(maxsize=4)(function)
@@ -321,7 +530,7 @@ def _load_generator(model_name: str):
         LOGGER.warning("Transformers is unavailable; using extractive answer generation")
         return None
     try:
-        return pipeline("text2text-generation", model=model_name)
+        return pipeline("text-generation", model=model_name)
     except Exception as exc:
         LOGGER.warning("Could not load text-generation model %s: %s", model_name, exc)
         return None
@@ -335,11 +544,11 @@ class SimpleLLM:
 
     def _get_generator(self):
         if self._generator is None and self._model_enabled:
-            self._generator = _load_generator(self.model_name or "google/flan-t5-small")
+            self._generator = _load_generator(self.model_name or "gpt2")
             self._model_enabled = False
         return self._generator
 
-    def _extract_answer(self, question: str, context_text: str) -> str:
+    def _extract_answer(self, question: str, context_text: str, fallback: bool = False) -> str:
         if not context_text:
             return "Information not found in the corpus."
 
@@ -361,17 +570,27 @@ class SimpleLLM:
                 ranked_sentences.append((overlap, sentence))
 
         if not ranked_sentences:
-            return "Information not found in the corpus."
+            if not fallback:
+                return "Information not found in the corpus."
+            return " ".join(sentences[:6])
         ranked_sentences.sort(key=lambda item: item[0], reverse=True)
         selected = [sentence for _, sentence in ranked_sentences[:6]]
         return " ".join(selected)
 
     @staticmethod
-    def _relevant_chunks(question: str, context_chunks: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    def _relevant_chunks(
+        question: str,
+        context_chunks: List[Dict[str, object]],
+        include_low_relevance: bool = False,
+    ) -> List[Dict[str, object]]:
         relevant = []
         requested_paper = _ARXIV_ID.search(question)
         target_paper_id = requested_paper.group(1) if requested_paper else None
-        minimum_score = min(MIN_SIMILARITY_SCORE, 0.125) if target_paper_id is not None else MIN_SIMILARITY_SCORE
+        minimum_score = (
+            -1.0
+            if include_low_relevance
+            else min(MIN_SIMILARITY_SCORE, 0.125) if target_paper_id is not None else MIN_SIMILARITY_SCORE
+        )
         for chunk in context_chunks:
             text = clean_extracted_text(str(chunk.get("text", "")))
             if not text:
@@ -399,6 +618,7 @@ class SimpleLLM:
         context_chunks: List[Dict[str, object]],
         instructions: str | None = None,
         response_language: str | None = None,
+        fallback: bool = False,
     ) -> str:
         if response_language is None:
             response_language = "English"
@@ -407,31 +627,41 @@ class SimpleLLM:
                 if selected_language:
                     response_language = str(selected_language)
         response_language = resolve_response_language(question, response_language)
-        context_chunks = self._relevant_chunks(question, context_chunks)
+        context_chunks = self._relevant_chunks(question, context_chunks, include_low_relevance=fallback)
         if not context_chunks:
-            return "Information not found in the corpus."
+            return localized_fallback_message(response_language)
 
-        context_text = "\n\n".join(str(chunk.get("text", "")) for chunk in context_chunks)
+        context_text = _truncate_context(
+            "\n\n".join(str(chunk.get("text", "")) for chunk in context_chunks)
+        )
+        prompt = _build_generation_prompt(
+            question,
+            context_text,
+            instructions,
+            response_language,
+            fallback,
+        )
+        groq_api_key = os.getenv("GROQ_API_KEY")
+        if groq_api_key and groq_api_key.strip():
+            try:
+                response_text = generate_response(prompt).strip()
+                if response_text:
+                    return _enforce_response_structure(
+                        response_text,
+                        response_language,
+                        context_chunks=context_chunks,
+                    )
+            except Exception as exc:
+                LOGGER.warning("Groq generation failed: %s", exc)
+            return _enforce_response_structure(
+                self._extract_answer(question, context_text, fallback=fallback),
+                response_language,
+                context_chunks=context_chunks,
+            )
 
         if self._get_generator() is not None:
             try:
-                template = _load_prompt_template()
-                prompt = (
-                    (instructions or "You are an academic research analyst.") + "\n"
-                    "Answer using ONLY the provided retrieved context. Do not rely on external general knowledge or unreferenced research concepts. "
-                    "Use only directly relevant facts supported by the context. If no passage directly answers the question, "
-                    "reply exactly: Information not found in the corpus. Never invent missing details.\n"
-                    f"CRITICAL: Write the entire five-section response strictly in {response_language}. "
-                    "Keep technical paper titles and source citations in English.\n"
-                    "Write all answer prose in " + response_language + ". Return exactly five Markdown subheadings, numbered 1 through 5, using the five headings specified in the template. "
-                    "Under each heading use no more than three detailed Markdown bullets and provide at least 100 words of substantive synthesis. "
-                    "Explain what, how, and why from the context. Never repeat paper titles as bullets or leave a heading empty; for unsupported sections, state the evidence boundary without inventing or padding. "
-                    "Do not write paragraphs or text outside bullets. "
-                    "Remove raw plot-axis numbers, OCR artifacts, and filler while preserving supported findings. "
-                    "Never use generic labels such as Point 1 or Key Concept 1.\n\n"
-                    + template.replace("{question}", question).replace("{context}", context_text).replace("{response_language}", response_language)
-                )
-                response = self._generator(prompt, max_new_tokens=1800)[0]["generated_text"]
+                response = generate_local_fallback(prompt, self._generator)
                 response_text = response.strip()
                 if response_text:
                     return _enforce_response_structure(response_text, response_language, context_chunks=context_chunks)
@@ -439,7 +669,7 @@ class SimpleLLM:
                 LOGGER.warning("Text generation failed; using extractive fallback: %s", exc)
 
         return _enforce_response_structure(
-            self._extract_answer(question, context_text),
+            self._extract_answer(question, context_text, fallback=fallback),
             response_language,
             context_chunks=context_chunks,
         )
@@ -450,6 +680,7 @@ class SimpleLLM:
         context_chunks: List[Dict[str, object]],
         instructions: str | None = None,
         response_language: str | None = None,
+        fallback: bool = False,
     ) -> Iterator[str]:
         if response_language is None:
             response_language = "English"
@@ -458,9 +689,20 @@ class SimpleLLM:
                 if selected_language:
                     response_language = str(selected_language)
         response_language = resolve_response_language(question, response_language)
-        context_chunks = self._relevant_chunks(question, context_chunks)
+        context_chunks = self._relevant_chunks(question, context_chunks, include_low_relevance=fallback)
         if not context_chunks:
-            yield "Information not found in the corpus."
+            yield localized_fallback_message(response_language)
+            return
+
+        groq_api_key = os.getenv("GROQ_API_KEY")
+        if groq_api_key and groq_api_key.strip():
+            yield self.generate_answer(
+                question,
+                context_chunks,
+                instructions=instructions,
+                response_language=response_language,
+                fallback=fallback,
+            )
             return
 
         generator = self._get_generator()
@@ -472,6 +714,7 @@ class SimpleLLM:
                 context_chunks,
                 instructions=instructions,
                 response_language=response_language,
+                fallback=fallback,
             )
             return
 
@@ -480,25 +723,23 @@ class SimpleLLM:
         except ImportError as exc:  # pragma: no cover - tied to optional transformers dependency
             raise RuntimeError("Streaming generation requires transformers.TextIteratorStreamer") from exc
 
-        context_text = "\n\n".join(str(chunk.get("text", "")) for chunk in context_chunks)
-        template = _load_prompt_template()
-        prompt = (
-            (instructions or "You are an academic research analyst.") + "\n"
-            "Answer using ONLY the provided retrieved context. Do not rely on external general knowledge or unreferenced research concepts. "
-            "Use only directly relevant facts supported by the context. If no passage directly answers the question, "
-            "reply exactly: Information not found in the corpus. Never invent missing details.\n"
-            f"CRITICAL: Write the entire five-section response strictly in {response_language}. "
-            "Keep technical paper titles and source citations in English.\n"
-            f"Write all answer prose in {response_language}. Return exactly five Markdown subheadings, numbered 1 through 5, "
-            "using the five headings specified in the template. Under each heading use no more than three detailed Markdown bullets "
-            "and provide at least 100 words of substantive synthesis. Explain what, how, and why from context. "
-            "Never repeat titles as bullets or leave headings empty; unsupported sections must state the evidence boundary without inventing or padding. "
-            "Do not write paragraphs or text outside bullets. "
-            "Remove raw plot-axis numbers, OCR artifacts, and filler while preserving supported findings. "
-            "Never use generic labels such as Point 1 or Key Concept 1.\n\n"
-            + template.replace("{question}", question).replace("{context}", context_text).replace("{response_language}", response_language)
+        context_text = _truncate_context(
+            "\n\n".join(str(chunk.get("text", "")) for chunk in context_chunks)
         )
-        encoded = tokenizer(prompt, return_tensors="pt")
+        prompt = _build_generation_prompt(
+            question,
+            context_text,
+            instructions,
+            response_language,
+            fallback,
+        )
+        final_prompt = _truncate_total_prompt(prompt)
+        encoded = tokenizer(
+            final_prompt,
+            return_tensors="pt",
+            truncation=True,
+            max_length=1024,
+        )
         model_device = getattr(model, "device", None)
         if model_device is not None:
             encoded = {key: value.to(model_device) for key, value in encoded.items()}
@@ -507,7 +748,7 @@ class SimpleLLM:
 
         def generate() -> None:
             try:
-                model.generate(**encoded, streamer=streamer, max_new_tokens=700, do_sample=False)
+                model.generate(**encoded, streamer=streamer, max_length=1024, do_sample=False)
             except BaseException as exc:
                 generation_errors.append(exc)
                 streamer.end()

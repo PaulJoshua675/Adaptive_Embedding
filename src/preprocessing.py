@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 from pathlib import Path
@@ -29,7 +30,7 @@ __all__ = [
 
 _VISUAL_QUERY = re.compile(r"\b(?:image|figure|fig\.?|chart|plot|graph|diagram|architecture|visual|table|picture)\b", re.I)
 _FIGURE_CAPTION = re.compile(
-    r"(?im)^\s*(Figure\s+\d+|Fig\.\s*\d+)\s*[:.]?\s*([^\r\n]*)"
+    r"(?im)^[ \t]*(Figure[ \t]+\d+|Fig\.?[ \t]*\d+)[ \t]*[:.]?[ \t]*([^\r\n]*)"
 )
 _SECTION_NAMES = (
     "ABSTRACT|INTRODUCTION|BACKGROUND|METHODOLOGY|RELATED WORK|EVALUATION|"
@@ -42,6 +43,7 @@ _SECTION_HEADING = re.compile(
 _QUERY_STOP_WORDS = frozenset(
     "a an and are can could find for from get how i me of please retrieve show tell the to what which with you your".split()
 )
+LOGGER = logging.getLogger(__name__)
 _SECTION_QUERY = re.compile(
     r"\b(?:show|find|get|retrieve|explain|summarize|give me)?\s*"
     r"(?:the\s+)?(abstract|introduction|background|related work|methods?|methodology|experiments?|results?|discussion|conclusions?|references)\b",
@@ -135,7 +137,7 @@ def _write_manifest(manifest: Dict[str, Dict[str, object]], figures_dir: Path) -
     manifest_path.write_text(json.dumps(existing, indent=2, ensure_ascii=True), encoding="utf-8")
 
 
-def _caption_rect(page, figure_match: re.Match[str]) -> "fitz.Rect":
+def _caption_rect(page, figure_match: re.Match[str]):
     """Find the exact text span rectangle for a caption label."""
     figure_label = _normalise(figure_match.group(1)).lower()
     for block in page.get_text("dict").get("blocks", []):
@@ -150,20 +152,46 @@ def _caption_rect(page, figure_match: re.Match[str]) -> "fitz.Rect":
     return fitz.Rect(0, 0, page.rect.width, min(page.rect.height, 1))
 
 
-def _save_page_capture(page, caption_rect: "fitz.Rect", figure_path: Path) -> None:
+def _save_page_capture(page, caption_rect, figure_path: Path) -> None:
     clip = fitz.Rect(0, 0, page.rect.width, min(page.rect.height, caption_rect.y1 + 20.0))
     page.get_pixmap(matrix=fitz.Matrix(2, 2), clip=clip, alpha=False).save(str(figure_path))
 
 
 def _catalog_figures(document, pdf_path: Path, figures_dir: Path) -> Dict[str, Dict[str, object]]:
-    manifest: Dict[str, Dict[str, object]] = {}
+    figures: Dict[str, Dict[str, object]] = {}
     figures_dir.mkdir(parents=True, exist_ok=True)
     for page in document:
         page_text = page.get_text("text") or ""
         captions = list(_FIGURE_CAPTION.finditer(page_text))
         if not captions:
             continue
-        for figure_match in captions:
+        page_number = int(page.number + 1)
+        image_paths: List[Path] = []
+        seen_xrefs: set[int] = set()
+        for image_info in page.get_images(full=True):
+            xref = int(image_info[0])
+            if xref in seen_xrefs:
+                continue
+            seen_xrefs.add(xref)
+            extracted = document.extract_image(xref)
+            image_bytes = extracted.get("image")
+            extension = str(extracted.get("ext", "png"))
+            if not isinstance(image_bytes, bytes) or not image_bytes:
+                continue
+            image_stem = f"{pdf_path.stem}_page_{page_number}_image_{len(image_paths) + 1}"
+            if extension.lower() in {"png", "jpg", "jpeg"}:
+                image_path = figures_dir / f"{image_stem}.{extension.lower()}"
+                image_path.write_bytes(image_bytes)
+            else:
+                pixmap = fitz.Pixmap(document, xref)
+                if pixmap.n - pixmap.alpha > 3:
+                    pixmap = fitz.Pixmap(fitz.csRGB, pixmap)
+                image_path = figures_dir / f"{image_stem}.png"
+                pixmap.save(str(image_path))
+            image_paths.append(image_path)
+
+        page_figures: Dict[str, Dict[str, object]] = {}
+        for caption_index, figure_match in enumerate(captions):
             figure_id = _normalise(figure_match.group(1))
             caption = _normalise(figure_match.group(2))
             if not caption:
@@ -171,15 +199,23 @@ def _catalog_figures(document, pdf_path: Path, figures_dir: Path) -> Dict[str, D
             figure_number = re.search(r"\d+", figure_id)
             if not figure_number:
                 continue
-            figure_path = figures_dir / f"{pdf_path.stem}_fig_{figure_number.group(0)}.png"
-            _save_page_capture(page, _caption_rect(page, figure_match), figure_path)
-            manifest[figure_id] = {
+            if caption_index < len(image_paths):
+                figure_path = image_paths[caption_index]
+            else:
+                figure_path = figures_dir / (
+                    f"{pdf_path.stem}_page_{page_number}_fig_{figure_number.group(0)}.png"
+                )
+                _save_page_capture(page, _caption_rect(page, figure_match), figure_path)
+            page_figures.setdefault(figure_id, {
                 "caption": caption,
-                "file_path": figure_path.as_posix(),
+                "file_path": str(figure_path.resolve()),
                 "paper_id": pdf_path.stem,
-                "page_number": int(page.number + 1),
-            }
-    return manifest
+                "page_number": page_number,
+                "source": str(pdf_path),
+            })
+        if page_figures:
+            figures[f"{pdf_path.stem}_page_{page_number}"] = page_figures
+    return figures
 
 
 def _page_blocks_text(page) -> str:
@@ -196,7 +232,7 @@ def _write_custom_page_records(
     document,
     file_path: Path,
     paper_id: str,
-    figures_dir: Path,
+    figures_by_page: Dict[int, List[Dict[str, object]]],
 ) -> List[Dict[str, object]]:
     records: List[Dict[str, object]] = []
     current_section = "ABSTRACT"
@@ -205,6 +241,7 @@ def _write_custom_page_records(
         page_text = _page_blocks_text(page)
         sections, current_section = _split_text_by_sections(page_text, current_section)
         image_count = len(page.get_images(full=True))
+        page_figures = figures_by_page.get(page_number, [])
         for section_index, section in enumerate(sections):
             text = str(section.get("text", "")).strip()
             if not text:
@@ -217,6 +254,7 @@ def _write_custom_page_records(
                 "section_type": str(section.get("section_type") or current_section),
                 "title": _title_reference(page_text, paper_id),
                 "image_count": image_count,
+                "figures": page_figures,
                 "source_type": "upload",
             })
     return records
@@ -243,28 +281,20 @@ def process_custom_pdf_path(
         doc.close()
         raise ValueError("The custom PDF contains zero pages.")
     try:
-        manifest: Dict[str, Dict[str, object]] = {}
-        for page in doc:
-            page_number = int(page.number + 1)
-            page_text = page.get_text("text") or ""
-            captions = list(_FIGURE_CAPTION.finditer(page_text))
-            if not captions:
-                continue
-            snapshot_path = output_dir / f"{paper_id}_fig_{page_number}.png"
-            page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False).save(str(snapshot_path))
-            for caption_match in captions:
-                figure_id = _normalise(caption_match.group(1))
-                caption = _normalise(caption_match.group(2))
-                manifest[figure_id] = {
-                    "caption": caption,
-                    "file_path": snapshot_path.as_posix(),
-                    "paper_id": paper_id,
-                    "page_number": page_number,
-                    "source": str(source_path),
-                    "source_type": "upload",
-                }
+        manifest = _catalog_figures(doc, source_path, output_dir)
         _write_manifest(manifest, output_dir)
-        return _write_custom_page_records(doc, source_path, paper_id, output_dir)
+        figures_by_page: Dict[int, List[Dict[str, object]]] = {}
+        for page_figures in manifest.values():
+            for figure in page_figures.values():
+                figures_by_page.setdefault(int(figure["page_number"]), []).append(
+                    {**figure, "source_type": "upload"}
+                )
+        return _write_custom_page_records(
+            doc,
+            source_path,
+            paper_id,
+            figures_by_page,
+        )
     finally:
         doc.close()
 
@@ -310,13 +340,20 @@ def _extract_page_text(page, scan_path: Path | None = None) -> str:
     return _ocr_pixmap(pixmap)
 
 
-def _extract_document_pages(document, pdf_path: Path, output_dir: Path, source_type: str) -> List[Dict[str, object]]:
+def _extract_document_pages(
+    document,
+    pdf_path: Path,
+    output_dir: Path,
+    source_type: str,
+    figures_by_page: Dict[int, List[Dict[str, object]]],
+) -> List[Dict[str, object]]:
     pages: List[Dict[str, object]] = []
     current_section = "DOCUMENT"
     for page in document:
         scan_path = output_dir / f"{pdf_path.stem}_page_{page.number + 1}_scan.png"
         raw_text = clean_extracted_text(_extract_page_text(page, scan_path))
         image_count = len(page.get_images(full=True))
+        page_figures = figures_by_page.get(int(page.number + 1), [])
         page_sections, current_section = _split_text_by_sections(raw_text, current_section)
         for section_index, section in enumerate(page_sections):
             if section["text"] or image_count:
@@ -328,6 +365,7 @@ def _extract_document_pages(document, pdf_path: Path, output_dir: Path, source_t
                     "section_type": section["section_type"],
                     "title": _title_reference(raw_text, pdf_path.stem),
                     "image_count": image_count,
+                    "figures": page_figures,
                     "source_type": source_type,
                 })
     return [page for page in pages if str(page.get("text", "")).strip()]
@@ -352,9 +390,17 @@ def extract_pdf_pages(
     pages: List[Dict[str, object]] = []
     try:
         with fitz.open(pdf_path) as document:
-            _write_manifest(_catalog_figures(document, pdf_path, output_dir), output_dir)
-            pages = _extract_document_pages(document, pdf_path, output_dir, source_type)
+            manifest = _catalog_figures(document, pdf_path, output_dir)
+            _write_manifest(manifest, output_dir)
+            figures_by_page: Dict[int, List[Dict[str, object]]] = {}
+            for page_figures in manifest.values():
+                for figure in page_figures.values():
+                    figures_by_page.setdefault(int(figure["page_number"]), []).append(
+                        {**figure, "source_type": source_type}
+                    )
+            pages = _extract_document_pages(document, pdf_path, output_dir, source_type, figures_by_page)
     except Exception:
+        LOGGER.exception("Unable to extract PDF pages and figures from %s", pdf_path)
         return []
     return [page for page in pages if str(page.get("text", "")).strip()]
 

@@ -41,6 +41,7 @@ import json
 import re
 import pickle
 import time
+from urllib.parse import quote
 try:
     from dotenv import load_dotenv
 except ImportError:  # pragma: no cover - optional runtime dependency
@@ -50,7 +51,7 @@ except ImportError:  # pragma: no cover - optional runtime dependency
 from functools import lru_cache
 from typing import Dict, Iterable, List, Tuple
 
-from config import DEFAULT_TOP_K, MIN_RERANKER_SCORE, MIN_RETRIEVAL_SIMILARITY, RERANKER_MODEL
+from config import DEFAULT_TOP_K, MIN_RERANKER_SCORE, MIN_RETRIEVAL_SIMILARITY, RERANKER_MODEL, VECTOR_STORE_DIR
 from .embeddings import EmbeddingRegistry
 from .reranker import PassageReranker
 
@@ -266,7 +267,10 @@ def _lexical_overlap(query: str, passage: str) -> float:
 
 
 def _visual_query(query: str) -> bool:
-    return any(word in query.lower() for word in ("figure", "diagram", "chart", "picture", "graph", "fig"))
+    return any(
+        word in query.lower()
+        for word in ("figure", "diagram", "chart", "picture", "graph", "fig", "image", "plot", "architecture", "visual", "table")
+    )
 
 
 def _manifest_entries(manifest: object) -> Iterable[Dict[str, object]]:
@@ -285,6 +289,7 @@ def _manifest_entries(manifest: object) -> Iterable[Dict[str, object]]:
 
 
 def _query_text(query: str) -> str:
+    query = re.sub(r"\b(?:figure|fig\.?)\s*\d+\b", " ", query, flags=re.I)
     return re.sub(r"\b(?:show|find|display|the|a|an|figure|fig\.?|diagram|chart|picture|plot)\b", " ", query, flags=re.I)
 
 
@@ -303,6 +308,14 @@ def _manifest_path(manifest_path: str | Path) -> Path:
 def _figure_identifier(query: str) -> str | None:
     match = re.search(r"\b(?:figure|fig\.?)\s*(\d+)\b", query, re.I)
     return f"Figure {match.group(1)}" if match else None
+
+
+def _figure_number(value: object) -> str | None:
+    value = str(value)
+    match = re.search(r"\b(?:figure|fig\.?)\s*(\d+)\b", value, re.I)
+    if match:
+        return match.group(1)
+    return value.strip() if value.strip().isdigit() else None
 
 
 def _normalise_figure_identifier(value: str) -> str:
@@ -365,7 +378,8 @@ def _verify_figure_alignment(query: str, entry: Dict[str, object], context: str,
 
 
 def _figure_referenced_by_passages(entry: Dict[str, object], passages: Iterable[Dict[str, object]]) -> bool:
-    figure_id = _normalise_figure_identifier(str(entry.get("figure_id", "")))
+    figure_label = str(entry.get("figure_id", "")) or str(entry.get("caption", ""))
+    figure_id = _normalise_figure_identifier(figure_label)
     figure_match = re.fullmatch(r"figure\s+(\d+)", figure_id)
     if not figure_match:
         return False
@@ -377,9 +391,18 @@ def _figure_referenced_by_passages(entry: Dict[str, object], passages: Iterable[
         if not reference.search(text):
             continue
         passage_source = str(passage.get("source", "")).strip()
-        if paper_id and passage_source and Path(passage_source).stem.lower() != paper_id:
-            if not source or Path(passage_source).resolve() != Path(source).resolve():
-                continue
+        if paper_id and (
+            not passage_source
+            or (
+                Path(passage_source).stem.lower() != paper_id
+                and (not source or Path(passage_source).resolve() != Path(source).resolve())
+            )
+        ):
+            continue
+        if not paper_id and source and (
+            not passage_source or Path(passage_source).resolve() != Path(source).resolve()
+        ):
+            continue
         return True
     return False
 
@@ -399,28 +422,32 @@ def find_matching_figures(
     query_text = _query_text(query).strip()
     query_tokens = _tokens(query_text)
     matches: List[Dict[str, object]] = []
+    requested_number = _figure_number(query)
     for entry in _manifest_entries(manifest):
-        if passages is not None and not _figure_referenced_by_passages(entry, passages):
+        figure_number = _figure_number(entry.get("number", entry.get("figure_number", entry.get("figure_id", ""))))
+        identifier_match = requested_number is not None and figure_number == requested_number
+        if requested_number is not None and not identifier_match:
+            continue
+        if passages is not None and not identifier_match and not _figure_referenced_by_passages(entry, passages):
             continue
         caption = str(entry.get("caption", ""))
         figure_id = str(entry.get("figure_id", ""))
         caption_tokens = _tokens(caption)
         overlap = len(query_tokens & caption_tokens) / max(len(query_tokens), 1)
         similarity = difflib.SequenceMatcher(None, query_text.lower(), caption.lower()).ratio()
-        figure_number = re.search(r"\d+", figure_id)
-        identifier_match = bool(
-            figure_number
-            and re.search(
-                rf"\b(?:figure|fig\.?)\s*{figure_number.group(0)}\b",
-                query,
-                re.I,
-            )
-        )
         context = _surrounding_context(entry, path)
         score = 1.0 if identifier_match else max(overlap, similarity)
         verified, alignment = _verify_figure_alignment(query, entry, context, threshold)
         if identifier_match:
-            verified = verified and (not context or alignment >= threshold or _figure_identifier(query) in context)
+            descriptive_tokens = query_tokens - _GENERIC_QUERY_TERMS
+            figure_tokens = _tokens(f"{caption} {context}")
+            content_alignment = (
+                len(descriptive_tokens & figure_tokens) / len(descriptive_tokens)
+                if descriptive_tokens
+                else 1.0
+            )
+            alignment = max(alignment, content_alignment)
+            verified = content_alignment >= threshold
         if not verified:
             print("Verifying figure alignment... Figure discarded due to low context confidence.")
             continue
@@ -430,7 +457,37 @@ def find_matching_figures(
     unique: Dict[str, Dict[str, object]] = {}
     for match in matches:
         unique[str(match.get("file_path", match.get("path", "")))] = match
-    return sorted(unique.values(), key=lambda item: float(item["score"]), reverse=True)
+    return sorted(
+        unique.values(),
+        key=lambda item: (float(item["score"]), float(item.get("alignment_score", 0.0))),
+        reverse=True,
+    )
+
+
+def _resolved_figure_payload(figure: Dict[str, object], manifest_path: str | Path) -> Dict[str, object]:
+    file_path = Path(str(figure.get("file_path", figure.get("path", ""))))
+    if not file_path.is_absolute():
+        candidates = (
+            file_path,
+            Path(manifest_path).parent / file_path,
+            VECTOR_STORE_DIR / file_path,
+        )
+        file_path = next((candidate for candidate in candidates if candidate.exists()), candidates[1])
+    resolved_path = file_path.resolve()
+    number = figure.get("number") or figure.get("figure_number") or _figure_number(figure.get("figure_id", ""))
+    resolved = {
+        **figure,
+        "number": number or "",
+        "file_path": str(resolved_path),
+        "path": str(resolved_path),
+        "resolved_path": str(resolved_path),
+    }
+    try:
+        image_relative_path = resolved_path.relative_to((VECTOR_STORE_DIR / "figures").resolve())
+    except ValueError:
+        return resolved
+    resolved["image_url"] = f"/images/{quote(image_relative_path.as_posix(), safe='/')}"
+    return resolved
 
 
 def inject_visual_payload(
@@ -440,16 +497,58 @@ def inject_visual_payload(
 ) -> Dict[str, object]:
     """Attach only figures explicitly referenced by retrieved passages."""
     passages = payload.get("chunks", [])
+    requested_number = _figure_number(query)
     matches = find_matching_figures(
         query,
         manifest_path,
-        passages=passages if isinstance(passages, list) else [],
+        passages=passages if requested_number is None and isinstance(passages, list) else None,
     )
+    linked_figures: List[Dict[str, object]] = []
+    if isinstance(passages, list):
+        for passage in passages:
+            if not isinstance(passage, dict):
+                continue
+            figures = passage.get("figures", [])
+            if isinstance(figures, list):
+                linked_figures.extend(
+                    figure
+                    for figure in figures
+                    if isinstance(figure, dict)
+                    and _figure_referenced_by_passages(figure, [passage])
+                    and (
+                        _visual_query(query)
+                        or _semantic_alignment(query, str(figure.get("caption", "")), "") >= 0.35
+                    )
+                )
+    unique_figures: Dict[str, Dict[str, object]] = {}
+    if requested_number is None:
+        candidate_figures = [*linked_figures, *matches]
+    else:
+        candidate_figures = matches[:1] or [
+            figure
+            for figure in linked_figures
+            if _figure_number(
+                figure.get(
+                    "number",
+                    figure.get("figure_number", figure.get("figure_id", figure.get("caption", ""))),
+                )
+            )
+            == requested_number
+        ]
+    for figure in candidate_figures:
+        file_path = str(figure.get("file_path", figure.get("path", "")))
+        if file_path:
+            resolved_figure = _resolved_figure_payload(figure, manifest_path)
+            unique_figures[str(resolved_figure["resolved_path"])] = resolved_figure
     result = dict(payload)
-    result["figures"] = matches
+    result["figures"] = list(unique_figures.values())
+    if result["figures"]:
+        result["matched_figure"] = result["figures"][0]
+    else:
+        result.pop("matched_figure", None)
     result.pop("rendered_figure_path", None)
-    if matches:
-        result["rendered_figure_path"] = matches[0]["file_path"]
+    if result["figures"]:
+        result["rendered_figure_path"] = result["figures"][0]["file_path"]
     return result
 
 
@@ -516,6 +615,7 @@ class AdaptiveRetriever:
         candidate_k: int = 20,
         section_type: str | None = None,
         query_vector: List[float] | None = None,
+        include_low_relevance: bool = False,
     ) -> List[Dict[str, object]]:
         self.last_timings_ms = {
             "faiss_index_lookup_ms": 0.0,
@@ -531,7 +631,7 @@ class AdaptiveRetriever:
         reference_query = bool(re.search(r"\b(?:references?|bibliography|citations?)\b", query, re.I))
         requested_paper = _ARXIV_ID.search(query)
         target_paper_id = requested_paper.group(1) if requested_paper else None
-        minimum_similarity = (
+        minimum_similarity = -1.0 if include_low_relevance else (
             max(0.12, MIN_RETRIEVAL_SIMILARITY * 0.5)
             if target_paper_id is not None
             else MIN_RETRIEVAL_SIMILARITY
@@ -575,7 +675,7 @@ class AdaptiveRetriever:
             if similarity >= minimum_similarity:
                 ranked.append({"score": similarity, **document, "text": text})
         ranked = [_ram_payload(item, index) | {"score": item.get("score", 0.0)} for index, item in enumerate(ranked)]
-        use_cross_encoder = os.getenv("RAG_ENABLE_CROSS_ENCODER_RERANKER", "0").lower() in {
+        use_cross_encoder = not include_low_relevance and os.getenv("RAG_ENABLE_CROSS_ENCODER_RERANKER", "0").lower() in {
             "1",
             "true",
             "yes",
@@ -606,6 +706,7 @@ class AdaptiveRetriever:
                 "rerank_score" in item
                 or _lexical_overlap(query, str(item.get("text", "")))
                 >= (0.15 if target_paper_id is not None else MIN_RETRIEVAL_SIMILARITY)
+                or include_low_relevance
             )
         ]
 

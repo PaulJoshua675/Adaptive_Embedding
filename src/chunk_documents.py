@@ -12,14 +12,14 @@ def split_text_into_chunks(
     text: str,
     chunk_size: int = 220,
     overlap: int = 40,
-    metadata: Dict[str, str] | None = None,
-) -> List[Dict[str, str | int]]:
+    metadata: Dict[str, object] | None = None,
+) -> List[Dict[str, object]]:
     normalized = normalize_text(text)
     words = normalized.split()
     if not words:
         return []
 
-    chunks: List[Dict[str, str | int]] = []
+    chunks: List[Dict[str, object]] = []
     start = 0
     while start < len(words):
         end = min(len(words), start + chunk_size)
@@ -35,12 +35,12 @@ def split_text_into_chunks(
     return chunks
 
 
-def chunk_documents(documents: List[Dict[str, object]], chunk_size: int = 220, overlap: int = 40) -> List[Dict[str, str | int]]:
-    chunks: List[Dict[str, str | int]] = []
+def chunk_documents(documents: List[Dict[str, object]], chunk_size: int = 220, overlap: int = 40) -> List[Dict[str, object]]:
+    chunks: List[Dict[str, object]] = []
     grouped_documents: Dict[str, List[Dict[str, object]]] = {}
     for document in documents:
         grouped_documents.setdefault(str(document["id"]).split("_page_", 1)[0], []).append(document)
-        doc_metadata: Dict[str, str | int] = {
+        doc_metadata: Dict[str, object] = {
             "document_id": str(document["id"]),
             "source": str(document["source"]),
             "page_number": int(document.get("page_number", 1)),
@@ -49,6 +49,10 @@ def chunk_documents(documents: List[Dict[str, object]], chunk_size: int = 220, o
         }
         if "image_count" in document:
             doc_metadata["image_count"] = int(document.get("image_count", 0))
+        if "figures" in document:
+            figures = document.get("figures")
+            if isinstance(figures, list):
+                doc_metadata["figures"] = [dict(figure) for figure in figures if isinstance(figure, dict)]
         if "source_type" in document:
             doc_metadata["source_type"] = str(document.get("source_type", "central"))
         chunks.extend(split_text_into_chunks(str(document["text"]), chunk_size=chunk_size, overlap=overlap, metadata=doc_metadata))

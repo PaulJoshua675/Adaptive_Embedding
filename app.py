@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import pickle
 import re
 import sys
@@ -12,10 +11,12 @@ import time
 from functools import lru_cache
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from config import DATASET_DIR, DOMAIN_EXAMPLE_QUESTIONS, VECTOR_STORE_DIR
 import streamlit as st
 import pandas as pd
-
+load_dotenv()
 st.title(" Final Performance Comparison: Single vs. Adaptive Embedding")
 
 col1, col2, col3 = st.columns(3)
@@ -81,7 +82,7 @@ comparison_data = {
 
 df_comparison = pd.DataFrame(comparison_data)
 
-st.dataframe(df_comparison, use_container_width=True, hide_index=True)
+st.dataframe(df_comparison, width="stretch", hide_index=True)
 
 ARXIV_DOMAINS = {
     "cs.CV": "Computer Vision & Pattern Recognition",
@@ -123,6 +124,7 @@ def _category_tags(record: dict) -> set[str]:
 
 @lru_cache(maxsize=4)
 def _indexed_paper_categories(metadata_path: str, modified_ns: int) -> dict[str, set[str]]:
+    del modified_ns
     try:
         with Path(metadata_path).open("rb") as handle:
             metadata = pickle.load(handle)
@@ -230,10 +232,25 @@ def _domain_paper_counts(dataset_dir: str | Path, vector_store_dir: str | Path) 
     return counts, len(paper_ids - classified_ids)
 
 
+_RELATED_IMAGES_HEADINGS = {
+    "English": "Related Images",
+    "Tamil": "தொடர்புடைய படங்கள்",
+    "French": "Images associées",
+    "Hindi": "संबंधित छवियाँ",
+    "Spanish": "Imágenes relacionadas",
+}
+_FALLBACK_NOTICES = {
+    "English": "ℹ️ Exact match not found in corpus. Showing related arXiv research context.",
+    "Tamil": "ℹ️ தொகுப்பில் துல்லியமான பொருத்தம் இல்லை. தொடர்புடைய arXiv ஆய்வுச் சூழல் காட்டப்படுகிறது.",
+    "French": "ℹ️ Aucune correspondance exacte dans le corpus. Le contexte de recherches arXiv connexes est affiché.",
+    "Hindi": "ℹ️ कॉर्पस में सटीक मिलान नहीं मिला। संबंधित arXiv शोध संदर्भ दिखाया जा रहा है।",
+    "Spanish": "ℹ️ No se encontró una coincidencia exacta en el corpus. Se muestra contexto de investigaciones arXiv relacionadas.",
+}
+
+
 def _render_answer(st, result: dict, question: str, image_root: Path, render_answer: bool = True) -> None:
     from src.evaluation_suite import retrieval_metrics
 
-    del question, image_root
     confidence = float(result.get("route_confidence", 0.0))
     model_name = str(result.get("embedding_model", result.get("embedding_key", "unknown")))
     st.caption(
@@ -242,25 +259,46 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
         f"Retrieved passages: {len(result.get('chunks', []))}"
     )
     answer = str(result["answer"])
+    response_language = str(result.get("response_language", "English"))
+    response_language = {
+        "en": "English",
+        "ta": "Tamil",
+        "fr": "French",
+        "hi": "Hindi",
+        "es": "Spanish",
+    }.get(response_language.lower(), response_language)
+    if response_language not in _RELATED_IMAGES_HEADINGS:
+        response_language = "English"
+    if result.get("fallback"):
+        st.info(_FALLBACK_NOTICES[response_language])
     if render_answer:
         st.markdown(answer)
     figures = result.get("figures", [])
-    if isinstance(figures, list) and figures:
-        st.markdown("### Matched figures")
-        for figure in figures:
-            figure_path = Path(str(figure.get("file_path", figure.get("path", ""))))
-            if figure_path.exists():
-                paper_id = str(figure.get("paper_id", ""))
-                page_number = figure.get("page_number", "page unavailable")
-                st.image(
-                    str(figure_path),
-                    caption=(
-                        f"{figure.get('figure_id', 'Figure')} | Page {page_number} | "
-                        f"{paper_id}: {figure.get('caption', '')}"
-                    ),
-                )
-                if paper_id and "." in paper_id and paper_id.replace(".", "", 1).isdigit():
-                    st.markdown(f"[Open verified arXiv source](https://arxiv.org/abs/{paper_id})")
+    matched_figure = result.get("matched_figure")
+    figure_candidates = []
+    if isinstance(matched_figure, dict):
+        figure_candidates.append((matched_figure, True))
+    if isinstance(figures, list):
+        figure_candidates.extend(
+            (figure, False) for figure in figures if isinstance(figure, dict)
+        )
+    renderable_figures = []
+    seen_figure_paths: set[str] = set()
+    for figure, is_matched in figure_candidates:
+        figure_path = Path(
+            str(figure.get("resolved_path", figure.get("file_path", figure.get("path", ""))))
+        )
+        if not figure_path.is_absolute():
+            figure_path = image_root / figure_path
+        has_local_image = figure_path.is_file()
+        image_source = str(figure_path) if has_local_image else str(figure.get("image_url", ""))
+        if not image_source.startswith(("https://", "http://")) and not has_local_image:
+            continue
+        identity = str(figure_path.resolve()) if has_local_image else image_source
+        if identity in seen_figure_paths:
+            continue
+        seen_figure_paths.add(identity)
+        renderable_figures.append((figure, image_source, is_matched))
     chunks = result.get("chunks", [])
     if isinstance(chunks, list):
         online_metrics = result.get("evaluation_metrics")
@@ -275,6 +313,30 @@ def _render_answer(st, result: dict, question: str, image_root: Path, render_ans
             f"Recall: **{float(online_metrics.get('recall', 0.0)):.3f}**  "
             f"F1-Score: **{float(online_metrics.get('f1', 0.0)):.3f}**"
         )
+    if renderable_figures:
+        st.markdown(f"### 🖼️ {_RELATED_IMAGES_HEADINGS[response_language]}")
+        for figure, image_source, is_matched in renderable_figures:
+            if is_matched:
+                number = figure.get("number") or figure.get("figure_id", "Figure")
+                caption = f"Figure {number}: {figure.get('caption', '')}"
+            else:
+                paper_id = str(figure.get("paper_id", ""))
+                page_number = figure.get("page_number", "page unavailable")
+                caption = (
+                    f"{figure.get('figure_id', 'Figure')} | Page {page_number} | "
+                    f"{paper_id}: {figure.get('caption', '')}"
+                )
+            st.image(image_source, caption=caption)
+            paper_id = str(figure.get("paper_id", ""))
+            if (
+                image_source.startswith(("https://", "http://"))
+                and paper_id
+                and "." in paper_id
+                and paper_id.replace(".", "", 1).isdigit()
+            ):
+                st.markdown(f"[Open verified arXiv source](https://arxiv.org/abs/{paper_id})")
+
+
 def _render_performance_metrics(st, result: dict, total_elapsed: float | None = None) -> None:
     timings = result.get("performance_timings_ms", {})
     if total_elapsed is not None:
@@ -304,7 +366,7 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
         vector_base: str,
     ) -> dict:
         """Index each uploaded file once without retaining vector objects in session state."""
-        from src.preprocessing import process_custom_pdf_path
+        from src.ingestion import ingest_pdf
         from src.rag_pipeline import save_index_from_documents
 
         del content_digest
@@ -313,8 +375,8 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
         base_path.mkdir(parents=True, exist_ok=True)
         pdf_path.parent.mkdir(parents=True, exist_ok=True)
         pdf_path.write_bytes(_pdf_content)
-        chunks = process_custom_pdf_path(
-            str(pdf_path),
+        chunks = ingest_pdf(
+            pdf_path,
             paper_id="custom_upload",
             figures_dir=base_path / "figures",
         )
@@ -370,7 +432,7 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
             if st.button(
                 example,
                 key=f"repository_example_{domain}_{example_index}",
-                use_container_width=True,
+                width="stretch",
             ):
                 st.session_state["repository_question"] = example
                 selected_example = example
@@ -379,7 +441,7 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
             "Fast extractive mode (skip LLM generation)",
             key="repository_fast_mode",
         )
-        ask = st.button("Retrieve grounded answer", type="primary", use_container_width=True, key="repository_ask") or selected_example is not None
+        ask = st.button("Retrieve grounded answer", type="primary", width="stretch", key="repository_ask") or selected_example is not None
         if ask:
             st.session_state.active_mode = "central"
             st.session_state.upload_result = None
@@ -457,7 +519,7 @@ def _render_streamlit(dataset_dir: str, vector_store_dir: str) -> None:
                     "Fast extractive mode (skip LLM generation)",
                     key="upload_fast_mode",
                 )
-                ask = st.button("Query uploaded paper", type="primary", use_container_width=True, key="upload_ask")
+                ask = st.button("Query uploaded paper", type="primary", width="stretch", key="upload_ask")
                 if ask:
                     st.session_state.active_mode = "upload"
                     started = time.perf_counter()

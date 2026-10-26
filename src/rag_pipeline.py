@@ -7,12 +7,20 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List
 
-from config import DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, DEFAULT_TOP_K, EMBEDDING_MODELS, VECTOR_STORE_DIR
+from config import (
+    DEFAULT_CHUNK_OVERLAP,
+    DEFAULT_CHUNK_SIZE,
+    DEFAULT_TOP_K,
+    EMBEDDING_MODELS,
+    MIN_RETRIEVAL_SIMILARITY,
+    VECTOR_STORE_DIR,
+)
 from .chunk_documents import chunk_documents
 from .embeddings import EmbeddingRegistry
 from .embedding_model import EmbeddingModel
 from .extract_pdf import extract_documents_from_path
 from .generator import AnswerGenerator
+from .ingestion import ingest_corpus
 from .cache import response_cache
 from .router import route_query
 from .retrieval import (
@@ -28,7 +36,7 @@ from .retrieval import (
 from .multilingual import resolve_response_language
 from .utils import ensure_directory, write_text
 from .vector_db import FaissVectorStore, MultiVectorStore
-from .preprocessing import extract_documents_with_pages, trim_query_tokens
+from .preprocessing import trim_query_tokens
 from .profiler import profile_stage
 
 try:
@@ -184,6 +192,41 @@ def save_index_from_documents(documents: List[Dict[str, object]], vector_store_d
     return {**metadata, "stores": stores}
 
 
+def _retrieve_with_fallback(
+    retriever: AdaptiveRetriever,
+    question: str,
+    embedding_key: str,
+    top_k: int,
+    section_type: str | None,
+    query_vector: List[float],
+) -> tuple[List[Dict[str, object]], bool]:
+    retrieved = retriever.retrieve(
+        question,
+        embedding_key=embedding_key,
+        top_k=top_k,
+        candidate_k=3,
+        section_type=section_type,
+        query_vector=query_vector,
+    )
+    best_score = max((float(chunk.get("score", -1.0)) for chunk in retrieved), default=-1.0)
+    if retrieved and best_score >= MIN_RETRIEVAL_SIMILARITY:
+        return retrieved, False
+    fallback_chunks = retriever.retrieve(
+        question,
+        embedding_key=embedding_key,
+        top_k=top_k,
+        candidate_k=5,
+        section_type=section_type,
+        query_vector=query_vector,
+        include_low_relevance=True,
+    )
+    fallback_score = max(
+        (float(chunk.get("score", -1.0)) for chunk in fallback_chunks),
+        default=-1.0,
+    )
+    return fallback_chunks, fallback_score < MIN_RETRIEVAL_SIMILARITY
+
+
 def answer_query_from_index(
     question: str,
     index: Dict[str, object],
@@ -195,17 +238,7 @@ def answer_query_from_index(
     stores = index["stores"]
     if not isinstance(stores, MultiVectorStore):
         raise TypeError("index['stores'] must be a MultiVectorStore")
-    timings: Dict[str, float] = {}
-    stage_started = time.perf_counter()
-    route = route_query(question)
-    route_time_ms = (time.perf_counter() - stage_started) * 1000
     language = resolve_response_language(question, response_language)
-    if route["route"] == "direct_response":
-        return _direct_response_result(
-            str(route["direct_kind"]),
-            language,
-            route_time_ms,
-        )
     result_limit = min(max(int(top_k if top_k is not None else DEFAULT_TOP_K), 3), 5)
     cache_identity = f"memory:{id(stores)}"
     exact_namespace = _cache_namespace(
@@ -218,6 +251,16 @@ def answer_query_from_index(
     cached = _cached_exact_response(question, exact_namespace + "|", None)
     if cached is not None:
         return cached
+    timings: Dict[str, float] = {}
+    stage_started = time.perf_counter()
+    route = route_query(question)
+    route_time_ms = (time.perf_counter() - stage_started) * 1000
+    if route["route"] == "direct_response":
+        return _direct_response_result(
+            str(route["direct_kind"]),
+            language,
+            route_time_ms,
+        )
     registry = load_cached_embedding_registry(tuple(sorted(dict(index["embedding_models"]).items())))
     timings["intent_classification_ms"] = route_time_ms
     query_type = str(route["query_type"])
@@ -246,17 +289,17 @@ def answer_query_from_index(
         )
         return cached
     retriever = AdaptiveRetriever(stores, registry)
-    retrieved = retriever.retrieve(
+    retrieved, fallback = _retrieve_with_fallback(
+        retriever,
         question,
-        embedding_key=embedding_key,
-        top_k=result_limit,
-        candidate_k=5,
-        section_type=section_from_query(question),
-        query_vector=query_vector,
+        embedding_key,
+        result_limit,
+        section_from_query(question),
+        query_vector,
     )
     timings.update(retriever.last_timings_ms)
     stage_started = time.perf_counter()
-    answer = _synthesize_answer(question, retrieved, language, fast_mode=fast_mode)
+    answer = _synthesize_answer(question, retrieved, language, fast_mode=fast_mode, fallback=fallback)
     timings["answer_generation_ms"] = (time.perf_counter() - stage_started) * 1000
     result = {
         "answer": answer,
@@ -268,6 +311,9 @@ def answer_query_from_index(
         "route_confidence": float(route.get("confidence", 0.0)),
         "classifier_model": route.get("classifier_model", "unknown"),
         "response_language": language,
+        "fallback": fallback,
+        "similarity_score": max((float(chunk.get("score", -1.0)) for chunk in retrieved), default=-1.0),
+        "relevance_threshold": MIN_RETRIEVAL_SIMILARITY,
         "figures": [],
         "performance_timings_ms": timings,
     }
@@ -284,7 +330,7 @@ def build_and_save_index(dataset_dir: str | Path, vector_store_dir: str | Path |
 
     figures_dir = store_dir / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
-    documents = extract_documents_with_pages(dataset_path, figures_dir)
+    documents = ingest_corpus(dataset_path, figures_dir)
     if not documents:
         documents = extract_documents_from_path(dataset_path)
     chunks = chunk_documents(documents, chunk_size=DEFAULT_CHUNK_SIZE, overlap=DEFAULT_CHUNK_OVERLAP)
@@ -356,10 +402,27 @@ def answer_query_details(
     stream_consumer: Callable[[Iterable[str]], str] | None = None,
     fast_mode: bool = False,
 ) -> Dict[str, object]:
+    language = resolve_response_language(question, response_language)
+    store_dir = resolve_index_path(vector_store_dir or None) if vector_store_dir is None else Path(vector_store_dir)
+    metadata_path = store_dir / "metadata.pkl"
+    result_limit = min(max(int(top_k if top_k is not None else DEFAULT_TOP_K), 3), 5)
+    stat = metadata_path.stat() if metadata_path.exists() else None
+    if stat is not None:
+        index_identity = f"{metadata_path.resolve()}:{stat.st_mtime_ns}:{stat.st_size}"
+        exact_namespace = _cache_namespace(
+            index_identity,
+            language,
+            result_limit,
+            fast_mode,
+            question,
+        )
+        cached = _cached_exact_response(question, exact_namespace + "|", stream_consumer)
+        if cached is not None:
+            return cached
+
     stage_started = time.perf_counter()
     route = route_query(question)
     route_time_ms = (time.perf_counter() - stage_started) * 1000
-    language = resolve_response_language(question, response_language)
     if route["route"] == "direct_response":
         return _direct_response_result(
             str(route["direct_kind"]),
@@ -368,23 +431,11 @@ def answer_query_details(
             stream_consumer,
         )
 
-    store_dir = resolve_index_path(vector_store_dir or None) if vector_store_dir is None else Path(vector_store_dir)
-    metadata_path = store_dir / "metadata.pkl"
-    if not metadata_path.exists():
+    if stat is None:
         build_and_save_index(dataset_dir=store_dir.parent / "dataset", vector_store_dir=store_dir)
-    stat = metadata_path.stat()
-    result_limit = min(max(int(top_k if top_k is not None else DEFAULT_TOP_K), 3), 5)
-    index_identity = f"{metadata_path.resolve()}:{stat.st_mtime_ns}:{stat.st_size}"
-    exact_namespace = _cache_namespace(
-        index_identity,
-        language,
-        result_limit,
-        fast_mode,
-        question,
-    )
-    cached = _cached_exact_response(question, exact_namespace + "|", stream_consumer)
-    if cached is not None:
-        return cached
+        stat = metadata_path.stat()
+        index_identity = f"{metadata_path.resolve()}:{stat.st_mtime_ns}:{stat.st_size}"
+
     metadata = _read_compact_query_metadata(
         str(metadata_path.resolve()),
         stat.st_mtime_ns,
@@ -426,18 +477,25 @@ def answer_query_details(
         index_load_ms = (time.perf_counter() - stage_started) * 1000
         populate_chunk_map_from_store(stores, embedding_key)
         retriever = AdaptiveRetriever(stores, registry)
-        retrieved = retriever.retrieve(
+        retrieved, fallback = _retrieve_with_fallback(
+            retriever,
             question,
-            embedding_key=embedding_key,
-            top_k=result_limit,
-            candidate_k=5,
-            section_type=section_from_query(question),
-            query_vector=query_vector,
+            embedding_key,
+            result_limit,
+            section_from_query(question),
+            query_vector,
         )
         timings.update(retriever.last_timings_ms)
         timings["faiss_index_lookup_ms"] += index_load_ms
         stage_started = time.perf_counter()
-        answer = _synthesize_answer(question, retrieved, language, stream_consumer, fast_mode)
+        answer = _synthesize_answer(
+            question,
+            retrieved,
+            language,
+            stream_consumer,
+            fast_mode,
+            fallback,
+        )
         timings["answer_generation_ms"] = (time.perf_counter() - stage_started) * 1000
         result = {
             "answer": answer,
@@ -449,6 +507,9 @@ def answer_query_details(
             "route_confidence": float(route.get("confidence", 0.0)),
             "classifier_model": route.get("classifier_model", "unknown"),
             "response_language": language,
+            "fallback": fallback,
+            "similarity_score": max((float(chunk.get("score", -1.0)) for chunk in retrieved), default=-1.0),
+            "relevance_threshold": MIN_RETRIEVAL_SIMILARITY,
             "figures": [],
             "performance_timings_ms": timings,
         }
@@ -484,8 +545,18 @@ def answer_query_details(
         top_k=result_limit,
         query_vector=query_vector,
     )
+    fallback = not retrieved
+    if fallback:
+        retrieved = retrieve_top_chunks(
+            question,
+            vector_store,
+            embedding_model,
+            top_k=result_limit,
+            query_vector=query_vector,
+            include_low_relevance=True,
+        )
     chunks = [{"text": chunk.get("text", ""), **chunk, "score": score} for score, chunk in retrieved]
-    answer = _synthesize_answer(question, chunks, language, stream_consumer, fast_mode)
+    answer = _synthesize_answer(question, chunks, language, stream_consumer, fast_mode, fallback)
     result = {
         "answer": answer,
         "chunks": chunks,
@@ -493,7 +564,12 @@ def answer_query_details(
         "route": str(route["route"]),
         "embedding_key": "simple-bow",
         "response_language": language,
+        "fallback": fallback,
+        "similarity_score": max((float(chunk.get("score", -1.0)) for chunk in chunks), default=-1.0),
+        "relevance_threshold": MIN_RETRIEVAL_SIMILARITY,
+        "figures": [],
     }
+    result = inject_visual_payload(result, question, store_dir / "figures" / "figure_manifest.json")
     if _cacheable_query(question):
         response_cache.set(question, query_vector, result, namespace)
     return result
@@ -565,16 +641,28 @@ def _synthesize_answer(
     response_language: str = "English",
     stream_consumer: Callable[[Iterable[str]], str] | None = None,
     fast_mode: bool = False,
+    fallback: bool = False,
 ) -> str:
     with profile_stage("LLM Synthesis"):
         generator = AnswerGenerator()
         if fast_mode:
-            return generator.generate_fast(question, retrieved, response_language=response_language)
+            return generator.generate_fast(
+                question,
+                retrieved,
+                response_language=response_language,
+                fallback=fallback,
+            )
         if stream_consumer is not None:
             return generator.generate_stream(
                 question,
                 retrieved,
                 stream_consumer=stream_consumer,
                 response_language=response_language,
+                fallback=fallback,
             )
-        return generator.generate(question, retrieved, response_language=response_language)
+        return generator.generate(
+            question,
+            retrieved,
+            response_language=response_language,
+            fallback=fallback,
+        )

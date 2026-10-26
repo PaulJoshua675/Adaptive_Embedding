@@ -30,6 +30,7 @@ def retrieve_top_chunks(
     embedding_model: EmbeddingModel,
     top_k: int = DEFAULT_TOP_K,
     query_vector: List[float] | None = None,
+    include_low_relevance: bool = False,
 ) -> List[Tuple[float, Dict[str, object]]]:
     limit = min(max(int(top_k), 3), 5)
     query_vector = query_vector or embedding_model.embed_text(query)
@@ -51,7 +52,7 @@ def retrieve_top_chunks(
     for score, document in candidates:
         cleaned_document = _clean_document(document)
         if cleaned_document is not None:
-            if score >= MIN_RETRIEVAL_SIMILARITY:
+            if include_low_relevance or score >= MIN_RETRIEVAL_SIMILARITY:
                 cleaned_results.append((score, cleaned_document))
     if cleaned_results:
         cleaned_results.sort(key=lambda item: item[0], reverse=True)

@@ -6,6 +6,7 @@ from threading import Lock
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from config import DATASET_DIR, VECTOR_STORE_DIR
@@ -13,6 +14,11 @@ from src.multilingual import SUPPORTED_LANGUAGES
 from src.rag_pipeline import answer_query_details, build_and_save_index
 
 app = FastAPI(title="Research Intelligence RAG API", version="1.0.0")
+app.mount(
+    "/images",
+    StaticFiles(directory=str(VECTOR_STORE_DIR / "figures"), check_dir=False),
+    name="images",
+)
 _index_lock = Lock()
 
 

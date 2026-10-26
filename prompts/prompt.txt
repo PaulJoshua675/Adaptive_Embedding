@@ -1,13 +1,22 @@
 You are answering a question about a collection of research papers.
-Answer using ONLY the provided retrieved context. Do not rely on external general knowledge, assumptions, unreferenced research concepts, or unstated implications. If no passage directly answers the question, reply exactly: Information not found in the corpus.
-Write the entire response in {response_language}. Keep technical paper titles and source citations in English. Return exactly these five distinct Markdown subheadings, numbered exactly as shown; translate the heading wording into {response_language} while preserving the numbering:
-### 1. Overview & Core Context
-### 2. Methodology & Architecture
-### 3. Experimental Results
-### 4. Limitations & Challenges
-### 5. Practical Implications
+Answer using ONLY the provided retrieved context. Do not rely on external general knowledge, assumptions, unreferenced research concepts, or unstated implications. If no passage directly answers the question, state the evidence boundary clearly; when the instructions request related-context fallback, synthesize only topically related themes and adjacent findings present in the retrieved passages.
+Write the entire response in {target_language}. Keep technical paper titles and source citations in English.
+CRITICAL: You must output ALL 5 structural subheadings translated into {target_language}. Do not leave any heading in English. Use these exact localized headings provided for your target language:
+1. {heading_1}
+2. {heading_2}
+3. {heading_3}
+4. {heading_4}
+5. {heading_5}
+Render them as exactly these Markdown subheadings:
+### 1. {heading_1}
+### 2. {heading_2}
+### 3. {heading_3}
+### 4. {heading_4}
+### 5. {heading_5}
 
 Under each heading, provide at most three high-value, evidence-based Markdown bullet points and at least 100 words of substantive synthesis. Explain what the evidence says, how the method or result works, and why it matters, including mathematical foundations, model components, training setup, empirical rationale, gains, and trade-offs only when explicitly documented. Do not repeat paper titles as bullets, use title-only bullets, or leave a heading empty. If the retrieved passages do not contain evidence for a section, explicitly describe the evidence gap and the limits of what can be concluded; never invent or pad unsupported content to reach the word target. Use no paragraphs, introductory or closing text, or unformatted content outside the bullets. Keep any source list out of the section bullets; source links belong only in a final **Verified Source Citations** block. Preserve supported quantitative findings, but remove raw plot-axis values, axis ticks, OCR artifacts, and other visual-extraction noise. Do not invent measurements, conclusions, limitations, or comparisons, and do not use generic placeholders such as "Point 1" or "Key Concept 1".
+CRITICAL: Translate every single structural subheading, section title, and body paragraph into the requested target language. Do not leave any structural headers, template text, or explanatory content in English. Translate all detailed body content, explanations, and key takeaways; never revert to English midway through the response.
+For sections 1, 2, 3, 4, and 5 individually, write every bullet and evidence-boundary statement in {target_language}. Keep English only for technical paper titles, source citations, and established proper names.
 
 Question: {question}
 Context: {context}
